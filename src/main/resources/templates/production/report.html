@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Production Report - Coconut Husk Inventory</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/raw-materials">Raw Materials</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/production">Production</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/accounts">Accounts</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-10 ms-sm-auto px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1>Production Report</h1>
+                </div>
+
+                <!-- Report Filter -->
+                <form th:action="@{/production/report}" method="get" class="mb-4">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label class="form-label">Date</label>
+                            <input type="date" class="form-control" name="date" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Shift</label>
+                            <select class="form-select" name="shift" required>
+                                <option value="">Select Shift</option>
+                                <option value="FIRST_SHIFT">First Shift (8 AM - 8 PM)</option>
+                                <option value="SECOND_SHIFT">Second Shift (8 PM - 8 AM)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="submit" class="btn btn-primary d-block">Generate Report</button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Production Report Table -->
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Batch Number</th>
+                                <th>Completion Time</th>
+                                <th>Supervisor</th>
+                                <th>Bales</th>
+                                <th>Boxes</th>
+                                <th>Pith Quantity (kg)</th>
+                                <th>Fiber Quantity (kg)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="prod : ${productions}">
+                                <td th:text="${prod.batchNumber}"></td>
+                                <td th:text="${#temporals.format(prod.batchCompletionTime, 'dd-MM-yyyy HH:mm')}"></td>
+                                <td th:text="${prod.supervisorName}"></td>
+                                <td th:text="${prod.numberOfBales}"></td>
+                                <td th:text="${prod.numberOfBoxes}"></td>
+                                <td th:text="${prod.pithQuantity}"></td>
+                                <td th:text="${prod.fiberQuantity}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

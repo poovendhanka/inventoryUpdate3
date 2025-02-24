@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+    <!-- Page Title -->
+    <h1 id="pageTitle">Dashboard</h1>
+    
+    <!-- Main Content -->
+    <div id="content">
+        <div class="row">
+            <!-- Stock Overview -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Current Stock</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="text-center">
+                                    <h6>Pith Stock</h6>
+                                    <h2 th:text="${currentPithStock + ' kg'}">0 kg</h2>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="text-center">
+                                    <h6>Fiber Stock</h6>
+                                    <h2 th:text="${currentFiberStock + ' kg'}">0 kg</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="/raw-materials" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> New Raw Material Entry
+                            </a>
+                            <a href="/production" class="btn btn-primary">
+                                <i class="fas fa-industry"></i> Start Production
+                            </a>
+                            <a href="/sales" class="btn btn-primary">
+                                <i class="fas fa-shopping-cart"></i> Record Sale
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Page specific scripts -->
+    <th:block id="pagescript">
+        <script>
+            // Add any page-specific JavaScript here
+        </script>
+    </th:block>
+</body>
+</html> 

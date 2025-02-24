@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Production Report</title>
+</head>
+<body>
+    <h1 id="pageTitle">Production Report</h1>
+    
+    <div id="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">View Production Report</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/production-report/view}" method="get">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <label class="form-label">Select Date</label>
+                                    <input type="date" class="form-control" name="date" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">&nbsp;</label>
+                                    <button type="submit" class="btn btn-primary d-block w-100">View Report</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <th:block id="pagescript">
+        <script>
+            // Initialize date picker with today's date
+            document.querySelector('input[type="date"]').valueAsDate = new Date();
+        </script>
+    </th:block>
+</body>
+</html> 

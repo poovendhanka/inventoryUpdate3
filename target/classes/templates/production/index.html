@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Production</title>
+</head>
+<body>
+    <!-- Page Title -->
+    <h1 id="pageTitle">Production Management</h1>
+    
+    <!-- Main Content -->
+    <div id="content">
+        <div class="row">
+            <!-- Current Stock Card -->
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Current Stock</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="alert alert-info">
+                                    <h6 class="alert-heading">Pith Stock</h6>
+                                    <p class="mb-0" th:text="${currentPithStock + ' kg'}">0 kg</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="alert alert-info">
+                                    <h6 class="alert-heading">Fiber Stock</h6>
+                                    <p class="mb-0" th:text="${currentFiberStock + ' bales'}">0 bales</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Production Form Card -->
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Batch Production</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/production}" method="post" th:object="${production}">
+                            <div class="mb-3">
+                                <label for="shift" class="form-label">Shift</label>
+                                <select class="form-select" id="shift" th:field="*{shift}" required>
+                                    <option value="">Select Shift</option>
+                                    <option th:each="shiftOption : ${shifts}"
+                                            th:value="${shiftOption}"
+                                            th:text="${shiftOption.description}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="supervisorName" class="form-label">Supervisor Name</label>
+                                <input type="text" class="form-control" id="supervisorName" th:field="*{supervisorName}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="batchCompletionTime" class="form-label">Batch Completion Time</label>
+                                <input type="datetime-local" class="form-control" id="batchCompletionTime" th:field="*{batchCompletionTime}" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Complete Batch</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Productions Table -->
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Recent Productions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Batch Number</th>
+                                        <th>Completion Time</th>
+                                        <th>Shift</th>
+                                        <th>Supervisor</th>
+                                        <th>Bales</th>
+                                        <th>Boxes</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="prod : ${recentProductions}">
+                                        <td th:text="${prod.batchNumber}"></td>
+                                        <td th:text="${#temporals.format(prod.batchCompletionTime, 'HH:mm')}"></td>
+                                        <td th:text="${prod.shift.description}"></td>
+                                        <td th:text="${prod.supervisorName}"></td>
+                                        <td th:text="${prod.numBales}"></td>
+                                        <td th:text="${prod.numBoxes}"></td>
+                                        <td>
+                                            <span class="badge bg-success">Completed</span>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(recentProductions)}">
+                                        <td colspan="7" class="text-center">No productions found for today</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <th:block id="pagescript">
+        <script>
+            $(document).ready(function() {
+                // Set default datetime to now
+                var now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                document.querySelector('input[type="datetime-local"]').value = now.toISOString().slice(0,16);
+                
+                // Confirm before submitting
+                $('form').on('submit', function(e) {
+                    if (!confirm('Are you sure you want to complete this batch?')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        </script>
+    </th:block>
+</body>
+</html> 

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Accounts</title>
+</head>
+<body>
+    <h1 id="pageTitle">Accounts</h1>
+    
+    <div id="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Unprocessed Raw Materials</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Receipt #</th>
+                                        <th>Date</th>
+                                        <th>Vehicle #</th>
+                                        <th>Party</th>
+                                        <th>Husk Type</th>
+                                        <th>CFT</th>
+                                        <th>Cost</th>
+                                        <th>Supervisor</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="entry : ${unprocessedEntries}">
+                                        <td th:text="${entry.receiptNumber}"></td>
+                                        <td th:text="${#temporals.format(entry.lorryInTime, 'dd-MM-yyyy HH:mm')}"></td>
+                                        <td th:text="${entry.vehicleNumber}"></td>
+                                        <td th:text="${entry.party.name}"></td>
+                                        <td th:text="${entry.huskType?.displayName}"></td>
+                                        <td th:text="${entry.cft}"></td>
+                                        <td>
+                                            <form th:id="'form-' + ${entry.id}" 
+                                                  th:action="@{/accounts/process}" 
+                                                  method="post" 
+                                                  class="process-form">
+                                                <input type="hidden" name="rawMaterialId" th:value="${entry.id}">
+                                                <input type="number" 
+                                                       name="cost" 
+                                                       class="form-control form-control-sm" 
+                                                       required 
+                                                       step="0.01">
+                                                <input type="text" 
+                                                       name="supervisorName" 
+                                                       class="form-control form-control-sm mt-1" 
+                                                       placeholder="Supervisor Name" 
+                                                       required>
+                                            </form>
+                                        </td>
+                                        <td th:text="${entry.supervisorName}"></td>
+                                        <td>
+                                            <button type="submit" 
+                                                    th:form="'form-' + ${entry.id}" 
+                                                    class="btn btn-primary btn-sm">
+                                                Process
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Processed Raw Materials</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/accounts-report/raw-materials}" method="get" class="row g-3 mb-4">
+                            <div class="col-auto">
+                                <input type="date" class="form-control" name="date" required>
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary">View Report</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <th:block id="pagescript">
+        <script>
+            // Add any page-specific JavaScript here
+            $(document).ready(function() {
+                $('.process-form').on('submit', function(e) {
+                    if (!confirm('Are you sure you want to process this entry?')) {
+                        e.preventDefault();
+                    }
+                });
+                // Set default date to today
+                var today = new Date().toISOString().split('T')[0];
+                $('input[type="date"]').val(today);
+            });
+        </script>
+    </th:block>
+</body>
+</html> 

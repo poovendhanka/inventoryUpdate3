@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Sales Report</title>
+</head>
+<body>
+    <h1 id="pageTitle">Sales Report - <span th:text="${#temporals.format(date, 'dd-MM-yyyy')}">Date</span></h1>
+    
+    <div id="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Sales Details</h5>
+                            <a href="/sales" class="btn btn-secondary">Back to Sales</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Invoice #</th>
+                                        <th>Time</th>
+                                        <th>Dealer</th>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Price/Unit</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="sale : ${sales}">
+                                        <td th:text="${sale.invoiceNumber}"></td>
+                                        <td th:text="${#temporals.format(sale.saleDate, 'HH:mm')}"></td>
+                                        <td th:text="${sale.dealer.name}"></td>
+                                        <td th:text="${sale.productType.displayName}"></td>
+                                        <td th:text="${sale.quantity + ' kg'}"></td>
+                                        <td th:text="${'₹' + sale.pricePerUnit}"></td>
+                                        <td th:text="${'₹' + sale.totalAmount}"></td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="6" class="text-end"><strong>Total:</strong></td>
+                                        <td><strong th:text="${'₹' + #aggregates.sum(sales.![totalAmount])}">0.00</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <th:block id="pagescript">
+        <script>
+            // Add any page-specific JavaScript here if needed
+            $(document).ready(function() {
+                // Initialize any plugins or add event handlers
+            });
+        </script>
+    </th:block>
+</body>
+</html> 

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Production Report</title>
+</head>
+<body>
+    <h1 id="pageTitle">Production Report for <span th:text="${#temporals.format(date, 'dd-MM-yyyy')}"></span></h1>
+    
+    <div id="content">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- First Shift -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title">First Shift (8:00 AM - 8:00 PM)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Batch #</th>
+                                        <th>Completion Time</th>
+                                        <th>Duration</th>
+                                        <th>Supervisor</th>
+                                        <th>Bales</th>
+                                        <th>Boxes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="prod : ${firstShift}">
+                                        <td th:text="${prod.batchNumber}"></td>
+                                        <td th:text="${#temporals.format(prod.batchCompletionTime, 'HH:mm')}"></td>
+                                        <td>
+                                            <span th:if="${prod.timeTaken != null}" 
+                                                  th:text="${prod.timeTaken.toHours() + 'h ' + (prod.timeTaken.toMinutesPart()) + 'm'}">
+                                            </span>
+                                        </td>
+                                        <td th:text="${prod.supervisorName}"></td>
+                                        <td th:text="${prod.numBales}"></td>
+                                        <td th:text="${prod.numBoxes}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Second Shift -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Second Shift (8:00 PM - 8:00 AM)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Batch #</th>
+                                        <th>Completion Time</th>
+                                        <th>Duration</th>
+                                        <th>Supervisor</th>
+                                        <th>Bales</th>
+                                        <th>Boxes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="prod : ${secondShift}">
+                                        <td th:text="${prod.batchNumber}"></td>
+                                        <td th:text="${#temporals.format(prod.batchCompletionTime, 'HH:mm')}"></td>
+                                        <td>
+                                            <span th:if="${prod.timeTaken != null}" 
+                                                  th:text="${prod.timeTaken.toHours() + 'h ' + (prod.timeTaken.toMinutesPart()) + 'm'}">
+                                            </span>
+                                        </td>
+                                        <td th:text="${prod.supervisorName}"></td>
+                                        <td th:text="${prod.numBales}"></td>
+                                        <td th:text="${prod.numBoxes}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="pagescript">
+        <script>
+            // Any page-specific JavaScript can go here
+        </script>
+    </div>
+</body>
+</html> 

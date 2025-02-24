@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Processed Raw Materials Report</title>
+</head>
+<body>
+    <h1 id="pageTitle">Processed Raw Materials Report</h1>
+    
+    <div id="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Processed Raw Materials for <span th:text="${#temporals.format(selectedDate, 'dd-MM-yyyy')}">Date</span></h5>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Receipt #</th>
+                                        <th>Date & Time</th>
+                                        <th>Vehicle #</th>
+                                        <th>Party</th>
+                                        <th>Husk Type</th>
+                                        <th>CFT</th>
+                                        <th>Cost (₹)</th>
+                                        <th>Supervisor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="entry : ${report.processedEntries}">
+                                        <td th:text="${entry.rawMaterial.receiptNumber}"></td>
+                                        <td th:text="${#temporals.format(entry.rawMaterial.lorryInTime, 'dd-MM-yyyy HH:mm')}"></td>
+                                        <td th:text="${entry.rawMaterial.vehicleNumber}"></td>
+                                        <td th:text="${entry.rawMaterial.party.name}"></td>
+                                        <td th:text="${entry.rawMaterial.huskType?.displayName}"></td>
+                                        <td th:text="${entry.rawMaterial.cft}"></td>
+                                        <td th:text="${'₹' + #numbers.formatDecimal(entry.cost, 1, 2)}">₹0.00</td>
+                                        <td th:text="${entry.accountsSupervisor}"></td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-info">
+                                        <td colspan="5"><strong>Total</strong></td>
+                                        <td><strong th:text="${#aggregates.sum(report.processedEntries.![rawMaterial.cft])}">0</strong></td>
+                                        <td><strong th:text="${'₹' + #numbers.formatDecimal(#aggregates.sum(report.processedEntries.![cost]), 1, 2)}">₹0.00</strong></td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="pagescript">
+        <script>
+            // Any page-specific JavaScript can go here
+        </script>
+    </div>
+</body>
+</html> 

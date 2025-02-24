@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Sales</title>
+</head>
+<body>
+    <h1 id="pageTitle">Sales Management</h1>
+    
+    <div id="content">
+        <div class="row">
+            <!-- Current Stock Card -->
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Current Stock</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="alert alert-info">
+                                    <h6 class="alert-heading">Pith Stock</h6>
+                                    <p class="mb-0" th:text="${currentPithStock + ' kg'}">0 kg</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="alert alert-info">
+                                    <h6 class="alert-heading">Fiber Stock</h6>
+                                    <p class="mb-0" th:text="${currentFiberStock + ' bales'}">0 bales</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sales Report Card -->
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Sales Report</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/sales/report}" method="get">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <label class="form-label">Date</label>
+                                    <input type="date" class="form-control" name="date" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">&nbsp;</label>
+                                    <button type="submit" class="btn btn-primary d-block w-100">View Sales Report</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sales Form Card -->
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Create Sale</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/sales}" th:object="${sale}" method="post">
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Dealer</label>
+                                    <select class="form-select" th:field="*{dealer}" required>
+                                        <option value="">Select Dealer</option>
+                                        <option th:each="dealer : ${dealers}"
+                                                th:value="${dealer.id}"
+                                                th:text="${dealer.name}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Product Type</label>
+                                    <select class="form-select" th:field="*{productType}" required>
+                                        <option value="">Select Product</option>
+                                        <option th:each="type : ${productTypes}"
+                                                th:value="${type}"
+                                                th:text="${type.displayName}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Quantity (kg)</label>
+                                    <input type="number" class="form-control" 
+                                           th:field="*{quantity}" required step="0.01">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Price per Unit</label>
+                                    <input type="number" class="form-control" 
+                                           th:field="*{pricePerUnit}" required step="0.01">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Create Sale</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Sales Table -->
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Recent Sales</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Invoice #</th>
+                                        <th>Date</th>
+                                        <th>Dealer</th>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Price/Unit</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="sale : ${recentSales}">
+                                        <td th:text="${sale.invoiceNumber}"></td>
+                                        <td th:text="${#temporals.format(sale.saleDate, 'dd-MM-yyyy HH:mm')}"></td>
+                                        <td th:text="${sale.dealer.name}"></td>
+                                        <td th:text="${sale.productType.displayName}"></td>
+                                        <td th:text="${sale.quantity + ' kg'}"></td>
+                                        <td th:text="${'₹' + sale.pricePerUnit}"></td>
+                                        <td th:text="${'₹' + sale.totalAmount}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <th:block id="pagescript">
+        <script>
+            $(document).ready(function() {
+                $('form').on('submit', function(e) {
+                    if (!confirm('Are you sure you want to create this sale?')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        </script>
+    </th:block>
+</body>
+</html> 

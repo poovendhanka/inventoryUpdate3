@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Settings</title>
+</head>
+<body>
+    <h1 id="pageTitle">Settings</h1>
+    
+    <div id="content">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Party Management</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/settings/party}" th:object="${party}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">Party Name</label>
+                                <input type="text" class="form-control" th:field="*{name}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Phone Number</label>
+                                <input type="text" class="form-control" th:field="*{phoneNumber}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">SIN Number</label>
+                                <input type="text" class="form-control" th:field="*{sinNumber}">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Party</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Dealer Management</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/settings/dealer}" th:object="${dealer}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">Dealer Name</label>
+                                <input type="text" class="form-control" th:field="*{name}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Phone Number</label>
+                                <input type="text" class="form-control" th:field="*{phoneNumber}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">GST Number</label>
+                                <input type="text" class="form-control" th:field="*{gstNumber}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Address</label>
+                                <textarea class="form-control" th:field="*{address}" rows="2"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Dealer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <th:block id="pagescript">
+        <script>
+            // Your page-specific JavaScript here
+        </script>
+    </th:block>
+</body>
+</html> 

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Admin Panel</title>
+</head>
+<body>
+    <h1 id="pageTitle">Admin Panel</h1>
+    
+    <div id="content">
+        <div class="row">
+            <!-- Party Management -->
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Manage Suppliers</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/admin/parties}" method="post" th:object="${party}">
+                            <div class="mb-3">
+                                <label for="partyName" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="partyName" th:field="*{name}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="partyPhone" class="form-label">Phone Number</label>
+                                <input type="text" class="form-control" id="partyPhone" th:field="*{phoneNumber}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="partySin" class="form-label">SIN Number</label>
+                                <input type="text" class="form-control" id="partySin" th:field="*{sinNumber}">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Supplier</button>
+                        </form>
+                        
+                        <hr>
+                        
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Phone</th>
+                                        <th>SIN</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="party : ${parties}">
+                                        <td th:text="${party.name}"></td>
+                                        <td th:text="${party.phoneNumber}"></td>
+                                        <td th:text="${party.sinNumber}"></td>
+                                        <td>
+                                            <form th:action="@{/admin/parties/{id}(id=${party.id})}" method="post" style="display: inline;">
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dealer Management -->
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Manage Dealers</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/admin/dealers}" method="post" th:object="${dealer}">
+                            <div class="mb-3">
+                                <label for="dealerName" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="dealerName" th:field="*{name}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="dealerPhone" class="form-label">Phone Number</label>
+                                <input type="text" class="form-control" id="dealerPhone" th:field="*{phoneNumber}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="dealerAddress" class="form-label">Address</label>
+                                <input type="text" class="form-control" id="dealerAddress" th:field="*{address}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="dealerGst" class="form-label">GST Number</label>
+                                <input type="text" class="form-control" id="dealerGst" th:field="*{gstNumber}">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Dealer</button>
+                        </form>
+                        
+                        <hr>
+                        
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Phone</th>
+                                        <th>GST</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="dealer : ${dealers}">
+                                        <td th:text="${dealer.name}"></td>
+                                        <td th:text="${dealer.phoneNumber}"></td>
+                                        <td th:text="${dealer.gstNumber}"></td>
+                                        <td>
+                                            <form th:action="@{/admin/dealers/{id}(id=${dealer.id})}" method="post" style="display: inline;">
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="pagescript">
+        <script>
+            // Add any page-specific JavaScript here
+            $(document).ready(function() {
+                // Your JavaScript code
+            });
+        </script>
+    </div>
+</body>
+</html> 

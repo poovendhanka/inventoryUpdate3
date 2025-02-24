@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Processed Raw Material Report</title>
+</head>
+<body>
+    <h1 id="pageTitle">Processed Raw Material Report</h1>
+    
+    <div id="content">
+        <div class="row">
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Select Date</h5>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/raw-material/processed}" method="get" class="row g-3">
+                            <div class="col-auto">
+                                <input type="date" class="form-control" name="date" 
+                                       th:value="${selectedDate}" required>
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary">View Report</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="alert alert-info">
+                                    <h6 class="alert-heading">Total Batches</h6>
+                                    <p class="mb-0" th:text="${report.totalBatches}">0</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="alert alert-info">
+                                    <h6 class="alert-heading">Total Husks</h6>
+                                    <p class="mb-0" th:text="${report.totalHusks}">0</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="alert alert-info">
+                                    <h6 class="alert-heading">Total Bales</h6>
+                                    <p class="mb-0" th:text="${report.totalBales}">0</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="alert alert-info">
+                                    <h6 class="alert-heading">Total Pith (kg)</h6>
+                                    <p class="mb-0" th:text="${report.totalPithKg}">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-4">
+                                <div class="alert alert-warning">
+                                    <h6 class="alert-heading">Cost per Unit</h6>
+                                    <p class="mb-0" th:text="${'₹' + #numbers.formatDecimal(report.costPerUnit, 1, 2)}">₹0.00</p>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="alert alert-success">
+                                    <h6 class="alert-heading">Total Cost</h6>
+                                    <p class="mb-0" th:text="${'₹' + #numbers.formatDecimal(report.totalCost, 1, 2)}">₹0.00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

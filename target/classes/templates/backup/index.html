@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Backup</title>
+</head>
+<body>
+    <h1 id="pageTitle">Database Backup</h1>
+    
+    <div id="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Generate Backup</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-4">
+                            Click the button below to generate and download a backup of all database tables in CSV format.
+                            The backup will include all current data from the system.
+                        </p>
+                        <a href="/backup/generate" class="btn btn-primary">
+                            <i class="fas fa-download me-2"></i>Generate Backup
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <th:block id="pagescript">
+        <script>
+            $(document).ready(function() {
+                // Add loading state to button when clicked
+                $('.btn-primary').click(function() {
+                    $(this).prop('disabled', true)
+                        .html('<i class="fas fa-spinner fa-spin me-2"></i>Generating...');
+                });
+            });
+        </script>
+    </th:block>
+</body>
+</html> 

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Raw Materials</title>
+</head>
+<body>
+    <h1 id="pageTitle">Raw Materials Management</h1>
+    
+    <div id="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h1>Raw Materials Entry</h1>
+                    </div>
+                    <div class="card-body">
+                        <!-- Entry Form -->
+                        <form th:action="@{/raw-materials}" th:object="${rawMaterial}" method="post">
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Lorry In Time</label>
+                                    <input type="datetime-local" class="form-control" th:field="*{lorryInTime}" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Vehicle Number</label>
+                                    <input type="text" class="form-control" th:field="*{vehicleNumber}" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Party</label>
+                                    <select class="form-select" th:field="*{party}" required>
+                                        <option value="">Select Party</option>
+                                        <option th:each="party : ${parties}"
+                                                th:value="${party.id}"
+                                                th:text="${party.name}">
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Husk Type</label>
+                                    <select class="form-select" th:field="*{huskType}" required>
+                                        <option value="">Select Husk Type</option>
+                                        <option th:each="type : ${T(com.inventory.model.HuskType).values()}"
+                                                th:value="${type}"
+                                                th:text="${type.displayName}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Length</label>
+                                    <input type="number" step="0.01" class="form-control" th:field="*{length}" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Breadth</label>
+                                    <input type="number" step="0.01" class="form-control" th:field="*{breadth}" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Height</label>
+                                    <input type="number" step="0.01" class="form-control" th:field="*{height}" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Supervisor Name</label>
+                                    <input type="text" class="form-control" th:field="*{supervisorName}" required>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Generate Receipt</button>
+                        </form>
+
+                        <!-- Recent Entries Table -->
+                        <h3 class="mt-4">Recent Entries</h3>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Receipt No</th>
+                                        <th>Date & Time</th>
+                                        <th>Vehicle No</th>
+                                        <th>Party</th>
+                                        <th>CFT</th>
+                                        <th>Supervisor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="entry : ${recentEntries}">
+                                        <td th:text="${entry.receiptNumber}"></td>
+                                        <td th:text="${#temporals.format(entry.lorryInTime, 'dd-MM-yyyy HH:mm')}"></td>
+                                        <td th:text="${entry.vehicleNumber}"></td>
+                                        <td th:text="${entry.party.name}"></td>
+                                        <td th:text="${entry.cft}"></td>
+                                        <td th:text="${entry.supervisorName}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <th:block id="pagescript">
+        <script>
+            $(document).ready(function() {
+                // Set default datetime to now
+                var now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                document.querySelector('input[type="datetime-local"]').value = now.toISOString().slice(0,16);
+                
+                // Confirm before submitting
+                $('form').on('submit', function(e) {
+                    if (!confirm('Are you sure you want to submit this entry?')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        </script>
+    </th:block>
+</body>
+</html> 

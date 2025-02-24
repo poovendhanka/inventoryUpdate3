@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Reports</title>
+</head>
+<body>
+    <h1 id="pageTitle">Reports</h1>
+    
+    <div id="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Production Reports</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/production/report}" method="get">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label class="form-label">Date</label>
+                                    <input type="datetime-local" class="form-control" name="date" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Shift</label>
+                                    <select class="form-select" name="shift" required>
+                                        <option value="">Select Shift</option>
+                                        <option th:each="shift : ${T(com.inventory.model.ShiftType).values()}"
+                                                th:value="${shift}"
+                                                th:text="${shift.description}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">&nbsp;</label>
+                                    <button type="submit" class="btn btn-primary d-block w-100">Generate Production Report</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Sales Reports</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/sales/report}" method="get">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label class="form-label">Start Date</label>
+                                    <input type="datetime-local" class="form-control" name="startDate" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">End Date</label>
+                                    <input type="datetime-local" class="form-control" name="endDate" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">&nbsp;</label>
+                                    <button type="submit" class="btn btn-primary d-block w-100">Generate Sales Report</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Stock Reports</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/stock/report}" method="get">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <label class="form-label">Date</label>
+                                    <input type="datetime-local" class="form-control" name="date" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">&nbsp;</label>
+                                    <button type="submit" class="btn btn-primary d-block w-100">Generate Stock Report</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <th:block id="pagescript">
+        <script>
+            // Your page-specific JavaScript here
+        </script>
+    </th:block>
+</body>
+</html> 
