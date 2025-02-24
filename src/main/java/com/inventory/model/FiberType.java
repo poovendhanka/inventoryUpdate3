@@ -1,12 +1,12 @@
 package com.inventory.model;
 
-public enum HuskType {
-    GREEN("Green Husk"),
-    BROWN("Brown Husk");
+public enum FiberType {
+    WHITE("White Fiber"),
+    BROWN("Brown Fiber");
 
     private final String displayName;
 
-    HuskType(String displayName) {
+    FiberType(String displayName) {
         this.displayName = displayName;
     }
 
