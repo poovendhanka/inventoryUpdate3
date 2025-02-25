@@ -2,11 +2,14 @@ package com.inventory.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Data
 @Entity
 @Table(name = "sales")
+@NoArgsConstructor
 public class Sale {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +40,13 @@ public class Sale {
     @Enumerated(EnumType.STRING)
     @Column(name = "fiber_type")
     private FiberType fiberType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "pith_type")
+    private PithType pithType;
+
+    @Column(name = "block_count")
+    private Integer blockCount;
 
     @PrePersist
     public void calculateTotal() {

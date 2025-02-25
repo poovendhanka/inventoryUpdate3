@@ -14,8 +14,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.time.format.DateTimeFormatter;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ProductionService {
 
@@ -23,52 +25,39 @@ public class ProductionService {
     private final PithStockService pithStockService;
     private final FibreStockService fibreStockService;
 
-    @Transactional
-    public Production createProduction(Production production) {
-        try {
-            // Generate batch number
-            LocalDateTime adjustedDateTime = getAdjustedDate(production.getBatchCompletionTime()).atStartOfDay();
-            Optional<Production> lastProduction = productionRepository.findFirstByProductionDateOrderByBatchNumberDesc(
-                    adjustedDateTime);
-            int batchNumber = lastProduction.map(p -> p.getBatchNumber() + 1).orElse(1);
-            production.setBatchNumber(batchNumber);
+    public void createProduction(Production production) {
+        // Generate batch number
+        Integer batchNumber = generateBatchNumber();
+        production.setBatchNumber(batchNumber);
 
-            // Save production
-            Production savedProduction = productionRepository.save(production);
+        // Save production
+        Production savedProduction = productionRepository.save(production);
 
-            // Update stocks - pith in kg, fiber based on husk type
+        // Update stocks based on production
+        updateStocks(savedProduction);
+    }
+
+    private void updateStocks(Production production) {
+        // Update pith stock
+        if (production.getPithQuantity() != null && production.getPithQuantity() > 0) {
             pithStockService.addStock(production.getPithQuantity());
-            fibreStockService.addStock(
-                    Double.valueOf(production.getFiberBales()),
-                    production.getFiberType());
+        }
 
-            return savedProduction;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to create production: " + e.getMessage(), e);
+        // Update fiber stock
+        if (production.getFiberBales() != null && production.getFiberBales() > 0) {
+            fibreStockService.addStock(production.getFiberBales().doubleValue(), production.getFiberType());
         }
     }
 
-    private LocalDate getAdjustedDate(LocalDateTime dateTime) {
-        if (dateTime.getHour() >= 0 && dateTime.getHour() < 8) {
-            return dateTime.toLocalDate().minusDays(1);
-        }
-        return dateTime.toLocalDate();
+    private Integer generateBatchNumber() {
+        return (int) (productionRepository.count() + 1);
+    }
+
+    public List<Production> getRecentProductions() {
+        return productionRepository.findTop10ByOrderByBatchCompletionTimeDesc();
     }
 
     public List<Production> getProductionsByDateAndShift(LocalDate date, ShiftType shift) {
-        List<Production> productions = productionRepository
-                .findByProductionDateAndShiftOrderByBatchCompletionTimeAsc(date, shift);
-
-        LocalDateTime previousBatchTime = null;
-        for (Production prod : productions) {
-            prod.calculateTimeTaken(previousBatchTime);
-            previousBatchTime = prod.getBatchCompletionTime();
-        }
-
-        return productions;
-    }
-
-    public List<Production> getRecentProductions(LocalDate date) {
-        return productionRepository.findTop10ByOrderByBatchCompletionTimeDesc();
+        return productionRepository.findByProductionDateAndShiftOrderByBatchCompletionTimeAsc(date, shift);
     }
 }

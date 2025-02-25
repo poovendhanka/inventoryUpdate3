@@ -9,17 +9,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
-@RequestMapping({"/", "/dashboard"})
+@RequestMapping({ "/", "/dashboard" })
 @RequiredArgsConstructor
 public class DashboardController extends BaseController {
     private final StockService stockService;
-    
+
     @GetMapping
     public String showDashboard(Model model, HttpServletRequest request) {
         model.addAttribute("activeTab", "dashboard");
         model.addAttribute("currentPithStock", stockService.getCurrentPithStock());
         model.addAttribute("currentFiberStock", stockService.getCurrentFiberStock());
-        
+
         return getViewPath("dashboard/index");
     }
-} 
+}

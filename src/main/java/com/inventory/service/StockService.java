@@ -8,6 +8,7 @@ import com.inventory.model.CocopithProduction;
 import com.inventory.model.BlockProduction;
 import com.inventory.model.PithType;
 import com.inventory.repository.CocopithProductionRepository;
+import com.inventory.repository.BlockProductionRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +17,7 @@ public class StockService {
     private final PithStockService pithStockService;
     private final FibreStockService fibreStockService;
     private final CocopithProductionRepository cocopithProductionRepository;
+    private final BlockProductionRepository blockProductionRepository;
 
     public Double getCurrentPithStock() {
         return pithStockService.getCurrentStock();
@@ -89,5 +91,30 @@ public class StockService {
             }
             pithStockService.addLowEcStock(-pithQuantity);
         }
+    }
+
+    @Transactional
+    public void reduceLowEcPithStock(Double quantity) {
+        Double currentStock = getCurrentLowEcPithStock();
+        if (currentStock < quantity) {
+            throw new RuntimeException("Insufficient Low EC pith stock");
+        }
+        pithStockService.addLowEcStock(-quantity);
+    }
+
+    @Transactional
+    public void reduceBlockStock(Integer blockCount) {
+        // Each block uses 5kg of pith
+        Double pithQuantityNeeded = blockCount * 5.0;
+        Double currentStock = getCurrentPithStock();
+        if (currentStock < pithQuantityNeeded) {
+            throw new RuntimeException("Insufficient pith stock for block sales");
+        }
+        pithStockService.addStock(-pithQuantityNeeded);
+    }
+
+    public Integer getCurrentBlockStock() {
+        // Get total blocks from block production repository
+        return (int) blockProductionRepository.count();
     }
 }

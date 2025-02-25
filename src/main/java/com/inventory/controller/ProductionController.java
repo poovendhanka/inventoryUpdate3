@@ -34,8 +34,8 @@ public class ProductionController extends BaseController {
             model.addAttribute("currentLowEcPithStock", stockService.getCurrentLowEcPithStock());
             model.addAttribute("whiteFiberStock", stockService.getCurrentFiberStock(FiberType.WHITE));
             model.addAttribute("brownFiberStock", stockService.getCurrentFiberStock(FiberType.BROWN));
-            model.addAttribute("recentProductions",
-                    productionService.getRecentProductions(LocalDate.now()));
+            model.addAttribute("blockStock", stockService.getCurrentBlockStock());
+            model.addAttribute("recentProductions", productionService.getRecentProductions());
             return "production/index";
         } catch (Exception e) {
             model.addAttribute("error", "Error loading production page: " + e.getMessage());
@@ -46,14 +46,29 @@ public class ProductionController extends BaseController {
     @PostMapping
     public String createProduction(@ModelAttribute Production production, RedirectAttributes redirectAttributes) {
         try {
+            // Set system time
+            production.setSystemTime(LocalDateTime.now());
+
+            // Validate required fields
             if (production.getHuskType() == null) {
                 throw new RuntimeException("Husk type must be specified");
             }
+            if (production.getShift() == null) {
+                throw new RuntimeException("Shift must be specified");
+            }
+            if (production.getSupervisorName() == null || production.getSupervisorName().trim().isEmpty()) {
+                throw new RuntimeException("Supervisor name must be specified");
+            }
+            if (production.getBatchCompletionTime() == null) {
+                throw new RuntimeException("Batch completion time must be specified");
+            }
 
+            // Create production
             productionService.createProduction(production);
             redirectAttributes.addFlashAttribute("success", "Production batch completed successfully");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/production";
         }
         return "redirect:/production";
     }

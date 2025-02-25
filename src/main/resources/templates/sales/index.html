@@ -16,17 +16,44 @@
                         <h5 class="card-title mb-0">Current Stock</h5>
                     </div>
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="alert alert-info">
-                                    <h6 class="alert-heading">Pith Stock</h6>
-                                    <p class="mb-0" th:text="${currentPithStock + ' kg'}">0 kg</p>
+                        <div class="row g-3">
+                            <!-- Normal EC Pith Stock -->
+                            <div class="col-md-2">
+                                <div class="alert alert-info mb-0">
+                                    <h6 class="alert-heading small mb-1">Normal EC Pith</h6>
+                                    <p class="h6 mb-0" th:text="${currentPithStock + ' kg'}">0 kg</p>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="alert alert-info">
-                                    <h6 class="alert-heading">Fiber Stock</h6>
-                                    <p class="mb-0" th:text="${currentFiberStock + ' bales'}">0 bales</p>
+                            
+                            <!-- Low EC Pith Stock -->
+                            <div class="col-md-2">
+                                <div class="alert alert-info mb-0">
+                                    <h6 class="alert-heading small mb-1">Low EC Pith</h6>
+                                    <p class="h6 mb-0" th:text="${currentLowEcPithStock + ' kg'}">0 kg</p>
+                                </div>
+                            </div>
+                            
+                            <!-- White Fiber Stock -->
+                            <div class="col-md-2">
+                                <div class="alert alert-info mb-0">
+                                    <h6 class="alert-heading small mb-1">White Fiber</h6>
+                                    <p class="h6 mb-0" th:text="${whiteFiberStock + ' bales'}">0 bales</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Brown Fiber Stock -->
+                            <div class="col-md-2">
+                                <div class="alert alert-info mb-0">
+                                    <h6 class="alert-heading small mb-1">Brown Fiber</h6>
+                                    <p class="h6 mb-0" th:text="${brownFiberStock + ' bales'}">0 bales</p>
+                                </div>
+                            </div>
+
+                            <!-- Block Stock -->
+                            <div class="col-md-2">
+                                <div class="alert alert-info mb-0">
+                                    <h6 class="alert-heading small mb-1">Blocks</h6>
+                                    <p class="h6 mb-0" th:text="${blockStock + ' blocks'}">0 blocks</p>
                                 </div>
                             </div>
                         </div>
@@ -57,83 +84,111 @@
                 </div>
             </div>
 
-            <!-- Sales Form Card -->
+            <!-- Create Sale Form -->
             <div class="col-md-12 mb-4">
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title mb-0">Create Sale</h5>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/sales}" th:object="${sale}" method="post">
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label class="form-label">Dealer</label>
-                                    <select class="form-select" th:field="*{dealer}" required>
+                        <form th:action="@{/sales}" method="post" id="saleForm">
+                            <div class="row">
+                                <!-- Dealer Selection -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="dealer" class="form-label">Dealer</label>
+                                    <select class="form-select" id="dealer" name="dealer.id" required>
                                         <option value="">Select Dealer</option>
-                                        <option th:each="dealer : ${dealers}"
-                                                th:value="${dealer.id}"
-                                                th:text="${dealer.name}">
-                                        </option>
+                                        <option th:each="dealer : ${dealers}" 
+                                                th:value="${dealer.id}" 
+                                                th:text="${dealer.name}"></option>
                                     </select>
                                 </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Product Type</label>
-                                    <select class="form-select" th:field="*{productType}" required>
-                                        <option value="">Select Product</option>
-                                        <option th:each="type : ${productTypes}"
+
+                                <!-- Product Type -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="productType" class="form-label">Product Type</label>
+                                    <select class="form-select" id="productType" name="productType" required>
+                                        <option value="">Select Product Type</option>
+                                        <option th:each="type : ${T(com.inventory.model.ProductType).values()}"
                                                 th:value="${type}"
-                                                th:text="${type.displayName}">
-                                        </option>
+                                                th:text="${type.displayName}"></option>
                                     </select>
                                 </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Quantity (kg)</label>
-                                    <input type="number" class="form-control" 
-                                           th:field="*{quantity}" required step="0.01">
+
+                                <!-- Pith Type Selection (Initially Hidden) -->
+                                <div class="col-md-6 mb-3" id="pithTypeDiv" style="display: none;">
+                                    <label for="pithType" class="form-label">Pith Type</label>
+                                    <select class="form-select" id="pithType" name="pithType">
+                                        <option value="">Select Pith Type</option>
+                                        <option th:each="type : ${T(com.inventory.model.PithType).values()}"
+                                                th:value="${type}"
+                                                th:text="${type.displayName}"></option>
+                                    </select>
+                                    <small class="text-muted" id="pithStockHelp"></small>
+                                </div>
+
+                                <!-- Fiber Type Selection (Initially Hidden) -->
+                                <div class="col-md-6 mb-3" id="fiberTypeDiv" style="display: none;">
+                                    <label for="fiberType" class="form-label">Fiber Type</label>
+                                    <select class="form-select" id="fiberType" name="fiberType">
+                                        <option value="">Select Fiber Type</option>
+                                        <option th:each="type : ${T(com.inventory.model.FiberType).values()}"
+                                                th:value="${type}"
+                                                th:text="${type.displayName}"></option>
+                                    </select>
+                                    <small class="text-muted" id="fiberStockHelp"></small>
+                                </div>
+
+                                <!-- Quantity Input -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="quantity" class="form-label">Quantity</label>
+                                    <input type="number" class="form-control" id="quantity" name="quantity" 
+                                           step="0.01" required min="0">
+                                    <small class="text-muted" id="quantityHelp"></small>
+                                </div>
+
+                                <!-- Price per Unit -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="pricePerUnit" class="form-label">Price per Unit</label>
+                                    <input type="number" class="form-control" id="pricePerUnit" 
+                                           name="pricePerUnit" step="0.01" required min="0">
+                                    <small class="text-muted" id="priceUnitLabel"></small>
                                 </div>
                             </div>
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label class="form-label">Price per Unit</label>
-                                    <input type="number" class="form-control" 
-                                           th:field="*{pricePerUnit}" required step="0.01">
-                                </div>
+
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary">Create Sale</button>
                             </div>
-                            <button type="submit" class="btn btn-primary">Create Sale</button>
                         </form>
                     </div>
                 </div>
             </div>
 
             <!-- Recent Sales Table -->
-            <div class="col-md-12">
+            <div class="col-md-12 mt-4">
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title mb-0">Recent Sales</h5>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-striped">
                                 <thead>
                                     <tr>
-                                        <th>Invoice #</th>
                                         <th>Date</th>
                                         <th>Dealer</th>
                                         <th>Product</th>
                                         <th>Quantity</th>
-                                        <th>Price/Unit</th>
-                                        <th>Total</th>
+                                        <th>Price</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr th:each="sale : ${recentSales}">
-                                        <td th:text="${sale.invoiceNumber}"></td>
-                                        <td th:text="${#temporals.format(sale.saleDate, 'dd-MM-yyyy HH:mm')}"></td>
-                                        <td th:text="${sale.dealer.name}"></td>
-                                        <td th:text="${sale.productType.displayName}"></td>
-                                        <td th:text="${sale.quantity + ' kg'}"></td>
-                                        <td th:text="${'₹' + sale.pricePerUnit}"></td>
-                                        <td th:text="${'₹' + sale.totalAmount}"></td>
+                                        <td th:text="${#temporals.format(sale.saleDate, 'dd-MM-yyyy HH:mm')}">Date</td>
+                                        <td th:text="${sale.dealer.name}">Dealer</td>
+                                        <td th:text="${sale.productType}">Product</td>
+                                        <td th:text="${sale.quantity}">Quantity</td>
+                                        <td th:text="${sale.pricePerUnit}">Price</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -145,11 +200,76 @@
     </div>
     
     <th:block id="pagescript">
-        <script>
-            $(document).ready(function() {
-                $('form').on('submit', function(e) {
-                    if (!confirm('Are you sure you want to create this sale?')) {
-                        e.preventDefault();
+        <script th:inline="javascript">
+            document.addEventListener('DOMContentLoaded', function() {
+                // Get initial stock values from Thymeleaf
+                const currentPithStock = /*[[${currentPithStock}]]*/ 0;
+                const currentLowEcPithStock = /*[[${currentLowEcPithStock}]]*/ 0;
+                const whiteFiberStock = /*[[${whiteFiberStock}]]*/ 0;
+                const brownFiberStock = /*[[${brownFiberStock}]]*/ 0;
+
+                const productTypeSelect = document.getElementById('productType');
+                const pithTypeDiv = document.getElementById('pithTypeDiv');
+                const fiberTypeDiv = document.getElementById('fiberTypeDiv');
+                const pithTypeSelect = document.getElementById('pithType');
+                const fiberTypeSelect = document.getElementById('fiberType');
+                const quantityInput = document.getElementById('quantity');
+                const quantityHelp = document.getElementById('quantityHelp');
+                const pithStockHelp = document.getElementById('pithStockHelp');
+                const fiberStockHelp = document.getElementById('fiberStockHelp');
+                const priceUnitLabel = document.getElementById('priceUnitLabel');
+
+                productTypeSelect.addEventListener('change', function() {
+                    const selectedType = this.value;
+                    // Hide all type-specific divs
+                    pithTypeDiv.style.display = 'none';
+                    fiberTypeDiv.style.display = 'none';
+                    pithTypeSelect.required = false;
+                    fiberTypeSelect.required = false;
+
+                    if (selectedType === 'FIBER') {
+                        fiberTypeDiv.style.display = 'block';
+                        fiberTypeSelect.required = true;
+                        quantityInput.placeholder = "Enter number of bales";
+                        priceUnitLabel.textContent = "Price per bale";
+                        
+                        if (fiberTypeSelect.value) {
+                            const availableStock = fiberTypeSelect.value === 'WHITE' ? whiteFiberStock : brownFiberStock;
+                            fiberStockHelp.textContent = `Available stock: ${availableStock} bales`;
+                            quantityInput.max = availableStock;
+                        }
+                    } else if (selectedType === 'PITH') {
+                        pithTypeDiv.style.display = 'block';
+                        pithTypeSelect.required = true;
+                        quantityInput.placeholder = "Enter quantity in kg";
+                        priceUnitLabel.textContent = "Price per kg";
+                        
+                        if (pithTypeSelect.value) {
+                            const availableStock = pithTypeSelect.value === 'NORMAL' ? currentPithStock : currentLowEcPithStock;
+                            pithStockHelp.textContent = `Available stock: ${availableStock} kg`;
+                            quantityInput.max = availableStock;
+                        }
+                    } else if (selectedType === 'BLOCK') {
+                        quantityInput.placeholder = "Enter number of blocks";
+                        priceUnitLabel.textContent = "Price per block";
+                        quantityHelp.textContent = "Enter number of blocks";
+                    }
+                });
+
+                // Add event listeners for type-specific selects
+                pithTypeSelect.addEventListener('change', function() {
+                    if (productTypeSelect.value === 'PITH') {
+                        const availableStock = this.value === 'NORMAL' ? currentPithStock : currentLowEcPithStock;
+                        pithStockHelp.textContent = `Available stock: ${availableStock} kg`;
+                        quantityInput.max = availableStock;
+                    }
+                });
+
+                fiberTypeSelect.addEventListener('change', function() {
+                    if (productTypeSelect.value === 'FIBER') {
+                        const availableStock = this.value === 'WHITE' ? whiteFiberStock : brownFiberStock;
+                        fiberStockHelp.textContent = `Available stock: ${availableStock} bales`;
+                        quantityInput.max = availableStock;
                     }
                 });
             });
