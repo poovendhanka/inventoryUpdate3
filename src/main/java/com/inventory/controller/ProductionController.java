@@ -17,6 +17,7 @@ import com.inventory.model.BlockProduction;
 import com.inventory.repository.BlockProductionRepository;
 import com.inventory.model.PithType;
 import java.time.LocalDateTime;
+import java.time.Duration;
 import java.util.List;
 
 @Controller
@@ -101,6 +102,13 @@ public class ProductionController extends BaseController {
             List<Production> firstShift = productionService.getProductionsByDateAndShift(date, ShiftType.FIRST);
             List<Production> secondShift = productionService.getProductionsByDateAndShift(date, ShiftType.SECOND);
 
+            // Calculate durations
+            calculateDurations(firstShift);
+            calculateDurations(secondShift);
+
+            // Add specific production type counts
+            addProductionSummaries(model, firstShift, secondShift);
+
             model.addAttribute("date", date);
             model.addAttribute("firstShift", firstShift);
             model.addAttribute("secondShift", secondShift);
@@ -110,6 +118,21 @@ public class ProductionController extends BaseController {
             model.addAttribute("error", "Error generating report: " + e.getMessage());
             return "error";
         }
+    }
+
+    private void addProductionSummaries(Model model, List<Production> firstShift, List<Production> secondShift) {
+        // Add Low EC Pith summaries
+        int normalPithUsed = calculateTotalPithUsed(firstShift, secondShift);
+        int lowEcPithProduced = calculateTotalLowEcPithProduced(firstShift, secondShift);
+
+        // Add Block Production summaries
+        int normalBlocksProduced = calculateTotalBlocksProduced(firstShift, secondShift, PithType.NORMAL);
+        int lowEcBlocksProduced = calculateTotalBlocksProduced(firstShift, secondShift, PithType.LOW);
+
+        model.addAttribute("normalPithUsed", normalPithUsed);
+        model.addAttribute("lowEcPithProduced", lowEcPithProduced);
+        model.addAttribute("normalBlocksProduced", normalBlocksProduced);
+        model.addAttribute("lowEcBlocksProduced", lowEcBlocksProduced);
     }
 
     @PostMapping("/block")
@@ -132,5 +155,28 @@ public class ProductionController extends BaseController {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/production";
+    }
+
+    private void calculateDurations(List<Production> productions) {
+        productions.forEach(production -> {
+            if (production.getBatchCompletionTime() != null && production.getSystemTime() != null) {
+                Duration duration = Duration.between(production.getSystemTime(),
+                        production.getBatchCompletionTime());
+                production.setDuration(duration);
+            }
+        });
+    }
+
+    private int calculateTotalPithUsed(List<Production> firstShift, List<Production> secondShift) {
+        return productionService.calculateTotalPithUsed(firstShift, secondShift);
+    }
+
+    private int calculateTotalLowEcPithProduced(List<Production> firstShift, List<Production> secondShift) {
+        return productionService.calculateTotalLowEcPithProduced(firstShift, secondShift);
+    }
+
+    private int calculateTotalBlocksProduced(List<Production> firstShift, List<Production> secondShift,
+            PithType pithType) {
+        return productionService.calculateTotalBlocksProduced(firstShift, secondShift, pithType);
     }
 }

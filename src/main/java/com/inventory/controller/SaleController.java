@@ -16,6 +16,8 @@ import java.time.LocalDate;
 import com.inventory.model.PithType;
 import com.inventory.model.FiberType;
 import com.inventory.model.Dealer;
+import java.math.BigDecimal;
+import java.util.List;
 
 @Controller
 @RequestMapping("/sales")
@@ -80,12 +82,15 @@ public class SaleController extends BaseController {
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
             Model model) {
         try {
-            LocalDateTime startOfDay = date.atStartOfDay();
-            LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
+            List<Sale> sales = saleService.getSalesByDate(date);
+            Double totalAmount = sales.stream()
+                    .mapToDouble(Sale::getTotalAmount)
+                    .sum();
 
             model.addAttribute("date", date);
-            model.addAttribute("sales", saleService.getSalesByDate(date));
-            return "sales/report"; // Changed from getViewPath to direct template path
+            model.addAttribute("sales", sales);
+            model.addAttribute("totalAmount", totalAmount);
+            return "sales/report";
         } catch (Exception e) {
             model.addAttribute("error", "Error generating report: " + e.getMessage());
             return "error";

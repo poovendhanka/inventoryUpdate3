@@ -4,6 +4,9 @@ import com.inventory.model.Production;
 import com.inventory.model.ShiftType;
 import com.inventory.model.PithStock;
 import com.inventory.model.FiberStock;
+import com.inventory.model.BlockProduction;
+import com.inventory.model.CocopithProduction;
+import com.inventory.model.PithType;
 import com.inventory.repository.ProductionRepository;
 import com.inventory.repository.PithStockRepository;
 import com.inventory.repository.FiberStockRepository;
@@ -59,5 +62,43 @@ public class ProductionService {
 
     public List<Production> getProductionsByDateAndShift(LocalDate date, ShiftType shift) {
         return productionRepository.findByProductionDateAndShiftOrderByBatchCompletionTimeAsc(date, shift);
+    }
+
+    public int calculateTotalPithUsed(List<Production> firstShift, List<Production> secondShift) {
+        return calculateShiftPithUsed(firstShift) + calculateShiftPithUsed(secondShift);
+    }
+
+    private int calculateShiftPithUsed(List<Production> productions) {
+        return productions.stream()
+                .filter(CocopithProduction.class::isInstance)
+                .map(CocopithProduction.class::cast)
+                .mapToInt(p -> p.getPithQuantityUsed().intValue())
+                .sum();
+    }
+
+    public int calculateTotalLowEcPithProduced(List<Production> firstShift, List<Production> secondShift) {
+        return calculateShiftLowEcPithProduced(firstShift) + calculateShiftLowEcPithProduced(secondShift);
+    }
+
+    private int calculateShiftLowEcPithProduced(List<Production> productions) {
+        return productions.stream()
+                .filter(CocopithProduction.class::isInstance)
+                .map(CocopithProduction.class::cast)
+                .mapToInt(p -> p.getLowEcQuantityProduced().intValue())
+                .sum();
+    }
+
+    public int calculateTotalBlocksProduced(List<Production> firstShift, List<Production> secondShift,
+            PithType pithType) {
+        return calculateShiftBlocksProduced(firstShift, pithType) + calculateShiftBlocksProduced(secondShift, pithType);
+    }
+
+    private int calculateShiftBlocksProduced(List<Production> productions, PithType pithType) {
+        return productions.stream()
+                .filter(BlockProduction.class::isInstance)
+                .map(BlockProduction.class::cast)
+                .filter(p -> p.getPithType() == pithType)
+                .mapToInt(BlockProduction::getBlocksProduced)
+                .sum();
     }
 }

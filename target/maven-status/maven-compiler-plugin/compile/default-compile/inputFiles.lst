@@ -60,6 +60,7 @@ D:\project\inventoryUpdate3\src\main\java\com\inventory\service\RawMaterialServi
 D:\project\inventoryUpdate3\src\main\java\com\inventory\repository\PartyRepository.java
 D:\project\inventoryUpdate3\src\main\java\com\inventory\model\TransactionType.java
 D:\project\inventoryUpdate3\src\main\java\com\inventory\repository\DealerRepository.java
+D:\project\inventoryUpdate3\src\main\java\com\inventory\util\ProductNameUtil.java
 D:\project\inventoryUpdate3\src\main\java\com\inventory\service\FibreStockService.java
 D:\project\inventoryUpdate3\src\main\java\com\inventory\model\BlockProduction.java
 D:\project\inventoryUpdate3\src\main\java\com\inventory\service\BackupService.java

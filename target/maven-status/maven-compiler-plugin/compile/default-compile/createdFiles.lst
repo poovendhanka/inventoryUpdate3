@@ -45,8 +45,10 @@ com\inventory\service\FibreStockService.class
 com\inventory\service\PithStockService.class
 com\inventory\controller\AdminController.class
 com\inventory\model\HuskType.class
+com\inventory\util\ProductNameUtil.class
 com\inventory\controller\DashboardController.class
 com\inventory\dto\ProcessedRawMaterialReport.class
+com\inventory\util\ProductNameUtil$1.class
 com\inventory\model\LowEcPithStock.class
 com\inventory\controller\BaseController.class
 com\inventory\model\PithStock.class

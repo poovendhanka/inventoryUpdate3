@@ -6,11 +6,15 @@ import java.time.LocalDateTime;
 import java.time.LocalDate;
 import lombok.NoArgsConstructor;
 import java.time.Duration;
+import lombok.Getter;
+import lombok.Setter;
 
 @Data
 @Entity
 @Table(name = "production")
 @NoArgsConstructor
+@Getter
+@Setter
 public class Production {
 
     @Id
@@ -56,6 +60,9 @@ public class Production {
     @Enumerated(EnumType.STRING)
     @Column(name = "fiber_type")
     private FiberType fiberType;
+
+    @Transient
+    private Duration duration;
 
     @PrePersist
     void prePersist() {
