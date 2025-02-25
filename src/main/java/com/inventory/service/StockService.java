@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.inventory.model.FiberType;
 import com.inventory.model.CocopithProduction;
+import com.inventory.model.BlockProduction;
+import com.inventory.model.PithType;
 import com.inventory.repository.CocopithProductionRepository;
 
 @Service
@@ -70,5 +72,22 @@ public class StockService {
         production.setLowEcQuantityProduced(quantity);
         production.setSupervisorName(supervisorName);
         cocopithProductionRepository.save(production);
+    }
+
+    @Transactional
+    public void processBlockProduction(BlockProduction blockProduction) {
+        Double pithQuantity = blockProduction.getBlocksProduced() * 5.0;
+
+        if (blockProduction.getPithType() == PithType.NORMAL) {
+            if (getCurrentPithStock() < pithQuantity) {
+                throw new RuntimeException("Insufficient normal pith stock for block production");
+            }
+            pithStockService.addStock(-pithQuantity);
+        } else {
+            if (getCurrentLowEcPithStock() < pithQuantity) {
+                throw new RuntimeException("Insufficient low EC pith stock for block production");
+            }
+            pithStockService.addLowEcStock(-pithQuantity);
+        }
     }
 }

@@ -128,6 +128,41 @@
                 </div>
             </div>
 
+            <!-- Block Production Card -->
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Block Production</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/production/block}" method="post">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="pithType" class="form-label">Pith Type</label>
+                                    <select class="form-select" id="pithType" name="pithType" required>
+                                        <option value="NORMAL">Normal EC Pith</option>
+                                        <option value="LOW">Low EC Pith</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="blocksProduced" class="form-label">Number of Blocks</label>
+                                    <input type="number" class="form-control" id="blocksProduced" 
+                                           name="blocksProduced" required min="1">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="productionTime" class="form-label">Production Time</label>
+                                    <input type="datetime-local" class="form-control" id="productionTime" 
+                                           name="productionTime" required>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary">Record Block Production</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <!-- Recent Productions Table -->
             <div class="col-md-12">
                 <div class="card">
@@ -196,6 +231,27 @@
                     if (quantity > currentPithStock) {
                         e.preventDefault();
                         alert(`Insufficient stock! Available: ${currentPithStock} kg`);
+                    }
+                });
+            });
+        </script>
+        <script th:inline="javascript">
+            document.addEventListener('DOMContentLoaded', function() {
+                const form = document.querySelector('form[action="/production/block"]');
+                const pithTypeSelect = document.getElementById('pithType');
+                const blocksInput = document.getElementById('blocksProduced');
+                const currentPithStock = [[${currentPithStock}]];
+                const currentLowEcPithStock = [[${currentLowEcPithStock}]];
+
+                form.addEventListener('submit', function(e) {
+                    const blocks = parseInt(blocksInput.value);
+                    const pithNeeded = blocks * 5;
+                    const isNormalPith = pithTypeSelect.value === 'NORMAL';
+                    const availableStock = isNormalPith ? currentPithStock : currentLowEcPithStock;
+
+                    if (pithNeeded > availableStock) {
+                        e.preventDefault();
+                        alert(`Insufficient ${isNormalPith ? 'normal' : 'low EC'} pith stock! Available: ${availableStock} kg`);
                     }
                 });
             });
