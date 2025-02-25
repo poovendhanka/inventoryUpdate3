@@ -28,13 +28,14 @@ public class ProductionController extends BaseController {
     private final BlockProductionRepository blockProductionRepository;
 
     @GetMapping
-    public String index(Model model) {
+    public String showProductionPage(Model model) {
         try {
             model.addAttribute("currentPithStock", stockService.getCurrentPithStock());
             model.addAttribute("currentLowEcPithStock", stockService.getCurrentLowEcPithStock());
             model.addAttribute("whiteFiberStock", stockService.getCurrentFiberStock(FiberType.WHITE));
             model.addAttribute("brownFiberStock", stockService.getCurrentFiberStock(FiberType.BROWN));
-            model.addAttribute("blockStock", stockService.getCurrentBlockStock());
+            model.addAttribute("normalBlockStock", stockService.getCurrentBlockStock(PithType.NORMAL));
+            model.addAttribute("lowEcBlockStock", stockService.getCurrentBlockStock(PithType.LOW));
             model.addAttribute("recentProductions", productionService.getRecentProductions());
             return "production/index";
         } catch (Exception e) {

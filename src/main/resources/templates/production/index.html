@@ -18,8 +18,8 @@
                         <h5 class="card-title mb-0">Current Stock</h5>
                     </div>
                     <div class="card-body">
-                        <div class="row g-3">
-                            <!-- Normal EC Pith Stock -->
+                        <div class="row">
+                            <!-- Normal EC Pith -->
                             <div class="col-md-2">
                                 <div class="alert alert-info mb-0">
                                     <h6 class="alert-heading small mb-1">Normal EC Pith</h6>
@@ -27,7 +27,7 @@
                                 </div>
                             </div>
                             
-                            <!-- Low EC Pith Stock -->
+                            <!-- Low EC Pith -->
                             <div class="col-md-2">
                                 <div class="alert alert-info mb-0">
                                     <h6 class="alert-heading small mb-1">Low EC Pith</h6>
@@ -35,7 +35,7 @@
                                 </div>
                             </div>
                             
-                            <!-- White Fiber Stock -->
+                            <!-- White Fiber -->
                             <div class="col-md-2">
                                 <div class="alert alert-info mb-0">
                                     <h6 class="alert-heading small mb-1">White Fiber</h6>
@@ -43,7 +43,7 @@
                                 </div>
                             </div>
                             
-                            <!-- Brown Fiber Stock -->
+                            <!-- Brown Fiber -->
                             <div class="col-md-2">
                                 <div class="alert alert-info mb-0">
                                     <h6 class="alert-heading small mb-1">Brown Fiber</h6>
@@ -51,11 +51,19 @@
                                 </div>
                             </div>
 
-                            <!-- Block Stock -->
+                            <!-- Normal EC Blocks -->
                             <div class="col-md-2">
                                 <div class="alert alert-info mb-0">
-                                    <h6 class="alert-heading small mb-1">Blocks</h6>
-                                    <p class="h6 mb-0" th:text="${blockStock + ' blocks'}">0 blocks</p>
+                                    <h6 class="alert-heading small mb-1">Normal EC Blocks</h6>
+                                    <p class="h6 mb-0" th:text="${normalBlockStock + ' blocks'}">0 blocks</p>
+                                </div>
+                            </div>
+
+                            <!-- Low EC Blocks -->
+                            <div class="col-md-2">
+                                <div class="alert alert-info mb-0">
+                                    <h6 class="alert-heading small mb-1">Low EC Blocks</h6>
+                                    <p class="h6 mb-0" th:text="${lowEcBlockStock + ' blocks'}">0 blocks</p>
                                 </div>
                             </div>
                         </div>

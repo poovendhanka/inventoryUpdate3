@@ -52,8 +52,14 @@
                             <!-- Block Stock -->
                             <div class="col-md-2">
                                 <div class="alert alert-info mb-0">
-                                    <h6 class="alert-heading small mb-1">Blocks</h6>
-                                    <p class="h6 mb-0" th:text="${blockStock + ' blocks'}">0 blocks</p>
+                                    <h6 class="alert-heading small mb-1">Normal EC Blocks</h6>
+                                    <p class="h6 mb-0" th:text="${normalBlockStock + ' blocks'}">0 blocks</p>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="alert alert-info mb-0">
+                                    <h6 class="alert-heading small mb-1">Low EC Blocks</h6>
+                                    <p class="h6 mb-0" th:text="${lowEcBlockStock + ' blocks'}">0 blocks</p>
                                 </div>
                             </div>
                         </div>
@@ -139,6 +145,16 @@
                                     <small class="text-muted" id="fiberStockHelp"></small>
                                 </div>
 
+                                <!-- Block Type Selection (Initially Hidden) -->
+                                <div class="col-md-6 mb-3" id="blockTypeDiv" style="display: none;">
+                                    <label for="pithType" class="form-label">Block Type</label>
+                                    <select class="form-select" id="pithType" name="pithType">
+                                        <option value="NORMAL">Normal EC Block</option>
+                                        <option value="LOW">Low EC Block</option>
+                                    </select>
+                                    <div id="blockStockHelp" class="form-text"></div>
+                                </div>
+
                                 <!-- Quantity Input -->
                                 <div class="col-md-6 mb-3">
                                     <label for="quantity" class="form-label">Quantity</label>
@@ -207,6 +223,8 @@
                 const currentLowEcPithStock = /*[[${currentLowEcPithStock}]]*/ 0;
                 const whiteFiberStock = /*[[${whiteFiberStock}]]*/ 0;
                 const brownFiberStock = /*[[${brownFiberStock}]]*/ 0;
+                const normalBlockStock = /*[[${normalBlockStock}]]*/ 0;
+                const lowEcBlockStock = /*[[${lowEcBlockStock}]]*/ 0;
 
                 const productTypeSelect = document.getElementById('productType');
                 const pithTypeDiv = document.getElementById('pithTypeDiv');
@@ -218,12 +236,14 @@
                 const pithStockHelp = document.getElementById('pithStockHelp');
                 const fiberStockHelp = document.getElementById('fiberStockHelp');
                 const priceUnitLabel = document.getElementById('priceUnitLabel');
+                const blockTypeDiv = document.getElementById('blockTypeDiv');
 
                 productTypeSelect.addEventListener('change', function() {
                     const selectedType = this.value;
                     // Hide all type-specific divs
                     pithTypeDiv.style.display = 'none';
                     fiberTypeDiv.style.display = 'none';
+                    blockTypeDiv.style.display = 'none';
                     pithTypeSelect.required = false;
                     fiberTypeSelect.required = false;
 
@@ -250,9 +270,13 @@
                             quantityInput.max = availableStock;
                         }
                     } else if (selectedType === 'BLOCK') {
+                        blockTypeDiv.style.display = 'block';
                         quantityInput.placeholder = "Enter number of blocks";
                         priceUnitLabel.textContent = "Price per block";
-                        quantityHelp.textContent = "Enter number of blocks";
+                        const blockType = document.getElementById('pithType').value;
+                        const availableStock = blockType === 'NORMAL' ? normalBlockStock : lowEcBlockStock;
+                        quantityHelp.textContent = `Available stock: ${availableStock} blocks`;
+                        quantityInput.max = availableStock;
                     }
                 });
 
@@ -269,6 +293,15 @@
                     if (productTypeSelect.value === 'FIBER') {
                         const availableStock = this.value === 'WHITE' ? whiteFiberStock : brownFiberStock;
                         fiberStockHelp.textContent = `Available stock: ${availableStock} bales`;
+                        quantityInput.max = availableStock;
+                    }
+                });
+
+                // Add block type change listener
+                document.getElementById('pithType').addEventListener('change', function() {
+                    if (productTypeSelect.value === 'BLOCK') {
+                        const availableStock = this.value === 'NORMAL' ? normalBlockStock : lowEcBlockStock;
+                        quantityHelp.textContent = `Available stock: ${availableStock} blocks`;
                         quantityInput.max = availableStock;
                     }
                 });

@@ -41,6 +41,8 @@ public class SaleController extends BaseController {
         model.addAttribute("whiteFiberStock", stockService.getCurrentFiberStock(FiberType.WHITE));
         model.addAttribute("brownFiberStock", stockService.getCurrentFiberStock(FiberType.BROWN));
         model.addAttribute("blockStock", stockService.getCurrentBlockStock());
+        model.addAttribute("normalBlockStock", stockService.getCurrentBlockStock(PithType.NORMAL));
+        model.addAttribute("lowEcBlockStock", stockService.getCurrentBlockStock(PithType.LOW));
 
         model.addAttribute("recentSales", saleService.getRecentSales());
         return getViewPath("sales/index");

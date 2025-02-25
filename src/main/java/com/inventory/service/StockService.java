@@ -9,6 +9,9 @@ import com.inventory.model.BlockProduction;
 import com.inventory.model.PithType;
 import com.inventory.repository.CocopithProductionRepository;
 import com.inventory.repository.BlockProductionRepository;
+import com.inventory.repository.SaleRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +21,7 @@ public class StockService {
     private final FibreStockService fibreStockService;
     private final CocopithProductionRepository cocopithProductionRepository;
     private final BlockProductionRepository blockProductionRepository;
+    private final SaleRepository saleRepository;
 
     public Double getCurrentPithStock() {
         return pithStockService.getCurrentStock();
@@ -113,8 +117,13 @@ public class StockService {
         pithStockService.addStock(-pithQuantityNeeded);
     }
 
+    public Integer getCurrentBlockStock(PithType pithType) {
+        Integer totalProduced = blockProductionRepository.getTotalBlocksProducedByType(pithType);
+        Integer totalSold = saleRepository.getTotalBlocksSoldByType(pithType);
+        return (totalProduced != null ? totalProduced : 0) - (totalSold != null ? totalSold : 0);
+    }
+
     public Integer getCurrentBlockStock() {
-        // Get total blocks from block production repository
-        return (int) blockProductionRepository.count();
+        return getCurrentBlockStock(PithType.NORMAL) + getCurrentBlockStock(PithType.LOW);
     }
 }

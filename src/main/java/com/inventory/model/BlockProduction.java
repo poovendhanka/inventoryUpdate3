@@ -15,8 +15,8 @@ public class BlockProduction {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "pith_type")
-    private PithType pithType;
+    @Column(name = "pith_type", nullable = false)
+    private PithType pithType = PithType.NORMAL; // Default to normal
 
     @Column(name = "blocks_produced")
     private Integer blocksProduced;
