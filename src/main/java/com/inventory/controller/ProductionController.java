@@ -26,6 +26,7 @@ public class ProductionController extends BaseController {
     public String index(Model model) {
         try {
             model.addAttribute("currentPithStock", stockService.getCurrentPithStock());
+            model.addAttribute("currentLowEcPithStock", stockService.getCurrentLowEcPithStock());
             model.addAttribute("whiteFiberStock", stockService.getCurrentFiberStock(FiberType.WHITE));
             model.addAttribute("brownFiberStock", stockService.getCurrentFiberStock(FiberType.BROWN));
             model.addAttribute("recentProductions",
@@ -46,6 +47,20 @@ public class ProductionController extends BaseController {
 
             productionService.createProduction(production);
             redirectAttributes.addFlashAttribute("success", "Production batch completed successfully");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/production";
+    }
+
+    @PostMapping("/cocopith")
+    public String createCocopithProduction(
+            @RequestParam Double pithQuantityUsed,
+            @RequestParam String supervisorName,
+            RedirectAttributes redirectAttributes) {
+        try {
+            stockService.convertToLowEcPith(pithQuantityUsed, supervisorName);
+            redirectAttributes.addFlashAttribute("success", "Cocopith production completed successfully");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }

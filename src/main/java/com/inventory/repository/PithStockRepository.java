@@ -6,4 +6,4 @@ import java.util.Optional;
 
 public interface PithStockRepository extends JpaRepository<PithStock, Long> {
     Optional<PithStock> findTopByOrderByUpdatedAtDesc();
-} 
+}

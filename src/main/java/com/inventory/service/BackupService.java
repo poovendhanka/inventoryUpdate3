@@ -2,7 +2,6 @@ package com.inventory.service;
 
 import com.opencsv.CSVWriter;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.Table;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -10,7 +9,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
@@ -31,14 +29,14 @@ public class BackupService {
 
             // List of entities to backup
             String[] tables = {
-                "dealers", "fiber_stock", "parties", "pith_stock",
-                "production", "raw_materials", "sales", "accounts"
+                    "dealers", "fiber_stock", "parties", "pith_stock",
+                    "production", "raw_materials", "sales", "accounts"
             };
 
             for (String tableName : tables) {
                 // Create CSV content for each table
                 String csvContent = generateCsvForTable(tableName);
-                
+
                 // Add CSV to zip file
                 ZipEntry entry = new ZipEntry(tableName + ".csv");
                 zos.putNextEntry(entry);
@@ -61,18 +59,19 @@ public class BackupService {
 
             // Get column names
             List<Map<String, Object>> columns = jdbcTemplate.queryForList(
-                "SELECT column_name FROM information_schema.columns " +
-                "WHERE table_name = ? ORDER BY ordinal_position", tableName);
-            
+                    "SELECT column_name FROM information_schema.columns " +
+                            "WHERE table_name = ? ORDER BY ordinal_position",
+                    tableName);
+
             String[] headers = columns.stream()
-                .map(col -> col.get("column_name").toString())
-                .toArray(String[]::new);
-            
+                    .map(col -> col.get("column_name").toString())
+                    .toArray(String[]::new);
+
             csvWriter.writeNext(headers);
 
             // Get data
             List<Map<String, Object>> rows = jdbcTemplate.queryForList("SELECT * FROM " + tableName);
-            
+
             for (Map<String, Object> row : rows) {
                 String[] data = new String[headers.length];
                 for (int i = 0; i < headers.length; i++) {
@@ -89,4 +88,4 @@ public class BackupService {
             throw new RuntimeException("Failed to generate CSV for table: " + tableName, e);
         }
     }
-} 
+}

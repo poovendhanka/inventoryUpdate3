@@ -27,8 +27,9 @@ public class ProductionService {
     public Production createProduction(Production production) {
         try {
             // Generate batch number
+            LocalDateTime adjustedDateTime = getAdjustedDate(production.getBatchCompletionTime()).atStartOfDay();
             Optional<Production> lastProduction = productionRepository.findFirstByProductionDateOrderByBatchNumberDesc(
-                    getAdjustedDate(production.getBatchCompletionTime()));
+                    adjustedDateTime);
             int batchNumber = lastProduction.map(p -> p.getBatchNumber() + 1).orElse(1);
             production.setBatchNumber(batchNumber);
 
@@ -68,6 +69,6 @@ public class ProductionService {
     }
 
     public List<Production> getRecentProductions(LocalDate date) {
-        return productionRepository.findByProductionDateOrderByBatchCompletionTimeDesc(date);
+        return productionRepository.findTop10ByOrderByBatchCompletionTimeDesc();
     }
 }
