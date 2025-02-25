@@ -79,9 +79,16 @@ public class SaleController extends BaseController {
     public String viewReport(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
             Model model) {
-        model.addAttribute("activeTab", "sales");
-        model.addAttribute("date", date);
-        model.addAttribute("sales", saleService.getSalesByDate(date));
-        return getViewPath("sales/report");
+        try {
+            LocalDateTime startOfDay = date.atStartOfDay();
+            LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
+
+            model.addAttribute("date", date);
+            model.addAttribute("sales", saleService.getSalesByDate(date));
+            return "sales/report"; // Changed from getViewPath to direct template path
+        } catch (Exception e) {
+            model.addAttribute("error", "Error generating report: " + e.getMessage());
+            return "error";
+        }
     }
 }

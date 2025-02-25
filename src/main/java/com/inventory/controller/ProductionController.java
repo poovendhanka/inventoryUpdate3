@@ -17,6 +17,7 @@ import com.inventory.model.BlockProduction;
 import com.inventory.repository.BlockProductionRepository;
 import com.inventory.model.PithType;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Controller
 @RequestMapping("/production")
@@ -89,11 +90,26 @@ public class ProductionController extends BaseController {
     }
 
     @GetMapping("/report")
-    public String viewReport(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date, Model model) {
-        model.addAttribute("date", date);
-        model.addAttribute("firstShift", productionService.getProductionsByDateAndShift(date, ShiftType.FIRST));
-        model.addAttribute("secondShift", productionService.getProductionsByDateAndShift(date, ShiftType.SECOND));
-        return getViewPath("production-report/view");
+    public String viewReport(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
+            Model model) {
+        try {
+            LocalDateTime startOfDay = date.atStartOfDay();
+            LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
+
+            // Get productions by shift
+            List<Production> firstShift = productionService.getProductionsByDateAndShift(date, ShiftType.FIRST);
+            List<Production> secondShift = productionService.getProductionsByDateAndShift(date, ShiftType.SECOND);
+
+            model.addAttribute("date", date);
+            model.addAttribute("firstShift", firstShift);
+            model.addAttribute("secondShift", secondShift);
+
+            return "production/report";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error generating report: " + e.getMessage());
+            return "error";
+        }
     }
 
     @PostMapping("/block")
