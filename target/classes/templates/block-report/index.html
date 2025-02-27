@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Block Production Report</title>
+</head>
+<body>
+    <h1 id="pageTitle">Block Production Report</h1>
+    
+    <div id="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Generate Block Production Report</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/block-report/view}" method="get">
+                            <div class="row mb-3">
+                                <div class="col-md-5">
+                                    <label class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" id="startDate" name="startDate" required>
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label">End Date</label>
+                                    <input type="date" class="form-control" id="endDate" name="endDate" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">&nbsp;</label>
+                                    <button type="submit" class="btn btn-primary d-block w-100">Generate Report</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <th:block id="pagescript">
+        <script>
+            $(document).ready(function() {
+                // Set default dates (current month)
+                const today = new Date();
+                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+                const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                
+                $('#startDate').val(firstDay.toISOString().split('T')[0]);
+                $('#endDate').val(lastDay.toISOString().split('T')[0]);
+            });
+        </script>
+    </th:block>
+</body>
+</html> 

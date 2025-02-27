@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Cocopith Production Report</title>
+</head>
+<body>
+    <h1 id="pageTitle">Cocopith Production Report</h1>
+    
+    <div id="content">
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <a th:href="@{/cocopith-report}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Report Selection
+                </a>
+                <button class="btn btn-primary ms-2" onclick="window.print()">
+                    <i class="fas fa-print"></i> Print Report
+                </button>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Cocopith Production Report</h5>
+                        <span th:text="${#temporals.format(startDate, 'dd MMM yyyy')} + ' - ' + ${#temporals.format(endDate, 'dd MMM yyyy')}"></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">Total Pith Used</h5>
+                                        <h2 class="text-primary" th:text="${#numbers.formatDecimal(totalPithUsed, 1, 2)} + ' kg'"></h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">Total Low EC Pith Produced</h5>
+                                        <h2 class="text-success" th:text="${#numbers.formatDecimal(totalLowEcProduced, 1, 2)} + ' kg'"></h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Date & Time</th>
+                                        <th>Production Start Time</th>
+                                        <th>System Time</th>
+                                        <th>Production Time</th>
+                                        <th>Pith Used (kg)</th>
+                                        <th>Low EC Pith Produced (kg)</th>
+                                        <th>Supervisor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${productions.empty}">
+                                        <td colspan="7" class="text-center">No production records found</td>
+                                    </tr>
+                                    <tr th:each="production : ${productions}">
+                                        <td th:text="${#temporals.format(production.productionDate, 'dd MMM yyyy HH:mm')}"></td>
+                                        <td th:text="${production.productionStartTime != null ? #temporals.format(production.productionStartTime, 'dd MMM yyyy HH:mm') : '-'}"></td>
+                                        <td th:text="${production.systemTime != null ? #temporals.format(production.systemTime, 'dd MMM yyyy HH:mm') : '-'}"></td>
+                                        <td>
+                                            <span th:if="${production.productionTime != null}" 
+                                                  th:text="${production.productionTime.toHours() + 'h ' + (production.productionTime.toMinutesPart()) + 'm'}">
+                                            </span>
+                                            <span th:unless="${production.productionTime != null}">-</span>
+                                        </td>
+                                        <td th:text="${#numbers.formatDecimal(production.pithQuantityUsed, 1, 2)}"></td>
+                                        <td th:text="${#numbers.formatDecimal(production.lowEcQuantityProduced, 1, 2)}"></td>
+                                        <td th:text="${production.supervisorName}"></td>
+                                    </tr>
+                                </tbody>
+                                <tfoot class="table-secondary">
+                                    <tr>
+                                        <th colspan="4">Total</th>
+                                        <th th:text="${#numbers.formatDecimal(totalPithUsed, 1, 2)} + ' kg'"></th>
+                                        <th th:text="${#numbers.formatDecimal(totalLowEcProduced, 1, 2)} + ' kg'"></th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <th:block id="pagescript">
+        <script>
+            $(document).ready(function() {
+                // Add print-specific styling
+                $('<style>')
+                    .append('@media print { .btn, .navbar, .sidebar, .mobile-menu-btn { display: none !important; } }')
+                    .append('@media print { body { padding: 0; margin: 0; } }')
+                    .append('@media print { main { margin-left: 0 !important; width: 100% !important; padding: 0 !important; } }')
+                    .append('@media print { .card { border: none !important; } }')
+                    .append('@media print { .card-header { background-color: #f8f9fa !important; -webkit-print-color-adjust: exact; } }')
+                    .append('@media print { .table-dark th { background-color: #212529 !important; color: white !important; -webkit-print-color-adjust: exact; } }')
+                    .append('@media print { .table-secondary th { background-color: #e2e3e5 !important; -webkit-print-color-adjust: exact; } }')
+                    .appendTo('head');
+            });
+        </script>
+    </th:block>
+</body>
+</html> 

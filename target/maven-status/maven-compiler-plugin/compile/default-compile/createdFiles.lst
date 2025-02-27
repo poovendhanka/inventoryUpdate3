@@ -64,6 +64,7 @@ com\inventory\repository\SaleRepository.class
 com\inventory\service\impl\PithStockServiceImpl.class
 com\inventory\dto\ProcessedRawMaterialReport$ProcessedRawMaterialReportBuilder.class
 com\inventory\repository\ProcessedRawMaterialRepository.class
+com\inventory\controller\SaleController$1.class
 com\inventory\controller\ProductionController.class
 com\inventory\model\PithType.class
 com\inventory\model\Expense.class

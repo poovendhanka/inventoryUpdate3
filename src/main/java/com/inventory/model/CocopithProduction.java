@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.time.Duration;
 
 @Data
 @Entity
@@ -26,10 +27,22 @@ public class CocopithProduction {
     @Column(name = "supervisor_name")
     private String supervisorName;
 
+    @Column(name = "production_time")
+    private Duration productionTime;
+
+    @Column(name = "production_start_time")
+    private LocalDateTime productionStartTime;
+
+    @Column(name = "system_time")
+    private LocalDateTime systemTime;
+
     @PrePersist
     void prePersist() {
         if (this.productionDate == null) {
             this.productionDate = LocalDateTime.now();
+        }
+        if (this.systemTime == null) {
+            this.systemTime = LocalDateTime.now();
         }
     }
 }

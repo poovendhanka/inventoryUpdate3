@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Block Production Report</title>
+</head>
+<body>
+    <h1 id="pageTitle">Block Production Report</h1>
+    
+    <div id="content">
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <a th:href="@{/block-report}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Report Selection
+                </a>
+                <button class="btn btn-primary ms-2" onclick="window.print()">
+                    <i class="fas fa-print"></i> Print Report
+                </button>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Block Production Report</h5>
+                        <span th:text="${#temporals.format(startDate, 'dd MMM yyyy')} + ' - ' + ${#temporals.format(endDate, 'dd MMM yyyy')}"></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">Normal Blocks</h5>
+                                        <h2 class="text-primary" th:text="${totalNormalBlocks}"></h2>
+                                        <p class="text-muted" th:text="${#numbers.formatDecimal(totalNormalPithUsed, 1, 2)} + ' kg pith used'"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">Low EC Blocks</h5>
+                                        <h2 class="text-success" th:text="${totalLowEcBlocks}"></h2>
+                                        <p class="text-muted" th:text="${#numbers.formatDecimal(totalLowEcPithUsed, 1, 2)} + ' kg pith used'"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">Total Blocks</h5>
+                                        <h2 class="text-info" th:text="${totalNormalBlocks + totalLowEcBlocks}"></h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">Total Pith Used</h5>
+                                        <h2 class="text-danger" th:text="${#numbers.formatDecimal(totalNormalPithUsed + totalLowEcPithUsed, 1, 2)} + ' kg'"></h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Date & Time</th>
+                                        <th>Block Type</th>
+                                        <th>Blocks Produced</th>
+                                        <th>Pith Used (kg)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${productions.empty}">
+                                        <td colspan="4" class="text-center">No production records found</td>
+                                    </tr>
+                                    <tr th:each="production : ${productions}">
+                                        <td th:text="${#temporals.format(production.productionTime, 'dd MMM yyyy HH:mm')}"></td>
+                                        <td>
+                                            <span th:if="${production.pithType.name() == 'NORMAL'}" class="badge bg-primary">Normal</span>
+                                            <span th:if="${production.pithType.name() == 'LOW'}" class="badge bg-success">Low EC</span>
+                                        </td>
+                                        <td th:text="${production.blocksProduced}"></td>
+                                        <td th:text="${#numbers.formatDecimal(production.pithQuantityUsed, 1, 2)}"></td>
+                                    </tr>
+                                </tbody>
+                                <tfoot class="table-secondary">
+                                    <tr>
+                                        <th colspan="2">Total</th>
+                                        <th th:text="${totalNormalBlocks + totalLowEcBlocks}"></th>
+                                        <th th:text="${#numbers.formatDecimal(totalNormalPithUsed + totalLowEcPithUsed, 1, 2)} + ' kg'"></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <th:block id="pagescript">
+        <script>
+            $(document).ready(function() {
+                // Add print-specific styling
+                $('<style>')
+                    .append('@media print { .btn, .navbar, .sidebar, .mobile-menu-btn { display: none !important; } }')
+                    .append('@media print { body { padding: 0; margin: 0; } }')
+                    .append('@media print { main { margin-left: 0 !important; width: 100% !important; padding: 0 !important; } }')
+                    .append('@media print { .card { border: none !important; } }')
+                    .append('@media print { .card-header { background-color: #f8f9fa !important; -webkit-print-color-adjust: exact; } }')
+                    .append('@media print { .table-dark th { background-color: #212529 !important; color: white !important; -webkit-print-color-adjust: exact; } }')
+                    .append('@media print { .table-secondary th { background-color: #e2e3e5 !important; -webkit-print-color-adjust: exact; } }')
+                    .append('@media print { .bg-light { background-color: #f8f9fa !important; -webkit-print-color-adjust: exact; } }')
+                    .append('@media print { .bg-primary { background-color: #0d6efd !important; color: white !important; -webkit-print-color-adjust: exact; } }')
+                    .append('@media print { .bg-success { background-color: #198754 !important; color: white !important; -webkit-print-color-adjust: exact; } }')
+                    .appendTo('head');
+            });
+        </script>
+    </th:block>
+</body>
+</html> 

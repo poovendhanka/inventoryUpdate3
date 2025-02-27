@@ -12,18 +12,18 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">View Production Report</h5>
+                        <h5 class="card-title mb-0">Generate Production Report</h5>
                     </div>
                     <div class="card-body">
                         <form th:action="@{/production-report/view}" method="get">
-                            <div class="row">
+                            <div class="row mb-3">
                                 <div class="col-md-8">
                                     <label class="form-label">Select Date</label>
-                                    <input type="date" class="form-control" name="date" required>
+                                    <input type="date" class="form-control" id="reportDate" name="date" required>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">&nbsp;</label>
-                                    <button type="submit" class="btn btn-primary d-block w-100">View Report</button>
+                                    <button type="submit" class="btn btn-primary d-block w-100">Generate Report</button>
                                 </div>
                             </div>
                         </form>
@@ -35,8 +35,10 @@
     
     <th:block id="pagescript">
         <script>
-            // Initialize date picker with today's date
-            document.querySelector('input[type="date"]').valueAsDate = new Date();
+            $(document).ready(function() {
+                // Initialize date picker with today's date
+                $('#reportDate').val(new Date().toISOString().split('T')[0]);
+            });
         </script>
     </th:block>
 </body>

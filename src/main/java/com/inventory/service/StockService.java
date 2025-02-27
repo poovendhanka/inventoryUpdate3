@@ -12,6 +12,8 @@ import com.inventory.repository.BlockProductionRepository;
 import com.inventory.repository.SaleRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import java.time.LocalDateTime;
+import java.time.Duration;
 
 @Service
 @RequiredArgsConstructor
@@ -60,13 +62,18 @@ public class StockService {
     }
 
     @Transactional
-    public void convertToLowEcPith(Double quantity, String supervisorName) {
-        Double currentStock = getCurrentPithStock();
-        if (currentStock < quantity) {
-            throw new RuntimeException("Insufficient pith stock for conversion");
+    public void convertToLowEcPith(Double quantity, String supervisorName, Duration productionTime,
+            LocalDateTime productionStartTime) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than 0");
         }
 
-        // Reduce normal pith stock
+        // Check if we have enough pith stock
+        if (pithStockService.getCurrentStock() < quantity) {
+            throw new IllegalArgumentException("Not enough pith stock available");
+        }
+
+        // Reduce from pith stock
         pithStockService.addStock(-quantity);
 
         // Add to Low EC pith stock
@@ -77,6 +84,9 @@ public class StockService {
         production.setPithQuantityUsed(quantity);
         production.setLowEcQuantityProduced(quantity);
         production.setSupervisorName(supervisorName);
+        production.setProductionTime(productionTime.abs()); // Ensure duration is positive
+        production.setProductionStartTime(productionStartTime);
+        production.setSystemTime(LocalDateTime.now());
         cocopithProductionRepository.save(production);
     }
 

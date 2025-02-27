@@ -79,10 +79,13 @@ public class ProductionController extends BaseController {
     @PostMapping("/cocopith")
     public String createCocopithProduction(
             @RequestParam Double pithQuantityUsed,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime productionTime,
             @RequestParam String supervisorName,
             RedirectAttributes redirectAttributes) {
         try {
-            stockService.convertToLowEcPith(pithQuantityUsed, supervisorName);
+            LocalDateTime systemTime = LocalDateTime.now();
+            Duration duration = Duration.between(productionTime, systemTime);
+            stockService.convertToLowEcPith(pithQuantityUsed, supervisorName, duration, productionTime);
             redirectAttributes.addFlashAttribute("success", "Cocopith production completed successfully");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
