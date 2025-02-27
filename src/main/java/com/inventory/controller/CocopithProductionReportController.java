@@ -42,11 +42,7 @@ public class CocopithProductionReportController extends BaseController {
                 List<CocopithProduction> productions = cocopithProductionRepository
                                 .findByProductionDateBetweenOrderByProductionDateDesc(startDateTime, endDateTime);
 
-                // Calculate totals
-                double totalPithUsed = productions.stream()
-                                .mapToDouble(CocopithProduction::getPithQuantityUsed)
-                                .sum();
-
+                // Calculate total Low EC pith produced
                 double totalLowEcProduced = productions.stream()
                                 .mapToDouble(CocopithProduction::getLowEcQuantityProduced)
                                 .sum();
@@ -55,7 +51,6 @@ public class CocopithProductionReportController extends BaseController {
                 model.addAttribute("productions", productions);
                 model.addAttribute("startDate", startDate);
                 model.addAttribute("endDate", endDate);
-                model.addAttribute("totalPithUsed", totalPithUsed);
                 model.addAttribute("totalLowEcProduced", totalLowEcProduced);
                 model.addAttribute("activeTab", "cocopith-report");
 

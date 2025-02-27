@@ -28,37 +28,27 @@
                     </div>
                     <div class="card-body">
                         <div class="row mb-4">
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="card bg-light">
                                     <div class="card-body text-center">
                                         <h5 class="card-title">Normal Blocks</h5>
                                         <h2 class="text-primary" th:text="${totalNormalBlocks}"></h2>
-                                        <p class="text-muted" th:text="${#numbers.formatDecimal(totalNormalPithUsed, 1, 2)} + ' kg pith used'"></p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="card bg-light">
                                     <div class="card-body text-center">
                                         <h5 class="card-title">Low EC Blocks</h5>
                                         <h2 class="text-success" th:text="${totalLowEcBlocks}"></h2>
-                                        <p class="text-muted" th:text="${#numbers.formatDecimal(totalLowEcPithUsed, 1, 2)} + ' kg pith used'"></p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="card bg-light">
                                     <div class="card-body text-center">
                                         <h5 class="card-title">Total Blocks</h5>
                                         <h2 class="text-info" th:text="${totalNormalBlocks + totalLowEcBlocks}"></h2>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="card bg-light">
-                                    <div class="card-body text-center">
-                                        <h5 class="card-title">Total Pith Used</h5>
-                                        <h2 class="text-danger" th:text="${#numbers.formatDecimal(totalNormalPithUsed + totalLowEcPithUsed, 1, 2)} + ' kg'"></h2>
                                     </div>
                                 </div>
                             </div>
@@ -71,7 +61,7 @@
                                         <th>Date & Time</th>
                                         <th>Block Type</th>
                                         <th>Blocks Produced</th>
-                                        <th>Pith Used (kg)</th>
+                                        <th>Supervisor</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -85,14 +75,14 @@
                                             <span th:if="${production.pithType.name() == 'LOW'}" class="badge bg-success">Low EC</span>
                                         </td>
                                         <td th:text="${production.blocksProduced}"></td>
-                                        <td th:text="${#numbers.formatDecimal(production.pithQuantityUsed, 1, 2)}"></td>
+                                        <td th:text="${production.supervisorName != null ? production.supervisorName : '-'}"></td>
                                     </tr>
                                 </tbody>
                                 <tfoot class="table-secondary">
                                     <tr>
                                         <th colspan="2">Total</th>
                                         <th th:text="${totalNormalBlocks + totalLowEcBlocks}"></th>
-                                        <th th:text="${#numbers.formatDecimal(totalNormalPithUsed + totalLowEcPithUsed, 1, 2)} + ' kg'"></th>
+                                        <th></th>
                                     </tr>
                                 </tfoot>
                             </table>

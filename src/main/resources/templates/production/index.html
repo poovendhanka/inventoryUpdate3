@@ -165,22 +165,27 @@
                     <div class="card-body">
                         <form th:action="@{/production/block}" method="post">
                             <div class="row">
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-3 mb-3">
                                     <label for="pithType" class="form-label">Pith Type</label>
                                     <select class="form-select" id="pithType" name="pithType" required>
                                         <option value="NORMAL">Normal EC Pith</option>
                                         <option value="LOW">Low EC Pith</option>
                                     </select>
                                 </div>
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-3 mb-3">
                                     <label for="blocksProduced" class="form-label">Number of Blocks</label>
                                     <input type="number" class="form-control" id="blocksProduced" 
                                            name="blocksProduced" required min="1">
                                 </div>
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-3 mb-3">
                                     <label for="productionTime" class="form-label">Production Time</label>
                                     <input type="datetime-local" class="form-control" id="productionTime" 
                                            name="productionTime" required>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="blockSupervisorName" class="form-label">Supervisor Name</label>
+                                    <input type="text" class="form-control" id="blockSupervisorName" 
+                                           name="supervisorName" required>
                                 </div>
                             </div>
                             <div class="text-end">

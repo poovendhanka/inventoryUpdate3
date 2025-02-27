@@ -66,17 +66,12 @@ public class BlockProductionReportController extends BaseController {
                                 .mapToInt(BlockProduction::getBlocksProduced)
                                 .sum();
 
-                double totalNormalPithUsed = totalNormalBlocks * 5.0; // 5kg per block
-                double totalLowEcPithUsed = totalLowEcBlocks * 5.0;
-
                 // Add data to model
                 model.addAttribute("productions", productions);
                 model.addAttribute("startDate", startDate);
                 model.addAttribute("endDate", endDate);
                 model.addAttribute("totalNormalBlocks", totalNormalBlocks);
                 model.addAttribute("totalLowEcBlocks", totalLowEcBlocks);
-                model.addAttribute("totalNormalPithUsed", totalNormalPithUsed);
-                model.addAttribute("totalLowEcPithUsed", totalLowEcPithUsed);
                 model.addAttribute("activeTab", "block-report");
 
                 return getViewPath("block-report/view");

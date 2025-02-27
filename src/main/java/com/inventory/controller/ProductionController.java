@@ -143,12 +143,14 @@ public class ProductionController extends BaseController {
             @RequestParam PithType pithType,
             @RequestParam Integer blocksProduced,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime productionTime,
+            @RequestParam String supervisorName,
             RedirectAttributes redirectAttributes) {
         try {
             BlockProduction blockProduction = new BlockProduction();
             blockProduction.setPithType(pithType);
             blockProduction.setBlocksProduced(blocksProduced);
             blockProduction.setProductionTime(productionTime);
+            blockProduction.setSupervisorName(supervisorName);
 
             stockService.processBlockProduction(blockProduction);
             blockProductionRepository.save(blockProduction);

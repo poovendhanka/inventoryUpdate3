@@ -30,6 +30,9 @@ public class BlockProduction {
     @Column(name = "system_time")
     private LocalDateTime systemTime;
 
+    @Column(name = "supervisor_name")
+    private String supervisorName;
+
     @PrePersist
     void prePersist() {
         this.systemTime = LocalDateTime.now();

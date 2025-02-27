@@ -28,15 +28,7 @@
                     </div>
                     <div class="card-body">
                         <div class="row mb-4">
-                            <div class="col-md-6">
-                                <div class="card">
-                                    <div class="card-body text-center">
-                                        <h5 class="card-title">Total Pith Used</h5>
-                                        <h2 class="text-primary" th:text="${#numbers.formatDecimal(totalPithUsed, 1, 2)} + ' kg'"></h2>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="card">
                                     <div class="card-body text-center">
                                         <h5 class="card-title">Total Low EC Pith Produced</h5>
@@ -54,14 +46,13 @@
                                         <th>Production Start Time</th>
                                         <th>System Time</th>
                                         <th>Production Time</th>
-                                        <th>Pith Used (kg)</th>
                                         <th>Low EC Pith Produced (kg)</th>
                                         <th>Supervisor</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr th:if="${productions.empty}">
-                                        <td colspan="7" class="text-center">No production records found</td>
+                                        <td colspan="6" class="text-center">No production records found</td>
                                     </tr>
                                     <tr th:each="production : ${productions}">
                                         <td th:text="${#temporals.format(production.productionDate, 'dd MMM yyyy HH:mm')}"></td>
@@ -73,7 +64,6 @@
                                             </span>
                                             <span th:unless="${production.productionTime != null}">-</span>
                                         </td>
-                                        <td th:text="${#numbers.formatDecimal(production.pithQuantityUsed, 1, 2)}"></td>
                                         <td th:text="${#numbers.formatDecimal(production.lowEcQuantityProduced, 1, 2)}"></td>
                                         <td th:text="${production.supervisorName}"></td>
                                     </tr>
@@ -81,7 +71,6 @@
                                 <tfoot class="table-secondary">
                                     <tr>
                                         <th colspan="4">Total</th>
-                                        <th th:text="${#numbers.formatDecimal(totalPithUsed, 1, 2)} + ' kg'"></th>
                                         <th th:text="${#numbers.formatDecimal(totalLowEcProduced, 1, 2)} + ' kg'"></th>
                                         <th></th>
                                     </tr>
