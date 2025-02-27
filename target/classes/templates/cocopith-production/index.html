@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Cocopith Production</title>
+</head>
+<body>
+    <!-- Page Title -->
+    <h1 id="pageTitle">Cocopith Production</h1>
+    
+    <!-- Main Content -->
+    <div id="content">
+        <div class="row">
+            <!-- Current Stock Card -->
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Current Stock</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Normal EC Pith -->
+                            <div class="col-md-3">
+                                <div class="alert alert-info mb-0">
+                                    <h6 class="alert-heading small mb-1">Normal EC Pith</h6>
+                                    <p class="h6 mb-0" th:text="${currentPithStock + ' kg'}" id="normalPithStockDisplay">0 kg</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Low EC Pith -->
+                            <div class="col-md-3">
+                                <div class="alert alert-info mb-0">
+                                    <h6 class="alert-heading small mb-1">Low EC Pith</h6>
+                                    <p class="h6 mb-0" th:text="${currentLowEcPithStock + ' kg'}" id="lowEcPithStockDisplay">0 kg</p>
+                                </div>
+                            </div>
+
+                            <!-- Normal EC Blocks -->
+                            <div class="col-md-3">
+                                <div class="alert alert-info mb-0">
+                                    <h6 class="alert-heading small mb-1">Normal EC Blocks</h6>
+                                    <p class="h6 mb-0" th:text="${normalBlockStock + ' blocks'}" id="normalBlockStockDisplay">0 blocks</p>
+                                </div>
+                            </div>
+
+                            <!-- Low EC Blocks -->
+                            <div class="col-md-3">
+                                <div class="alert alert-info mb-0">
+                                    <h6 class="alert-heading small mb-1">Low EC Blocks</h6>
+                                    <p class="h6 mb-0" th:text="${lowEcBlockStock + ' blocks'}" id="lowEcBlockStockDisplay">0 blocks</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cocopith Production Card -->
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Cocopith Production</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/cocopith-production/cocopith}" method="post" id="cocopithForm">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="pithQuantityUsed" class="form-label">Pith Quantity for Processing (kg)</label>
+                                    <input type="number" step="0.01" class="form-control" id="pithQuantityUsed" 
+                                           name="pithQuantityUsed" required>
+                                    <div class="invalid-feedback" id="pithQuantityFeedback">
+                                        Insufficient normal EC pith stock available.
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="productionTime" class="form-label">Production Time</label>
+                                    <input type="datetime-local" class="form-control datetime-input" id="productionTime" 
+                                           name="productionTime" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="cocopithSupervisorName" class="form-label">Supervisor Name</label>
+                                    <input type="text" class="form-control" id="cocopithSupervisorName" 
+                                           name="supervisorName" required>
+                                </div>
+                            </div>
+                            <div class="alert alert-warning d-none" id="pithStockWarning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Warning: Insufficient normal EC pith stock available. Current stock: <span id="availablePithStock">0</span> kg.
+                            </div>
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary">Convert to Low EC Pith</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Block Production Card -->
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Block Production</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/cocopith-production/block}" method="post" id="blockForm">
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label for="pithType" class="form-label">Pith Type</label>
+                                    <select class="form-select" id="pithType" name="pithType" required>
+                                        <option value="NORMAL">Normal EC Pith</option>
+                                        <option value="LOW">Low EC Pith</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="blocksProduced" class="form-label">Number of Blocks</label>
+                                    <input type="number" class="form-control" id="blocksProduced" 
+                                           name="blocksProduced" required min="1">
+                                    <div class="invalid-feedback" id="blocksProducedFeedback">
+                                        Insufficient pith stock available for this many blocks.
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="blockProductionTime" class="form-label">Production Time</label>
+                                    <input type="datetime-local" class="form-control datetime-input" id="blockProductionTime" 
+                                           name="productionTime" required>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="blockSupervisorName" class="form-label">Supervisor Name</label>
+                                    <input type="text" class="form-control" id="blockSupervisorName" 
+                                           name="supervisorName" required>
+                                </div>
+                            </div>
+                            <div class="alert alert-warning d-none" id="blockStockWarning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Warning: Insufficient pith stock available for this many blocks. Max blocks possible: <span id="maxBlocksPossible">0</span>.
+                            </div>
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary">Record Block Production</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <th:block id="pagescript">
+        <script>
+            $(document).ready(function() {
+                // Set default datetime to now for all datetime-local inputs
+                var now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                var nowStr = now.toISOString().slice(0,16);
+                
+                // Set for all datetime inputs
+                $('.datetime-input').val(nowStr);
+                
+                // Get stock values
+                const currentPithStock = parseFloat(document.getElementById('normalPithStockDisplay').innerText);
+                const currentLowEcPithStock = parseFloat(document.getElementById('lowEcPithStockDisplay').innerText);
+                
+                // Each block requires 5kg of pith (this is a business rule)
+                const PITH_PER_BLOCK = 5; 
+                
+                // Validate Cocopith Production form
+                $('#pithQuantityUsed').on('input', function() {
+                    validatePithQuantity();
+                });
+                
+                $('#cocopithForm').on('submit', function(e) {
+                    if (!validatePithQuantity()) {
+                        e.preventDefault();
+                    }
+                });
+                
+                function validatePithQuantity() {
+                    const pithQuantity = parseFloat($('#pithQuantityUsed').val());
+                    const pithInput = $('#pithQuantityUsed');
+                    const warningAlert = $('#pithStockWarning');
+                    
+                    if (isNaN(pithQuantity) || pithQuantity <= 0) {
+                        pithInput.removeClass('is-invalid');
+                        warningAlert.addClass('d-none');
+                        return true;
+                    }
+                    
+                    if (pithQuantity > currentPithStock) {
+                        pithInput.addClass('is-invalid');
+                        $('#availablePithStock').text(currentPithStock);
+                        warningAlert.removeClass('d-none');
+                        return false;
+                    } else {
+                        pithInput.removeClass('is-invalid');
+                        warningAlert.addClass('d-none');
+                        return true;
+                    }
+                }
+                
+                // Validate Block Production form
+                $('#blocksProduced, #pithType').on('input change', function() {
+                    validateBlockProduction();
+                });
+                
+                $('#blockForm').on('submit', function(e) {
+                    if (!validateBlockProduction()) {
+                        e.preventDefault();
+                    }
+                });
+                
+                function validateBlockProduction() {
+                    const blocksProduced = parseInt($('#blocksProduced').val());
+                    const pithType = $('#pithType').val();
+                    const blocksInput = $('#blocksProduced');
+                    const warningAlert = $('#blockStockWarning');
+                    
+                    if (isNaN(blocksProduced) || blocksProduced <= 0) {
+                        blocksInput.removeClass('is-invalid');
+                        warningAlert.addClass('d-none');
+                        return true;
+                    }
+                    
+                    const availablePith = pithType === 'NORMAL' ? currentPithStock : currentLowEcPithStock;
+                    const maxBlocks = Math.floor(availablePith / PITH_PER_BLOCK);
+                    
+                    if (blocksProduced > maxBlocks) {
+                        blocksInput.addClass('is-invalid');
+                        $('#maxBlocksPossible').text(maxBlocks);
+                        warningAlert.removeClass('d-none');
+                        return false;
+                    } else {
+                        blocksInput.removeClass('is-invalid');
+                        warningAlert.addClass('d-none');
+                        return true;
+                    }
+                }
+                
+                // Initial validation
+                validatePithQuantity();
+                validateBlockProduction();
+            });
+        </script>
+    </th:block>
+</body>
+</html> 

@@ -1,187 +1,164 @@
 package com.inventory.controller;
 
 import com.inventory.model.Production;
+import com.inventory.model.FiberType;
+import com.inventory.model.HuskType;
 import com.inventory.model.ShiftType;
+import com.inventory.repository.BlockProductionRepository;
 import com.inventory.service.ProductionService;
 import com.inventory.service.StockService;
-import lombok.RequiredArgsConstructor;
+
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import jakarta.servlet.http.HttpServletRequest;
-import java.time.LocalDate;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import com.inventory.model.FiberType;
-import com.inventory.model.BlockProduction;
-import com.inventory.repository.BlockProductionRepository;
-import com.inventory.model.PithType;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Duration;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 @RequestMapping("/production")
-@RequiredArgsConstructor
-public class ProductionController extends BaseController {
+public class ProductionController {
 
     private final ProductionService productionService;
     private final StockService stockService;
     private final BlockProductionRepository blockProductionRepository;
+    private static final Logger log = LoggerFactory.getLogger(ProductionController.class);
+
+    public ProductionController(ProductionService productionService,
+            StockService stockService,
+            BlockProductionRepository blockProductionRepository) {
+        this.productionService = productionService;
+        this.stockService = stockService;
+        this.blockProductionRepository = blockProductionRepository;
+    }
 
     @GetMapping
     public String showProductionPage(Model model) {
         try {
-            model.addAttribute("currentPithStock", stockService.getCurrentPithStock());
-            model.addAttribute("currentLowEcPithStock", stockService.getCurrentLowEcPithStock());
-            model.addAttribute("whiteFiberStock", stockService.getCurrentFiberStock(FiberType.WHITE));
-            model.addAttribute("brownFiberStock", stockService.getCurrentFiberStock(FiberType.BROWN));
-            model.addAttribute("normalBlockStock", stockService.getCurrentBlockStock(PithType.NORMAL));
-            model.addAttribute("lowEcBlockStock", stockService.getCurrentBlockStock(PithType.LOW));
-            model.addAttribute("recentProductions", productionService.getRecentProductions());
+            // Get current stock for display
+            double whiteFiberStock = stockService.getCurrentFiberStock(FiberType.WHITE);
+            double brownFiberStock = stockService.getCurrentFiberStock(FiberType.BROWN);
+            double pithStock = stockService.getCurrentPithStock();
+            double lowEcPithStock = stockService.getCurrentLowEcPithStock();
+
+            model.addAttribute("whiteFiberStock", whiteFiberStock);
+            model.addAttribute("brownFiberStock", brownFiberStock);
+            model.addAttribute("currentPithStock", pithStock);
+            model.addAttribute("currentLowEcPithStock", lowEcPithStock);
+
+            // Get recent productions for the table
+            List<Production> recentProductions = productionService.getRecentProductions();
+            model.addAttribute("recentProductions", recentProductions);
+
+            // Set active tab for sidebar highlighting
+            model.addAttribute("activeTab", "production");
+
             return "production/index";
         } catch (Exception e) {
-            model.addAttribute("error", "Error loading production page: " + e.getMessage());
+            log.error("Error loading production page: {}", e.getMessage(), e);
             return "error";
         }
     }
 
     @PostMapping
-    public String createProduction(@ModelAttribute Production production, RedirectAttributes redirectAttributes) {
-        try {
-            // Set system time
-            production.setSystemTime(LocalDateTime.now());
-
-            // Validate required fields
-            if (production.getHuskType() == null) {
-                throw new RuntimeException("Husk type must be specified");
-            }
-            if (production.getShift() == null) {
-                throw new RuntimeException("Shift must be specified");
-            }
-            if (production.getSupervisorName() == null || production.getSupervisorName().trim().isEmpty()) {
-                throw new RuntimeException("Supervisor name must be specified");
-            }
-            if (production.getBatchCompletionTime() == null) {
-                throw new RuntimeException("Batch completion time must be specified");
-            }
-
-            // Create production
-            productionService.createProduction(production);
-            redirectAttributes.addFlashAttribute("success", "Production batch completed successfully");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/production";
-        }
-        return "redirect:/production";
-    }
-
-    @PostMapping("/cocopith")
-    public String createCocopithProduction(
-            @RequestParam Double pithQuantityUsed,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime productionTime,
-            @RequestParam String supervisorName,
+    public String createProduction(
+            @RequestParam("huskType") String huskType,
+            @RequestParam("numBales") Integer numBales,
+            @RequestParam("pithQuantity") Double pithQuantity,
+            @RequestParam("batchCompletionTime") LocalDateTime batchCompletionTime,
+            @RequestParam("supervisorName") String supervisorName,
+            @RequestParam("shift") String shift,
             RedirectAttributes redirectAttributes) {
+
         try {
-            LocalDateTime systemTime = LocalDateTime.now();
-            Duration duration = Duration.between(productionTime, systemTime);
-            stockService.convertToLowEcPith(pithQuantityUsed, supervisorName, duration, productionTime);
-            redirectAttributes.addFlashAttribute("success", "Cocopith production completed successfully");
+            Production production = new Production();
+            production.setHuskType(HuskType.valueOf(huskType));
+            production.setNumBales(numBales);
+            production.setPithQuantity(pithQuantity);
+            production.setBatchCompletionTime(batchCompletionTime);
+            production.setSupervisorName(supervisorName);
+            production.setShift(ShiftType.valueOf(shift));
+
+            productionService.createProduction(production);
+
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Production batch recorded successfully!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            log.error("Error creating production: {}", e.getMessage(), e);
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Error: " + e.getMessage());
         }
+
         return "redirect:/production";
     }
 
     @GetMapping("/report")
-    public String viewReport(
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
+    public String showProductionReport(
+            @RequestParam(value = "start", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam(value = "end", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
             Model model) {
+
+        // If dates not provided, default to current month
+        LocalDate finalStartDate = startDate;
+        LocalDate finalEndDate = endDate;
+
+        if (finalStartDate == null) {
+            finalStartDate = LocalDate.now().withDayOfMonth(1);
+        }
+        if (finalEndDate == null) {
+            finalEndDate = LocalDate.now();
+        }
+
         try {
-            LocalDateTime startOfDay = date.atStartOfDay();
-            LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
+            // Get productions for the date range
+            List<Production> productions = productionService.getRecentProductions(); // Temporary fix
 
-            // Get productions by shift
-            List<Production> firstShift = productionService.getProductionsByDateAndShift(date, ShiftType.FIRST);
-            List<Production> secondShift = productionService.getProductionsByDateAndShift(date, ShiftType.SECOND);
+            // Use effectively final copies of the date variables
+            final LocalDate filterStartDate = finalStartDate;
+            final LocalDate filterEndDate = finalEndDate;
 
-            // Calculate durations
-            calculateDurations(firstShift);
-            calculateDurations(secondShift);
+            // Filter productions by date range manually until proper method is available
+            productions = productions.stream()
+                    .filter(p -> {
+                        LocalDate prodDate = p.getBatchCompletionTime().toLocalDate();
+                        return !prodDate.isBefore(filterStartDate) && !prodDate.isAfter(filterEndDate);
+                    })
+                    .toList();
 
-            // Add specific production type counts
-            addProductionSummaries(model, firstShift, secondShift);
+            // Calculate totals for summary
+            int totalBatches = productions.size();
+            int totalWhiteFiberBales = 0;
+            int totalBrownFiberBales = 0;
+            double totalPithProduced = 0;
 
-            model.addAttribute("date", date);
-            model.addAttribute("firstShift", firstShift);
-            model.addAttribute("secondShift", secondShift);
+            for (Production prod : productions) {
+                if ("WHITE".equals(prod.getFiberType())) {
+                    totalWhiteFiberBales += prod.getNumBales();
+                } else if ("BROWN".equals(prod.getFiberType())) {
+                    totalBrownFiberBales += prod.getNumBales();
+                }
+                totalPithProduced += prod.getPithQuantity();
+            }
+
+            model.addAttribute("productions", productions);
+            model.addAttribute("startDate", finalStartDate);
+            model.addAttribute("endDate", finalEndDate);
+            model.addAttribute("totalBatches", totalBatches);
+            model.addAttribute("totalWhiteFiberBales", totalWhiteFiberBales);
+            model.addAttribute("totalBrownFiberBales", totalBrownFiberBales);
+            model.addAttribute("totalPithProduced", totalPithProduced);
+            model.addAttribute("activeTab", "production");
 
             return "production/report";
         } catch (Exception e) {
-            model.addAttribute("error", "Error generating report: " + e.getMessage());
+            log.error("Error generating production report: {}", e.getMessage(), e);
+            model.addAttribute("errorMessage", "Error generating report: " + e.getMessage());
             return "error";
         }
-    }
-
-    private void addProductionSummaries(Model model, List<Production> firstShift, List<Production> secondShift) {
-        // Add Low EC Pith summaries
-        int normalPithUsed = calculateTotalPithUsed(firstShift, secondShift);
-        int lowEcPithProduced = calculateTotalLowEcPithProduced(firstShift, secondShift);
-
-        // Add Block Production summaries
-        int normalBlocksProduced = calculateTotalBlocksProduced(firstShift, secondShift, PithType.NORMAL);
-        int lowEcBlocksProduced = calculateTotalBlocksProduced(firstShift, secondShift, PithType.LOW);
-
-        model.addAttribute("normalPithUsed", normalPithUsed);
-        model.addAttribute("lowEcPithProduced", lowEcPithProduced);
-        model.addAttribute("normalBlocksProduced", normalBlocksProduced);
-        model.addAttribute("lowEcBlocksProduced", lowEcBlocksProduced);
-    }
-
-    @PostMapping("/block")
-    public String createBlockProduction(
-            @RequestParam PithType pithType,
-            @RequestParam Integer blocksProduced,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime productionTime,
-            @RequestParam String supervisorName,
-            RedirectAttributes redirectAttributes) {
-        try {
-            BlockProduction blockProduction = new BlockProduction();
-            blockProduction.setPithType(pithType);
-            blockProduction.setBlocksProduced(blocksProduced);
-            blockProduction.setProductionTime(productionTime);
-            blockProduction.setSupervisorName(supervisorName);
-
-            stockService.processBlockProduction(blockProduction);
-            blockProductionRepository.save(blockProduction);
-
-            redirectAttributes.addFlashAttribute("success", "Block production recorded successfully");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-        }
-        return "redirect:/production";
-    }
-
-    private void calculateDurations(List<Production> productions) {
-        productions.forEach(production -> {
-            if (production.getBatchCompletionTime() != null && production.getSystemTime() != null) {
-                Duration duration = Duration.between(production.getSystemTime(),
-                        production.getBatchCompletionTime());
-                production.setDuration(duration);
-            }
-        });
-    }
-
-    private int calculateTotalPithUsed(List<Production> firstShift, List<Production> secondShift) {
-        return productionService.calculateTotalPithUsed(firstShift, secondShift);
-    }
-
-    private int calculateTotalLowEcPithProduced(List<Production> firstShift, List<Production> secondShift) {
-        return productionService.calculateTotalLowEcPithProduced(firstShift, secondShift);
-    }
-
-    private int calculateTotalBlocksProduced(List<Production> firstShift, List<Production> secondShift,
-            PithType pithType) {
-        return productionService.calculateTotalBlocksProduced(firstShift, secondShift, pithType);
     }
 }

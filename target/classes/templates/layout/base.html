@@ -272,6 +272,12 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeTab == 'cocopith-production'} ? 'active' : ''" 
+                       th:href="@{/cocopith-production}">
+                        <i class="fas fa-leaf"></i> Cocopith Production
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" th:classappend="${activeTab == 'reports' || activeTab == 'production-report' || activeTab == 'cocopith-report' || activeTab == 'block-report'} ? 'active' : ''" 
                        th:href="@{/reports}">
                         <i class="fas fa-chart-line"></i> Reports

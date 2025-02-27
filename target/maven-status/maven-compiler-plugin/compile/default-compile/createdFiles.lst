@@ -47,7 +47,6 @@ com\inventory\model\Party.class
 com\inventory\controller\PartyController.class
 com\inventory\repository\RawMaterialRepository.class
 com\inventory\controller\AccountsController.class
-com\inventory\repository\ProductionRepository.class
 com\inventory\controller\BackupController.class
 com\inventory\service\SaleService$1.class
 com\inventory\model\BlockProduction.class
@@ -69,5 +68,4 @@ com\inventory\repository\WhiteFiberStockRepository.class
 com\inventory\repository\FiberStockRepository.class
 com\inventory\service\impl\PithStockServiceImpl.class
 com\inventory\dto\ProcessedRawMaterialReport$ProcessedRawMaterialReportBuilder.class
-com\inventory\controller\ProductionController.class
 com\inventory\repository\LowEcPithStockRepository.class

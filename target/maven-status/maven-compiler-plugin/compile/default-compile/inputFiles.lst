@@ -9,6 +9,7 @@ D:\project\inventoryUpdate3\src\main\java\com\inventory\repository\SaleRepositor
 D:\project\inventoryUpdate3\src\main\java\com\inventory\model\RawMaterialCost.java
 D:\project\inventoryUpdate3\src\main\java\com\inventory\model\ProcessedRawMaterial.java
 D:\project\inventoryUpdate3\src\main\java\com\inventory\model\RawMaterial.java
+D:\project\inventoryUpdate3\src\main\java\com\inventory\controller\CocopithProductionController.java
 D:\project\inventoryUpdate3\src\main\java\com\inventory\model\PithStock.java
 D:\project\inventoryUpdate3\src\main\java\com\inventory\service\impl\PithStockServiceImpl.java
 D:\project\inventoryUpdate3\src\main\java\com\inventory\model\BrownFiberStock.java

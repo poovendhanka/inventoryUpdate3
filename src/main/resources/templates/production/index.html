@@ -20,7 +20,7 @@
                     <div class="card-body">
                         <div class="row">
                             <!-- Normal EC Pith -->
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="alert alert-info mb-0">
                                     <h6 class="alert-heading small mb-1">Normal EC Pith</h6>
                                     <p class="h6 mb-0" th:text="${currentPithStock + ' kg'}">0 kg</p>
@@ -28,7 +28,7 @@
                             </div>
                             
                             <!-- Low EC Pith -->
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="alert alert-info mb-0">
                                     <h6 class="alert-heading small mb-1">Low EC Pith</h6>
                                     <p class="h6 mb-0" th:text="${currentLowEcPithStock + ' kg'}">0 kg</p>
@@ -36,7 +36,7 @@
                             </div>
                             
                             <!-- White Fiber -->
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="alert alert-info mb-0">
                                     <h6 class="alert-heading small mb-1">White Fiber</h6>
                                     <p class="h6 mb-0" th:text="${whiteFiberStock + ' bales'}">0 bales</p>
@@ -44,26 +44,10 @@
                             </div>
                             
                             <!-- Brown Fiber -->
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="alert alert-info mb-0">
                                     <h6 class="alert-heading small mb-1">Brown Fiber</h6>
                                     <p class="h6 mb-0" th:text="${brownFiberStock + ' bales'}">0 bales</p>
-                                </div>
-                            </div>
-
-                            <!-- Normal EC Blocks -->
-                            <div class="col-md-2">
-                                <div class="alert alert-info mb-0">
-                                    <h6 class="alert-heading small mb-1">Normal EC Blocks</h6>
-                                    <p class="h6 mb-0" th:text="${normalBlockStock + ' blocks'}">0 blocks</p>
-                                </div>
-                            </div>
-
-                            <!-- Low EC Blocks -->
-                            <div class="col-md-2">
-                                <div class="alert alert-info mb-0">
-                                    <h6 class="alert-heading small mb-1">Low EC Blocks</h6>
-                                    <p class="h6 mb-0" th:text="${lowEcBlockStock + ' blocks'}">0 blocks</p>
                                 </div>
                             </div>
                         </div>
@@ -123,79 +107,6 @@
                 </div>
             </div>
 
-            <!-- Cocopith Production Card -->
-            <div class="col-md-12 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Cocopith Production</h5>
-                    </div>
-                    <div class="card-body">
-                        <form th:action="@{/production/cocopith}" method="post">
-                            <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    <label for="pithQuantityUsed" class="form-label">Pith Quantity for Processing (kg)</label>
-                                    <input type="number" step="0.01" class="form-control" id="pithQuantityUsed" 
-                                           name="pithQuantityUsed" required>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label for="productionTime" class="form-label">Production Time</label>
-                                    <input type="datetime-local" class="form-control" id="productionTime" 
-                                           name="productionTime" required>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label for="cocopithSupervisorName" class="form-label">Supervisor Name</label>
-                                    <input type="text" class="form-control" id="cocopithSupervisorName" 
-                                           name="supervisorName" required>
-                                </div>
-                            </div>
-                            <div class="text-end">
-                                <button type="submit" class="btn btn-primary">Convert to Low EC Pith</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Block Production Card -->
-            <div class="col-md-12 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Block Production</h5>
-                    </div>
-                    <div class="card-body">
-                        <form th:action="@{/production/block}" method="post">
-                            <div class="row">
-                                <div class="col-md-3 mb-3">
-                                    <label for="pithType" class="form-label">Pith Type</label>
-                                    <select class="form-select" id="pithType" name="pithType" required>
-                                        <option value="NORMAL">Normal EC Pith</option>
-                                        <option value="LOW">Low EC Pith</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label for="blocksProduced" class="form-label">Number of Blocks</label>
-                                    <input type="number" class="form-control" id="blocksProduced" 
-                                           name="blocksProduced" required min="1">
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label for="productionTime" class="form-label">Production Time</label>
-                                    <input type="datetime-local" class="form-control" id="productionTime" 
-                                           name="productionTime" required>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label for="blockSupervisorName" class="form-label">Supervisor Name</label>
-                                    <input type="text" class="form-control" id="blockSupervisorName" 
-                                           name="supervisorName" required>
-                                </div>
-                            </div>
-                            <div class="text-end">
-                                <button type="submit" class="btn btn-primary">Record Block Production</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
             <!-- Recent Productions Table -->
             <div class="col-md-12">
                 <div class="card">
@@ -247,55 +158,6 @@
                 
                 // Set for main production form
                 document.querySelector('form[action="/production"] input[type="datetime-local"]').value = nowStr;
-                
-                // Set for cocopith production form
-                document.querySelector('form[action="/production/cocopith"] input[type="datetime-local"]').value = nowStr;
-                
-                // Set for block production form
-                document.querySelector('form[action="/production/block"] input[type="datetime-local"]').value = nowStr;
-                
-                // Confirm before submitting
-                $('form').on('submit', function(e) {
-                    if (!confirm('Are you sure you want to complete this batch?')) {
-                        e.preventDefault();
-                    }
-                });
-            });
-        </script>
-        <script th:inline="javascript">
-            document.addEventListener('DOMContentLoaded', function() {
-                const form = document.querySelector('form[action="/production/cocopith"]');
-                const input = document.getElementById('pithQuantityUsed');
-                const currentPithStock = [[${currentPithStock}]];
-
-                form.addEventListener('submit', function(e) {
-                    const quantity = parseFloat(input.value);
-                    if (quantity > currentPithStock) {
-                        e.preventDefault();
-                        alert(`Insufficient stock! Available: ${currentPithStock} kg`);
-                    }
-                });
-            });
-        </script>
-        <script th:inline="javascript">
-            document.addEventListener('DOMContentLoaded', function() {
-                const form = document.querySelector('form[action="/production/block"]');
-                const pithTypeSelect = document.getElementById('pithType');
-                const blocksInput = document.getElementById('blocksProduced');
-                const currentPithStock = [[${currentPithStock}]];
-                const currentLowEcPithStock = [[${currentLowEcPithStock}]];
-
-                form.addEventListener('submit', function(e) {
-                    const blocks = parseInt(blocksInput.value);
-                    const pithNeeded = blocks * 5;
-                    const isNormalPith = pithTypeSelect.value === 'NORMAL';
-                    const availableStock = isNormalPith ? currentPithStock : currentLowEcPithStock;
-
-                    if (pithNeeded > availableStock) {
-                        e.preventDefault();
-                        alert(`Insufficient ${isNormalPith ? 'normal' : 'low EC'} pith stock! Available: ${availableStock} kg`);
-                    }
-                });
             });
         </script>
     </th:block>
