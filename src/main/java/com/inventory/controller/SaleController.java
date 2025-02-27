@@ -5,11 +5,15 @@ import com.inventory.model.ProductType;
 import com.inventory.service.SaleService;
 import com.inventory.service.DealerService;
 import com.inventory.service.StockService;
+import com.inventory.util.ProductNameUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
@@ -149,10 +153,56 @@ public class SaleController extends BaseController {
             model.addAttribute("date", date);
             model.addAttribute("sales", sales);
             model.addAttribute("totalAmount", totalAmount);
+            model.addAttribute("activeTab", "sales");
             return "sales/report";
         } catch (Exception e) {
             model.addAttribute("error", "Error generating report: " + e.getMessage());
             return "error";
+        }
+    }
+
+    @GetMapping("/report/export")
+    public void exportSalesReportCsv(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
+            HttpServletResponse response) throws IOException {
+
+        List<Sale> sales = saleService.getSalesByDate(date);
+        Double totalAmount = sales.stream()
+                .mapToDouble(Sale::getTotalAmount)
+                .sum();
+
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename=sales_report_" + date + ".csv");
+
+        try (PrintWriter writer = response.getWriter()) {
+            // Write CSV header
+            writer.println("Date & Time,Dealer,Product,Quantity,Price Per Unit,Total Amount");
+
+            // Write data rows
+            for (Sale sale : sales) {
+                String product = ProductNameUtil.getFullProductName(sale.getProductType(), sale.getPithType(),
+                        sale.getFiberType());
+                String quantity = "";
+                if (sale.getProductType() == ProductType.BLOCK) {
+                    quantity = sale.getBlockCount() + " blocks";
+                } else if (sale.getProductType() == ProductType.PITH) {
+                    quantity = sale.getQuantity() + " kg";
+                } else if (sale.getProductType() == ProductType.FIBER) {
+                    quantity = sale.getQuantity() + " bales";
+                }
+
+                writer.println(String.join(",",
+                        "\"" + sale.getSaleDate()
+                                .format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")) + "\"",
+                        "\"" + sale.getDealer().getName() + "\"",
+                        "\"" + product + "\"",
+                        "\"" + quantity + "\"",
+                        "₹" + sale.getPricePerUnit(),
+                        "₹" + sale.getTotalAmount()));
+            }
+
+            // Write total row
+            writer.println(",,,,Total:,₹" + totalAmount);
         }
     }
 }
