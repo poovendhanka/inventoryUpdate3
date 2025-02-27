@@ -272,21 +272,9 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:classappend="${activeTab == 'production-report'} ? 'active' : ''" 
-                       th:href="@{/production-report}">
-                        <i class="fas fa-chart-line"></i> Production Report
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:classappend="${activeTab == 'cocopith-report'} ? 'active' : ''" 
-                       th:href="@{/cocopith-report}">
-                        <i class="fas fa-leaf"></i> Cocopith Report
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:classappend="${activeTab == 'block-report'} ? 'active' : ''" 
-                       th:href="@{/block-report}">
-                        <i class="fas fa-cubes"></i> Block Report
+                    <a class="nav-link" th:classappend="${activeTab == 'reports' || activeTab == 'production-report' || activeTab == 'cocopith-report' || activeTab == 'block-report'} ? 'active' : ''" 
+                       th:href="@{/reports}">
+                        <i class="fas fa-chart-line"></i> Reports
                     </a>
                 </li>
                 <li class="nav-item">

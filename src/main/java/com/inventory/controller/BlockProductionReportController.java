@@ -28,8 +28,7 @@ public class BlockProductionReportController extends BaseController {
 
         @GetMapping
         public String showReportPage(Model model) {
-                model.addAttribute("activeTab", "block-report");
-                return getViewPath("block-report/index");
+                return "redirect:/reports?tab=block";
         }
 
         @GetMapping("/view")
@@ -72,7 +71,8 @@ public class BlockProductionReportController extends BaseController {
                 model.addAttribute("endDate", endDate);
                 model.addAttribute("totalNormalBlocks", totalNormalBlocks);
                 model.addAttribute("totalLowEcBlocks", totalLowEcBlocks);
-                model.addAttribute("activeTab", "block-report");
+                model.addAttribute("activeTab", "reports");
+                model.addAttribute("activeReportTab", "block");
 
                 return getViewPath("block-report/view");
         }

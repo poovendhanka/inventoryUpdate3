@@ -26,8 +26,7 @@ public class ProductionReportController extends BaseController {
 
     @GetMapping
     public String showReportPage(Model model, HttpServletRequest request) {
-        model.addAttribute("activeTab", "production-report");
-        return getViewPath("production-report/index");
+        return "redirect:/reports";
     }
 
     @GetMapping("/view")
@@ -62,7 +61,8 @@ public class ProductionReportController extends BaseController {
         model.addAttribute("firstShiftBoxes", firstShiftBoxes);
         model.addAttribute("secondShiftBales", secondShiftBales);
         model.addAttribute("secondShiftBoxes", secondShiftBoxes);
-        model.addAttribute("activeTab", "production-report");
+        model.addAttribute("activeTab", "reports");
+        model.addAttribute("activeReportTab", "production");
 
         return getViewPath("production-report/view");
     }

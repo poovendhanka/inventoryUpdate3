@@ -8,76 +8,106 @@
     <h1 id="pageTitle">Reports</h1>
     
     <div id="content">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Production Reports</h5>
-                    </div>
-                    <div class="card-body">
-                        <form th:action="@{/production/report}" method="get">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <label class="form-label">Date</label>
-                                    <input type="datetime-local" class="form-control" name="date" required>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Shift</label>
-                                    <select class="form-select" name="shift" required>
-                                        <option value="">Select Shift</option>
-                                        <option th:each="shift : ${T(com.inventory.model.ShiftType).values()}"
-                                                th:value="${shift}"
-                                                th:text="${shift.description}">
-                                        </option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">&nbsp;</label>
-                                    <button type="submit" class="btn btn-primary d-block w-100">Generate Production Report</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+        <!-- Report Tabs -->
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link" id="production-tab" 
+                   th:classappend="${activeReportTab == 'production'} ? 'active' : ''"
+                   href="#production-report" data-bs-toggle="tab">
+                   <i class="fas fa-chart-line"></i> Production Report
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="cocopith-tab" 
+                   th:classappend="${activeReportTab == 'cocopith'} ? 'active' : ''"
+                   href="#cocopith-report" data-bs-toggle="tab">
+                   <i class="fas fa-leaf"></i> Cocopith Report
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="block-tab" 
+                   th:classappend="${activeReportTab == 'block'} ? 'active' : ''"
+                   href="#block-report" data-bs-toggle="tab">
+                   <i class="fas fa-cubes"></i> Block Report
+                </a>
+            </li>
+        </ul>
 
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Sales Reports</h5>
-                    </div>
-                    <div class="card-body">
-                        <form th:action="@{/sales/report}" method="get">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <label class="form-label">Start Date</label>
-                                    <input type="datetime-local" class="form-control" name="startDate" required>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">End Date</label>
-                                    <input type="datetime-local" class="form-control" name="endDate" required>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">&nbsp;</label>
-                                    <button type="submit" class="btn btn-primary d-block w-100">Generate Sales Report</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <!-- Production Report Tab -->
+            <div class="tab-pane fade" id="production-report" 
+                 th:classappend="${activeReportTab == 'production'} ? 'show active' : ''">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Stock Reports</h5>
+                        <h5 class="card-title mb-0">Generate Production Report</h5>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/stock/report}" method="get">
-                            <div class="row">
+                        <form th:action="@{/production-report/view}" method="get">
+                            <div class="row mb-3">
                                 <div class="col-md-8">
-                                    <label class="form-label">Date</label>
-                                    <input type="datetime-local" class="form-control" name="date" required>
+                                    <label class="form-label">Select Date</label>
+                                    <input type="date" class="form-control" id="productionReportDate" name="date" required>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">&nbsp;</label>
-                                    <button type="submit" class="btn btn-primary d-block w-100">Generate Stock Report</button>
+                                    <button type="submit" class="btn btn-primary d-block w-100">Generate Report</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cocopith Report Tab -->
+            <div class="tab-pane fade" id="cocopith-report" 
+                 th:classappend="${activeReportTab == 'cocopith'} ? 'show active' : ''">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Generate Cocopith Production Report</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/cocopith-report/view}" method="get">
+                            <div class="row mb-3">
+                                <div class="col-md-5">
+                                    <label class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" id="cocopithStartDate" name="startDate" required>
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label">End Date</label>
+                                    <input type="date" class="form-control" id="cocopithEndDate" name="endDate" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">&nbsp;</label>
+                                    <button type="submit" class="btn btn-primary d-block w-100">Generate Report</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Block Report Tab -->
+            <div class="tab-pane fade" id="block-report" 
+                 th:classappend="${activeReportTab == 'block'} ? 'show active' : ''">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Generate Block Production Report</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/block-report/view}" method="get">
+                            <div class="row mb-3">
+                                <div class="col-md-5">
+                                    <label class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" id="blockStartDate" name="startDate" required>
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label">End Date</label>
+                                    <input type="date" class="form-control" id="blockEndDate" name="endDate" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">&nbsp;</label>
+                                    <button type="submit" class="btn btn-primary d-block w-100">Generate Report</button>
                                 </div>
                             </div>
                         </form>
@@ -89,7 +119,32 @@
     
     <th:block id="pagescript">
         <script>
-            // Your page-specific JavaScript here
+            $(document).ready(function() {
+                // Initialize date fields
+                
+                // Production Report - Today's date
+                $('#productionReportDate').val(new Date().toISOString().split('T')[0]);
+                
+                // Cocopith and Block Reports - Current month
+                const today = new Date();
+                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+                const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                
+                $('#cocopithStartDate, #blockStartDate').val(firstDay.toISOString().split('T')[0]);
+                $('#cocopithEndDate, #blockEndDate').val(lastDay.toISOString().split('T')[0]);
+                
+                // Save active tab to sessionStorage when tab changes
+                $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+                    const tabId = $(e.target).attr('id');
+                    sessionStorage.setItem('lastReportTab', tabId);
+                });
+                
+                // Restore last active tab if available
+                const lastTab = sessionStorage.getItem('lastReportTab');
+                if (lastTab && $('#' + lastTab).length) {
+                    $('#' + lastTab).tab('show');
+                }
+            });
         </script>
     </th:block>
 </body>

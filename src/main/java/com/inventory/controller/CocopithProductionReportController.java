@@ -24,8 +24,7 @@ public class CocopithProductionReportController extends BaseController {
 
         @GetMapping
         public String showReportPage(Model model) {
-                model.addAttribute("activeTab", "cocopith-report");
-                return getViewPath("cocopith-report/index");
+                return "redirect:/reports?tab=cocopith";
         }
 
         @GetMapping("/view")
@@ -52,7 +51,8 @@ public class CocopithProductionReportController extends BaseController {
                 model.addAttribute("startDate", startDate);
                 model.addAttribute("endDate", endDate);
                 model.addAttribute("totalLowEcProduced", totalLowEcProduced);
-                model.addAttribute("activeTab", "cocopith-report");
+                model.addAttribute("activeTab", "reports");
+                model.addAttribute("activeReportTab", "cocopith");
 
                 return getViewPath("cocopith-report/view");
         }

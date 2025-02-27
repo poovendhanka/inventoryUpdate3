@@ -1,5 +1,6 @@
 D:\project\inventoryUpdate3\src\main\java\com\inventory\controller\SaleController.java
 D:\project\inventoryUpdate3\src\main\java\com\inventory\service\PartyService.java
+D:\project\inventoryUpdate3\src\main\java\com\inventory\controller\CocopithProductionReportController.java
 D:\project\inventoryUpdate3\src\main\java\com\inventory\controller\AccountsController.java
 D:\project\inventoryUpdate3\src\main\java\com\inventory\repository\RawMaterialCostRepository.java
 D:\project\inventoryUpdate3\src\main\java\com\inventory\repository\LowEcPithStockRepository.java
@@ -32,6 +33,7 @@ D:\project\inventoryUpdate3\src\main\java\com\inventory\model\ProductType.java
 D:\project\inventoryUpdate3\src\main\java\com\inventory\service\SaleService.java
 D:\project\inventoryUpdate3\src\main\java\com\inventory\model\ShiftType.java
 D:\project\inventoryUpdate3\src\main\java\com\inventory\controller\DashboardController.java
+D:\project\inventoryUpdate3\src\main\java\com\inventory\controller\BlockProductionReportController.java
 D:\project\inventoryUpdate3\src\main\java\com\inventory\service\PithStockService.java
 D:\project\inventoryUpdate3\src\main\java\com\inventory\repository\BrownFiberStockRepository.java
 D:\project\inventoryUpdate3\src\main\java\com\inventory\controller\AdminController.java
