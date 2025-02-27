@@ -61,7 +61,9 @@ public class ProductionService {
     }
 
     public List<Production> getProductionsByDateAndShift(LocalDate date, ShiftType shift) {
-        return productionRepository.findByProductionDateAndShiftOrderByBatchCompletionTimeAsc(date, shift);
+        // Get all productions for the specific date and shift based on batch completion
+        // time
+        return productionRepository.findByBatchCompletionTimeDate(date, shift);
     }
 
     public int calculateTotalPithUsed(List<Production> firstShift, List<Production> secondShift) {

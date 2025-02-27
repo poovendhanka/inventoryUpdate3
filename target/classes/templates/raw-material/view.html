@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Processed Raw Materials Report</title>
+</head>
+<body>
+    <h1 id="pageTitle">Processed Raw Materials Report</h1>
+    
+    <div id="content">
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <a th:href="@{/raw-materials/processed}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Report Selection
+                </a>
+                <button class="btn btn-primary ms-2" onclick="window.print()">
+                    <i class="fas fa-print"></i> Print Report
+                </button>
+                <a th:href="@{/raw-materials/processed/export(startDate=${startDate},endDate=${endDate})}" class="btn btn-success ms-2">
+                    <i class="fas fa-file-csv"></i> Export to CSV
+                </a>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Processed Raw Materials Report</h5>
+                        <span th:text="${#temporals.format(startDate, 'dd MMM yyyy')} + ' - ' + ${#temporals.format(endDate, 'dd MMM yyyy')}"></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">Total Entries</h5>
+                                        <h2 class="text-primary" th:text="${report.totalEntries}"></h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">Total Cost</h5>
+                                        <h2 class="text-success" th:text="${'₹' + #numbers.formatDecimal(report.totalCost, 1, 2)}"></h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">Average Cost</h5>
+                                        <h2 class="text-info" th:text="${'₹' + #numbers.formatDecimal(report.averageCost, 1, 2)}"></h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Receipt #</th>
+                                        <th>Date</th>
+                                        <th>Vehicle Number</th>
+                                        <th>Party</th>
+                                        <th>Supervisor</th>
+                                        <th>Cost</th>
+                                        <th>Processed Date</th>
+                                        <th>Accounts Supervisor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${report.processedEntries.empty}">
+                                        <td colspan="8" class="text-center">No processed raw materials found</td>
+                                    </tr>
+                                    <tr th:each="entry : ${report.processedEntries}">
+                                        <td th:text="${entry.rawMaterial.receiptNumber}"></td>
+                                        <td th:text="${#temporals.format(entry.rawMaterial.lorryInTime, 'dd MMM yyyy')}"></td>
+                                        <td th:text="${entry.rawMaterial.vehicleNumber}"></td>
+                                        <td th:text="${entry.rawMaterial.party != null ? entry.rawMaterial.party.name : '-'}"></td>
+                                        <td th:text="${entry.rawMaterial.supervisorName}"></td>
+                                        <td th:text="${'₹' + #numbers.formatDecimal(entry.cost, 1, 2)}"></td>
+                                        <td th:text="${#temporals.format(entry.processedDate, 'dd MMM yyyy HH:mm')}"></td>
+                                        <td th:text="${entry.accountsSupervisor}"></td>
+                                    </tr>
+                                </tbody>
+                                <tfoot class="table-secondary" th:if="${!report.processedEntries.empty}">
+                                    <tr>
+                                        <th colspan="5">Total</th>
+                                        <th th:text="${'₹' + #numbers.formatDecimal(report.totalCost, 1, 2)}"></th>
+                                        <th colspan="2"></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <th:block id="pagescript">
+        <script>
+            $(document).ready(function() {
+                // Add print-specific styling
+                $('<style>')
+                    .append('@media print { .btn, .navbar, .sidebar, .mobile-menu-btn { display: none !important; } }')
+                    .append('@media print { body { padding: 0; margin: 0; } }')
+                    .append('@media print { main { margin-left: 0 !important; width: 100% !important; padding: 0 !important; } }')
+                    .append('@media print { .card { border: none !important; } }')
+                    .append('@media print { .card-header { background-color: #f8f9fa !important; -webkit-print-color-adjust: exact; } }')
+                    .append('@media print { .table-dark th { background-color: #212529 !important; color: white !important; -webkit-print-color-adjust: exact; } }')
+                    .append('@media print { .table-secondary th { background-color: #e2e3e5 !important; -webkit-print-color-adjust: exact; } }')
+                    .append('@media print { .bg-light { background-color: #f8f9fa !important; -webkit-print-color-adjust: exact; } }')
+                    .append('@media print { .bg-primary { background-color: #0d6efd !important; color: white !important; -webkit-print-color-adjust: exact; } }')
+                    .append('@media print { .bg-success { background-color: #198754 !important; color: white !important; -webkit-print-color-adjust: exact; } }')
+                    .append('@media print { .bg-info { background-color: #0dcaf0 !important; color: white !important; -webkit-print-color-adjust: exact; } }')
+                    .appendTo('head');
+            });
+        </script>
+    </th:block>
+</body>
+</html> 
