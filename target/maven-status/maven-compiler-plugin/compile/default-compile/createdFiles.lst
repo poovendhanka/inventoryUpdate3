@@ -1,7 +1,6 @@
 com\inventory\service\AccountService.class
 com\inventory\repository\CocopithProductionRepository.class
 com\inventory\model\CocopithProduction.class
-com\inventory\controller\ProductionReportController.class
 com\inventory\controller\SaleController.class
 com\inventory\service\DealerService.class
 com\inventory\repository\DealerRepository.class

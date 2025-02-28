@@ -61,9 +61,19 @@ public class ProductionService {
     }
 
     public List<Production> getProductionsByDateAndShift(LocalDate date, ShiftType shift) {
-        // Get all productions for the specific date and shift based on batch completion
-        // time
-        return productionRepository.findByBatchCompletionTimeDate(date, shift);
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
+
+        // Use batch completion time
+        return productionRepository.findByBatchCompletionTimeBetweenAndShift(startOfDay, endOfDay, shift);
+    }
+
+    public List<Production> getProductionsByDateRange(LocalDate fromDate, LocalDate toDate) {
+        LocalDateTime startOfDay = fromDate.atStartOfDay();
+        LocalDateTime endOfDay = toDate.plusDays(1).atStartOfDay();
+
+        // Use batch completion time
+        return productionRepository.findByBatchCompletionTimeBetween(startOfDay, endOfDay);
     }
 
     public int calculateTotalPithUsed(List<Production> firstShift, List<Production> secondShift) {

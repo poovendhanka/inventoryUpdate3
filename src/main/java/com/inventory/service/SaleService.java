@@ -84,4 +84,10 @@ public class SaleService {
         LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
         return saleRepository.findBySaleDateBetweenOrderBySaleDateDesc(startOfDay, endOfDay);
     }
+
+    public List<Sale> getSalesByDateRange(LocalDate fromDate, LocalDate toDate) {
+        LocalDateTime startOfDay = fromDate.atStartOfDay();
+        LocalDateTime endOfDay = toDate.plusDays(1).atStartOfDay();
+        return saleRepository.findBySaleDateBetweenOrderBySaleDateDesc(startOfDay, endOfDay);
+    }
 }

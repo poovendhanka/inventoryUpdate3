@@ -45,13 +45,23 @@
                     <div class="card-body">
                         <form th:action="@{/production-report/view}" method="get">
                             <div class="row mb-3">
-                                <div class="col-md-8">
-                                    <label class="form-label">Select Date</label>
-                                    <input type="date" class="form-control" id="productionReportDate" name="date" required>
+                                <div class="col-md-5">
+                                    <label class="form-label">From Date</label>
+                                    <input type="date" class="form-control" id="productionStartDate" name="fromDate" required>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-5">
+                                    <label class="form-label">To Date</label>
+                                    <input type="date" class="form-control" id="productionEndDate" name="toDate" required>
+                                </div>
+                                <div class="col-md-2">
                                     <label class="form-label">&nbsp;</label>
                                     <button type="submit" class="btn btn-primary d-block w-100">Generate Report</button>
+                                </div>
+                                <div class="col-md-12 mt-2">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="prodDownloadCsv" name="downloadCsv" value="true">
+                                        <label class="form-check-label" for="prodDownloadCsv">Download as CSV</label>
+                                    </div>
                                 </div>
                             </div>
                         </form>
@@ -81,6 +91,12 @@
                                     <label class="form-label">&nbsp;</label>
                                     <button type="submit" class="btn btn-primary d-block w-100">Generate Report</button>
                                 </div>
+                                <div class="col-md-12 mt-2">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="cocopithDownloadCsv" name="downloadCsv" value="true">
+                                        <label class="form-check-label" for="cocopithDownloadCsv">Download as CSV</label>
+                                    </div>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -109,6 +125,12 @@
                                     <label class="form-label">&nbsp;</label>
                                     <button type="submit" class="btn btn-primary d-block w-100">Generate Report</button>
                                 </div>
+                                <div class="col-md-12 mt-2">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="blockDownloadCsv" name="downloadCsv" value="true">
+                                        <label class="form-check-label" for="blockDownloadCsv">Download as CSV</label>
+                                    </div>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -122,16 +144,14 @@
             $(document).ready(function() {
                 // Initialize date fields
                 
-                // Production Report - Today's date
-                $('#productionReportDate').val(new Date().toISOString().split('T')[0]);
-                
-                // Cocopith and Block Reports - Current month
+                // Get first and last day of current month
                 const today = new Date();
                 const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
                 const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
                 
-                $('#cocopithStartDate, #blockStartDate').val(firstDay.toISOString().split('T')[0]);
-                $('#cocopithEndDate, #blockEndDate').val(lastDay.toISOString().split('T')[0]);
+                // Set default dates for all reports to current month range
+                $('#productionStartDate, #cocopithStartDate, #blockStartDate').val(firstDay.toISOString().split('T')[0]);
+                $('#productionEndDate, #cocopithEndDate, #blockEndDate').val(lastDay.toISOString().split('T')[0]);
                 
                 // Save active tab to sessionStorage when tab changes
                 $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {

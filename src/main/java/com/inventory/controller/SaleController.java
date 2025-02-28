@@ -142,15 +142,74 @@ public class SaleController extends BaseController {
 
     @GetMapping("/report")
     public String viewReport(
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
-            Model model) {
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate,
+            @RequestParam(defaultValue = "false") boolean exportCsv,
+            Model model,
+            HttpServletResponse response) throws IOException {
         try {
-            List<Sale> sales = saleService.getSalesByDate(date);
+            // Handle legacy single date param
+            if (date != null && fromDate == null && toDate == null) {
+                fromDate = date;
+                toDate = date;
+            }
+
+            // If dates are not provided, use current date as default
+            if (fromDate == null) {
+                fromDate = LocalDate.now();
+            }
+            if (toDate == null) {
+                toDate = LocalDate.now();
+            }
+
+            List<Sale> sales = saleService.getSalesByDateRange(fromDate, toDate);
             Double totalAmount = sales.stream()
                     .mapToDouble(Sale::getTotalAmount)
                     .sum();
 
-            model.addAttribute("date", date);
+            // Handle CSV export if requested
+            if (exportCsv) {
+                response.setContentType("text/csv");
+                response.setHeader("Content-Disposition",
+                        "attachment; filename=sales_report_" + fromDate + "_to_" + toDate + ".csv");
+
+                try (PrintWriter writer = response.getWriter()) {
+                    // Write CSV header
+                    writer.println("Date & Time,Dealer,Product,Quantity,Price Per Unit,Total Amount");
+
+                    // Write data rows
+                    for (Sale sale : sales) {
+                        String product = ProductNameUtil.getFullProductName(sale.getProductType(), sale.getPithType(),
+                                sale.getFiberType());
+                        String quantity = "";
+                        if (sale.getProductType() == ProductType.BLOCK) {
+                            quantity = sale.getBlockCount() + " blocks";
+                        } else if (sale.getProductType() == ProductType.PITH) {
+                            quantity = sale.getQuantity() + " kg";
+                        } else if (sale.getProductType() == ProductType.FIBER) {
+                            quantity = sale.getQuantity() + " bales";
+                        }
+
+                        writer.println(String.join(",",
+                                "\"" + sale.getSaleDate()
+                                        .format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"))
+                                        + "\"",
+                                "\"" + sale.getDealer().getName() + "\"",
+                                "\"" + product + "\"",
+                                "\"" + quantity + "\"",
+                                "₹" + sale.getPricePerUnit(),
+                                "₹" + sale.getTotalAmount()));
+                    }
+
+                    // Write total row
+                    writer.println(",,,,,\"₹" + totalAmount + "\"");
+                }
+                return null;
+            }
+
+            model.addAttribute("fromDate", fromDate);
+            model.addAttribute("toDate", toDate);
             model.addAttribute("sales", sales);
             model.addAttribute("totalAmount", totalAmount);
             model.addAttribute("activeTab", "sales");
@@ -158,51 +217,6 @@ public class SaleController extends BaseController {
         } catch (Exception e) {
             model.addAttribute("error", "Error generating report: " + e.getMessage());
             return "error";
-        }
-    }
-
-    @GetMapping("/report/export")
-    public void exportSalesReportCsv(
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
-            HttpServletResponse response) throws IOException {
-
-        List<Sale> sales = saleService.getSalesByDate(date);
-        Double totalAmount = sales.stream()
-                .mapToDouble(Sale::getTotalAmount)
-                .sum();
-
-        response.setContentType("text/csv");
-        response.setHeader("Content-Disposition", "attachment; filename=sales_report_" + date + ".csv");
-
-        try (PrintWriter writer = response.getWriter()) {
-            // Write CSV header
-            writer.println("Date & Time,Dealer,Product,Quantity,Price Per Unit,Total Amount");
-
-            // Write data rows
-            for (Sale sale : sales) {
-                String product = ProductNameUtil.getFullProductName(sale.getProductType(), sale.getPithType(),
-                        sale.getFiberType());
-                String quantity = "";
-                if (sale.getProductType() == ProductType.BLOCK) {
-                    quantity = sale.getBlockCount() + " blocks";
-                } else if (sale.getProductType() == ProductType.PITH) {
-                    quantity = sale.getQuantity() + " kg";
-                } else if (sale.getProductType() == ProductType.FIBER) {
-                    quantity = sale.getQuantity() + " bales";
-                }
-
-                writer.println(String.join(",",
-                        "\"" + sale.getSaleDate()
-                                .format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")) + "\"",
-                        "\"" + sale.getDealer().getName() + "\"",
-                        "\"" + product + "\"",
-                        "\"" + quantity + "\"",
-                        "₹" + sale.getPricePerUnit(),
-                        "₹" + sale.getTotalAmount()));
-            }
-
-            // Write total row
-            writer.println(",,,,Total:,₹" + totalAmount);
         }
     }
 }

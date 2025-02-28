@@ -16,6 +16,11 @@ import java.time.LocalTime;
 import java.time.Duration;
 import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.io.PrintWriter;
+import java.io.IOException;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 @RequestMapping("/production-report")
@@ -30,39 +35,137 @@ public class ProductionReportController extends BaseController {
     }
 
     @GetMapping("/view")
-    public String viewReport(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date, Model model) {
-        // Get productions for both shifts
-        List<Production> firstShift = productionService.getProductionsByDateAndShift(date, ShiftType.FIRST);
-        List<Production> secondShift = productionService.getProductionsByDateAndShift(date, ShiftType.SECOND);
+    public String viewReport(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate,
+            @RequestParam(required = false, defaultValue = "false") boolean downloadCsv,
+            Model model,
+            HttpServletResponse response) throws IOException {
 
-        // Calculate durations for first shift
-        calculateDurations(firstShift, date, ShiftType.FIRST);
+        // For backward compatibility, if both dates are the same, treat as a single day
+        // report
+        boolean isSingleDayReport = fromDate.isEqual(toDate);
+        LocalDate reportDate = isSingleDayReport ? fromDate : null;
 
-        // Calculate durations for second shift
-        calculateDurations(secondShift, date, ShiftType.SECOND);
+        List<Production> allProductions = null;
+        List<Production> firstShift = null;
+        List<Production> secondShift = null;
+        int totalBales = 0;
+        int totalBoxes = 0;
 
-        // Calculate totals
-        int totalBales = calculateTotalBales(firstShift, secondShift);
-        int totalBoxes = calculateTotalBoxes(firstShift, secondShift);
+        // If single day report, use existing logic
+        if (isSingleDayReport) {
+            // Get productions for both shifts for the single date
+            firstShift = productionService.getProductionsByDateAndShift(fromDate, ShiftType.FIRST);
+            secondShift = productionService.getProductionsByDateAndShift(fromDate, ShiftType.SECOND);
 
-        // Calculate shift-specific totals
-        int firstShiftBales = calculateShiftBales(firstShift);
-        int firstShiftBoxes = calculateShiftBoxes(firstShift);
-        int secondShiftBales = calculateShiftBales(secondShift);
-        int secondShiftBoxes = calculateShiftBoxes(secondShift);
+            // Calculate durations for first shift
+            calculateDurations(firstShift, fromDate, ShiftType.FIRST);
 
-        // Add data to model
-        model.addAttribute("date", date);
-        model.addAttribute("firstShift", firstShift);
-        model.addAttribute("secondShift", secondShift);
-        model.addAttribute("totalBales", totalBales);
-        model.addAttribute("totalBoxes", totalBoxes);
-        model.addAttribute("firstShiftBales", firstShiftBales);
-        model.addAttribute("firstShiftBoxes", firstShiftBoxes);
-        model.addAttribute("secondShiftBales", secondShiftBales);
-        model.addAttribute("secondShiftBoxes", secondShiftBoxes);
+            // Calculate durations for second shift
+            calculateDurations(secondShift, fromDate, ShiftType.SECOND);
+
+            // Calculate totals
+            totalBales = calculateTotalBales(firstShift, secondShift);
+            totalBoxes = calculateTotalBoxes(firstShift, secondShift);
+
+            // Calculate shift-specific totals
+            int firstShiftBales = calculateShiftBales(firstShift);
+            int firstShiftBoxes = calculateShiftBoxes(firstShift);
+            int secondShiftBales = calculateShiftBales(secondShift);
+            int secondShiftBoxes = calculateShiftBoxes(secondShift);
+
+            // Add data to model
+            model.addAttribute("date", fromDate);
+            model.addAttribute("firstShift", firstShift);
+            model.addAttribute("secondShift", secondShift);
+            model.addAttribute("totalBales", totalBales);
+            model.addAttribute("totalBoxes", totalBoxes);
+            model.addAttribute("firstShiftBales", firstShiftBales);
+            model.addAttribute("firstShiftBoxes", firstShiftBoxes);
+            model.addAttribute("secondShiftBales", secondShiftBales);
+            model.addAttribute("secondShiftBoxes", secondShiftBoxes);
+
+            // Combine first and second shift for CSV export if needed
+            allProductions = new java.util.ArrayList<>();
+            allProductions.addAll(firstShift);
+            allProductions.addAll(secondShift);
+        } else {
+            // Date range report logic
+            // Get all productions within the date range
+            allProductions = productionService.getProductionsByDateRange(fromDate, toDate);
+
+            // Calculate durations for productions in date range
+            Map<LocalDate, List<Production>> productionsByDate = allProductions.stream()
+                    .collect(Collectors.groupingBy(p -> p.getBatchCompletionTime().toLocalDate()));
+
+            // Calculate durations for each date and shift
+            productionsByDate.forEach((date, prods) -> {
+                Map<ShiftType, List<Production>> productionsByShift = prods.stream()
+                        .collect(Collectors.groupingBy(Production::getShift));
+
+                productionsByShift.forEach((shift, shiftProductions) -> {
+                    // Sort by batch completion time before calculating durations
+                    shiftProductions
+                            .sort((p1, p2) -> p1.getBatchCompletionTime().compareTo(p2.getBatchCompletionTime()));
+                    calculateDurations(shiftProductions, date, shift);
+                });
+            });
+
+            // Calculate summary totals for the date range
+            totalBales = allProductions.stream().mapToInt(p -> p.getNumBales() != null ? p.getNumBales() : 0).sum();
+            totalBoxes = allProductions.stream().mapToInt(p -> p.getNumBoxes() != null ? p.getNumBoxes() : 0).sum();
+
+            // Add data to model for date range report
+            model.addAttribute("fromDate", fromDate);
+            model.addAttribute("toDate", toDate);
+            model.addAttribute("allProductions", allProductions);
+            model.addAttribute("productionsByDate", productionsByDate);
+            model.addAttribute("totalBales", totalBales);
+            model.addAttribute("totalBoxes", totalBoxes);
+        }
+
         model.addAttribute("activeTab", "reports");
         model.addAttribute("activeReportTab", "production");
+
+        // Handle CSV download if requested
+        if (downloadCsv) {
+            response.setContentType("text/csv");
+            response.setHeader("Content-Disposition",
+                    "attachment; filename=production_report_" + fromDate + "_to_" + toDate + ".csv");
+
+            try (PrintWriter writer = response.getWriter()) {
+                // Write CSV header
+                writer.println("Date & Time,Shift,Batch #,Fiber Type,Duration,Bales,Boxes,Pith (kg)");
+
+                // Write data rows
+                for (Production prod : allProductions) {
+                    String fiberType = prod.getFiberType() != null ? prod.getFiberType().toString() : "";
+                    int bales = prod.getNumBales() != null ? prod.getNumBales() : 0;
+                    int boxes = prod.getNumBoxes() != null ? prod.getNumBoxes() : 0;
+                    double pith = prod.getPithQuantity() != null ? prod.getPithQuantity() : 0;
+                    String duration = prod.getTimeTaken() != null
+                            ? prod.getTimeTaken().toHours() + "h " + prod.getTimeTaken().toMinutesPart() + "m"
+                            : "";
+                    String dateTime = prod.getBatchCompletionTime().toLocalDate().toString() + " "
+                            + prod.getBatchCompletionTime().toLocalTime().toString().substring(0, 5);
+
+                    writer.println(String.join(",",
+                            dateTime,
+                            prod.getShift().toString(),
+                            String.valueOf(prod.getBatchNumber()),
+                            fiberType,
+                            duration,
+                            String.valueOf(bales),
+                            String.valueOf(boxes),
+                            pith + " kg"));
+                }
+
+                // Write total row
+                writer.println("TOTAL,,,,,," + totalBales + "," + totalBoxes + ",");
+            }
+            return null;
+        }
 
         return getViewPath("production-report/view");
     }

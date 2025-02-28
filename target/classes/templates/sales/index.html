@@ -279,14 +279,27 @@
                     </div>
                     <div class="card-body">
                         <form th:action="@{/sales/report}" method="get">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">From Date</label>
+                                    <input type="date" class="form-control" name="fromDate" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">To Date</label>
+                                    <input type="date" class="form-control" name="toDate" required>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-md-8">
-                                    <label class="form-label">Date</label>
-                                    <input type="date" class="form-control" name="date" required>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" name="exportCsv" id="exportCsv" value="true">
+                                        <label class="form-check-label" for="exportCsv">
+                                            Download as CSV
+                                        </label>
+                                    </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label">&nbsp;</label>
-                                    <button type="submit" class="btn btn-primary d-block w-100">View Sales Report</button>
+                                    <button type="submit" class="btn btn-primary d-block w-100">View Report</button>
                                 </div>
                             </div>
                         </form>
@@ -330,8 +343,26 @@
     </div>
     
     <th:block id="pagescript">
-        <script>
+        <script th:inline="javascript">
+            // Initialize date field for sales report to current date
             document.addEventListener('DOMContentLoaded', function() {
+                // Get first day of current month
+                const today = new Date();
+                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+                const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                
+                // Format dates as YYYY-MM-DD
+                const formatDate = (date) => {
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
+                    return `${year}-${month}-${day}`;
+                };
+                
+                // Set default values for date fields
+                document.querySelector('input[name="fromDate"]').value = formatDate(firstDay);
+                document.querySelector('input[name="toDate"]').value = formatDate(lastDay);
+                
                 // Get initial stock values - Fix the extraction method
                 const stockElements = document.querySelectorAll('.alert-info .h6');
                 const currentPithStock = parseFloat(stockElements[0].innerText.replace(/[^\d.]/g, '')) || 0;

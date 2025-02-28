@@ -38,4 +38,18 @@ public interface ProductionRepository extends JpaRepository<Production, Long> {
         List<Production> findByProductionDateOrderByBatchCompletionTimeDesc(LocalDate date);
 
         List<Production> findTop10ByOrderByBatchCompletionTimeDesc();
+
+        @Query("SELECT p FROM Production p WHERE p.batchCompletionTime >= :startTime " +
+                        "AND p.batchCompletionTime < :endTime")
+        List<Production> findByBatchCompletionTimeBetween(
+                        @Param("startTime") LocalDateTime startTime,
+                        @Param("endTime") LocalDateTime endTime);
+
+        @Query("SELECT p FROM Production p WHERE p.batchCompletionTime >= :startTime " +
+                        "AND p.batchCompletionTime < :endTime " +
+                        "AND p.shift = :shift")
+        List<Production> findByBatchCompletionTimeBetweenAndShift(
+                        @Param("startTime") LocalDateTime startTime,
+                        @Param("endTime") LocalDateTime endTime,
+                        @Param("shift") ShiftType shift);
 }
