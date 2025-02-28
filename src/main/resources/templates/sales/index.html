@@ -67,6 +67,210 @@
                 </div>
             </div>
 
+            <!-- Create Sale Form with Tabs -->
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Create Sale</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Sale Type Tabs -->
+                        <ul class="nav nav-tabs mb-3" id="saleTypeTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="pith-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#pith-sale" type="button" role="tab" 
+                                        aria-controls="pith-sale" aria-selected="true">
+                                    <i class="fas fa-box"></i> Pith Sale
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="fiber-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#fiber-sale" type="button" role="tab" 
+                                        aria-controls="fiber-sale" aria-selected="false">
+                                    <i class="fas fa-wind"></i> Fiber Sale
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="block-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#block-sale" type="button" role="tab" 
+                                        aria-controls="block-sale" aria-selected="false">
+                                    <i class="fas fa-cubes"></i> Block Sale
+                                </button>
+                            </li>
+                        </ul>
+                        
+                        <!-- Tab Content -->
+                        <div class="tab-content" id="saleTypeTabsContent">
+                            <!-- Pith Sale Tab -->
+                            <div class="tab-pane fade show active" id="pith-sale" role="tabpanel" aria-labelledby="pith-tab">
+                                <form th:action="@{/sales}" method="post" id="pithSaleForm" class="saleForm">
+                                    <input type="hidden" name="productType" value="PITH">
+                                    
+                                    <div class="row">
+                                        <!-- Dealer Selection -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="pithDealer" class="form-label">Dealer</label>
+                                            <select class="form-select dealer-select" id="pithDealer" name="dealer.id" required>
+                                                <option value="">Select Dealer</option>
+                                                <option th:each="dealer : ${dealers}" 
+                                                        th:value="${dealer.id}" 
+                                                        th:text="${dealer.name}"></option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Pith Type Selection -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="pithType" class="form-label">Pith Type</label>
+                                            <select class="form-select" id="pithType" name="pithType" required>
+                                                <option value="">Select Pith Type</option>
+                                                <option th:each="type : ${T(com.inventory.model.PithType).values()}"
+                                                        th:value="${type}"
+                                                        th:text="${type.displayName}"></option>
+                                            </select>
+                                            <small class="text-muted" id="pithStockHelp"></small>
+                                        </div>
+
+                                        <!-- Quantity Input -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="pithQuantity" class="form-label">Quantity (kg)</label>
+                                            <input type="number" class="form-control" id="pithQuantity" name="quantity" 
+                                                   step="0.01" required min="0" placeholder="Enter quantity in kg">
+                                            <small class="text-muted" id="pithQuantityHelp"></small>
+                                        </div>
+
+                                        <!-- Price per Unit -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="pithPricePerUnit" class="form-label">Price per kg</label>
+                                            <input type="number" class="form-control" id="pithPricePerUnit" 
+                                                   name="pricePerUnit" step="0.01" required min="0">
+                                        </div>
+                                    </div>
+
+                                    <div class="alert alert-warning d-none" id="pithStockWarning">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        Warning: Insufficient pith stock available. Available: <span id="availablePithStock">0</span> kg.
+                                    </div>
+
+                                    <div class="text-end">
+                                        <button type="submit" class="btn btn-primary">Create Pith Sale</button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- Fiber Sale Tab -->
+                            <div class="tab-pane fade" id="fiber-sale" role="tabpanel" aria-labelledby="fiber-tab">
+                                <form th:action="@{/sales}" method="post" id="fiberSaleForm" class="saleForm">
+                                    <input type="hidden" name="productType" value="FIBER">
+                                    
+                                    <div class="row">
+                                        <!-- Dealer Selection -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="fiberDealer" class="form-label">Dealer</label>
+                                            <select class="form-select dealer-select" id="fiberDealer" name="dealer.id" required>
+                                                <option value="">Select Dealer</option>
+                                                <option th:each="dealer : ${dealers}" 
+                                                        th:value="${dealer.id}" 
+                                                        th:text="${dealer.name}"></option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Fiber Type Selection -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="fiberType" class="form-label">Fiber Type</label>
+                                            <select class="form-select" id="fiberType" name="fiberType" required>
+                                                <option value="">Select Fiber Type</option>
+                                                <option th:each="type : ${T(com.inventory.model.FiberType).values()}"
+                                                        th:value="${type}"
+                                                        th:text="${type.displayName}"></option>
+                                            </select>
+                                            <small class="text-muted" id="fiberStockHelp"></small>
+                                        </div>
+
+                                        <!-- Quantity Input -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="fiberQuantity" class="form-label">Quantity (bales)</label>
+                                            <input type="number" class="form-control" id="fiberQuantity" name="quantity" 
+                                                   step="1" required min="0" placeholder="Enter number of bales">
+                                            <small class="text-muted" id="fiberQuantityHelp"></small>
+                                        </div>
+
+                                        <!-- Price per Unit -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="fiberPricePerUnit" class="form-label">Price per bale</label>
+                                            <input type="number" class="form-control" id="fiberPricePerUnit" 
+                                                   name="pricePerUnit" step="0.01" required min="0">
+                                        </div>
+                                    </div>
+
+                                    <div class="alert alert-warning d-none" id="fiberStockWarning">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        Warning: Insufficient fiber stock available. Available: <span id="availableFiberStock">0</span> bales.
+                                    </div>
+
+                                    <div class="text-end">
+                                        <button type="submit" class="btn btn-primary">Create Fiber Sale</button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- Block Sale Tab -->
+                            <div class="tab-pane fade" id="block-sale" role="tabpanel" aria-labelledby="block-tab">
+                                <form th:action="@{/sales}" method="post" id="blockSaleForm" class="saleForm">
+                                    <input type="hidden" name="productType" value="BLOCK">
+                                    
+                                    <div class="row">
+                                        <!-- Dealer Selection -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="blockDealer" class="form-label">Dealer</label>
+                                            <select class="form-select dealer-select" id="blockDealer" name="dealer.id" required>
+                                                <option value="">Select Dealer</option>
+                                                <option th:each="dealer : ${dealers}" 
+                                                        th:value="${dealer.id}" 
+                                                        th:text="${dealer.name}"></option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Block Type Selection -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="blockType" class="form-label">Block Type</label>
+                                            <select class="form-select" id="blockType" name="pithType" required>
+                                                <option value="NORMAL">Normal EC Block</option>
+                                                <option value="LOW">Low EC Block</option>
+                                            </select>
+                                            <small class="text-muted" id="blockStockHelp"></small>
+                                        </div>
+
+                                        <!-- Quantity Input -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="blockQuantity" class="form-label">Quantity (blocks)</label>
+                                            <input type="number" class="form-control" id="blockQuantity" name="quantity" 
+                                                   step="1" required min="0" placeholder="Enter number of blocks">
+                                            <small class="text-muted" id="blockQuantityHelp"></small>
+                                        </div>
+
+                                        <!-- Price per Unit -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="blockPricePerUnit" class="form-label">Price per block</label>
+                                            <input type="number" class="form-control" id="blockPricePerUnit" 
+                                                   name="pricePerUnit" step="0.01" required min="0">
+                                        </div>
+                                    </div>
+
+                                    <div class="alert alert-warning d-none" id="blockStockWarning">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        Warning: Insufficient block stock available. Available: <span id="availableBlockStock">0</span> blocks.
+                                    </div>
+
+                                    <div class="text-end">
+                                        <button type="submit" class="btn btn-primary">Create Block Sale</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Sales Report Card -->
             <div class="col-md-12 mb-4">
                 <div class="card">
@@ -84,96 +288,6 @@
                                     <label class="form-label">&nbsp;</label>
                                     <button type="submit" class="btn btn-primary d-block w-100">View Sales Report</button>
                                 </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Create Sale Form -->
-            <div class="col-md-12 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Create Sale</h5>
-                    </div>
-                    <div class="card-body">
-                        <form th:action="@{/sales}" method="post" id="saleForm">
-                            <div class="row">
-                                <!-- Dealer Selection -->
-                                <div class="col-md-6 mb-3">
-                                    <label for="dealer" class="form-label">Dealer</label>
-                                    <select class="form-select" id="dealer" name="dealer.id" required>
-                                        <option value="">Select Dealer</option>
-                                        <option th:each="dealer : ${dealers}" 
-                                                th:value="${dealer.id}" 
-                                                th:text="${dealer.name}"></option>
-                                    </select>
-                                </div>
-
-                                <!-- Product Type -->
-                                <div class="col-md-6 mb-3">
-                                    <label for="productType" class="form-label">Product Type</label>
-                                    <select class="form-select" id="productType" name="productType" required>
-                                        <option value="">Select Product Type</option>
-                                        <option th:each="type : ${T(com.inventory.model.ProductType).values()}"
-                                                th:value="${type}"
-                                                th:text="${type.displayName}"></option>
-                                    </select>
-                                </div>
-
-                                <!-- Pith Type Selection (Initially Hidden) -->
-                                <div class="col-md-6 mb-3" id="pithTypeDiv" style="display: none;">
-                                    <label for="pithType" class="form-label">Pith Type</label>
-                                    <select class="form-select" id="pithType" name="pithType">
-                                        <option value="">Select Pith Type</option>
-                                        <option th:each="type : ${T(com.inventory.model.PithType).values()}"
-                                                th:value="${type}"
-                                                th:text="${type.displayName}"></option>
-                                    </select>
-                                    <small class="text-muted" id="pithStockHelp"></small>
-                                </div>
-
-                                <!-- Fiber Type Selection (Initially Hidden) -->
-                                <div class="col-md-6 mb-3" id="fiberTypeDiv" style="display: none;">
-                                    <label for="fiberType" class="form-label">Fiber Type</label>
-                                    <select class="form-select" id="fiberType" name="fiberType">
-                                        <option value="">Select Fiber Type</option>
-                                        <option th:each="type : ${T(com.inventory.model.FiberType).values()}"
-                                                th:value="${type}"
-                                                th:text="${type.displayName}"></option>
-                                    </select>
-                                    <small class="text-muted" id="fiberStockHelp"></small>
-                                </div>
-
-                                <!-- Block Type Selection (Initially Hidden) -->
-                                <div class="col-md-6 mb-3" id="blockTypeDiv" style="display: none;">
-                                    <label for="pithType" class="form-label">Block Type</label>
-                                    <select class="form-select" id="pithType" name="pithType">
-                                        <option value="NORMAL">Normal EC Block</option>
-                                        <option value="LOW">Low EC Block</option>
-                                    </select>
-                                    <div id="blockStockHelp" class="form-text"></div>
-                                </div>
-
-                                <!-- Quantity Input -->
-                                <div class="col-md-6 mb-3">
-                                    <label for="quantity" class="form-label">Quantity</label>
-                                    <input type="number" class="form-control" id="quantity" name="quantity" 
-                                           step="0.01" required min="0">
-                                    <small class="text-muted" id="quantityHelp"></small>
-                                </div>
-
-                                <!-- Price per Unit -->
-                                <div class="col-md-6 mb-3">
-                                    <label for="pricePerUnit" class="form-label">Price per Unit</label>
-                                    <input type="number" class="form-control" id="pricePerUnit" 
-                                           name="pricePerUnit" step="0.01" required min="0">
-                                    <small class="text-muted" id="priceUnitLabel"></small>
-                                </div>
-                            </div>
-
-                            <div class="text-end">
-                                <button type="submit" class="btn btn-primary">Create Sale</button>
                             </div>
                         </form>
                     </div>
@@ -216,95 +330,210 @@
     </div>
     
     <th:block id="pagescript">
-        <script th:inline="javascript">
+        <script>
             document.addEventListener('DOMContentLoaded', function() {
-                // Get initial stock values from Thymeleaf
-                const currentPithStock = /*[[${currentPithStock}]]*/ 0;
-                const currentLowEcPithStock = /*[[${currentLowEcPithStock}]]*/ 0;
-                const whiteFiberStock = /*[[${whiteFiberStock}]]*/ 0;
-                const brownFiberStock = /*[[${brownFiberStock}]]*/ 0;
-                const normalBlockStock = /*[[${normalBlockStock}]]*/ 0;
-                const lowEcBlockStock = /*[[${lowEcBlockStock}]]*/ 0;
+                // Get initial stock values - Fix the extraction method
+                const stockElements = document.querySelectorAll('.alert-info .h6');
+                const currentPithStock = parseFloat(stockElements[0].innerText.replace(/[^\d.]/g, '')) || 0;
+                const currentLowEcPithStock = parseFloat(stockElements[1].innerText.replace(/[^\d.]/g, '')) || 0;
+                const whiteFiberStock = parseFloat(stockElements[2].innerText.replace(/[^\d.]/g, '')) || 0;
+                const brownFiberStock = parseFloat(stockElements[3].innerText.replace(/[^\d.]/g, '')) || 0;
+                const normalBlockStock = parseFloat(stockElements[4].innerText.replace(/[^\d.]/g, '')) || 0;
+                const lowEcBlockStock = parseFloat(stockElements[5].innerText.replace(/[^\d.]/g, '')) || 0;
 
-                const productTypeSelect = document.getElementById('productType');
-                const pithTypeDiv = document.getElementById('pithTypeDiv');
-                const fiberTypeDiv = document.getElementById('fiberTypeDiv');
+                console.log("Stock values loaded:", {
+                    currentPithStock,
+                    currentLowEcPithStock,
+                    whiteFiberStock,
+                    brownFiberStock,
+                    normalBlockStock,
+                    lowEcBlockStock
+                });
+
+                // Pith sale validations
                 const pithTypeSelect = document.getElementById('pithType');
-                const fiberTypeSelect = document.getElementById('fiberType');
-                const quantityInput = document.getElementById('quantity');
-                const quantityHelp = document.getElementById('quantityHelp');
+                const pithQuantityInput = document.getElementById('pithQuantity');
+                const pithStockWarning = document.getElementById('pithStockWarning');
+                const availablePithStock = document.getElementById('availablePithStock');
                 const pithStockHelp = document.getElementById('pithStockHelp');
-                const fiberStockHelp = document.getElementById('fiberStockHelp');
-                const priceUnitLabel = document.getElementById('priceUnitLabel');
-                const blockTypeDiv = document.getElementById('blockTypeDiv');
 
-                productTypeSelect.addEventListener('change', function() {
-                    const selectedType = this.value;
-                    // Hide all type-specific divs
-                    pithTypeDiv.style.display = 'none';
-                    fiberTypeDiv.style.display = 'none';
-                    blockTypeDiv.style.display = 'none';
-                    pithTypeSelect.required = false;
-                    fiberTypeSelect.required = false;
-
-                    if (selectedType === 'FIBER') {
-                        fiberTypeDiv.style.display = 'block';
-                        fiberTypeSelect.required = true;
-                        quantityInput.placeholder = "Enter number of bales";
-                        priceUnitLabel.textContent = "Price per bale";
-                        
-                        if (fiberTypeSelect.value) {
-                            const availableStock = fiberTypeSelect.value === 'WHITE' ? whiteFiberStock : brownFiberStock;
-                            fiberStockHelp.textContent = `Available stock: ${availableStock} bales`;
-                            quantityInput.max = availableStock;
-                        }
-                    } else if (selectedType === 'PITH') {
-                        pithTypeDiv.style.display = 'block';
-                        pithTypeSelect.required = true;
-                        quantityInput.placeholder = "Enter quantity in kg";
-                        priceUnitLabel.textContent = "Price per kg";
-                        
-                        if (pithTypeSelect.value) {
-                            const availableStock = pithTypeSelect.value === 'NORMAL' ? currentPithStock : currentLowEcPithStock;
-                            pithStockHelp.textContent = `Available stock: ${availableStock} kg`;
-                            quantityInput.max = availableStock;
-                        }
-                    } else if (selectedType === 'BLOCK') {
-                        blockTypeDiv.style.display = 'block';
-                        quantityInput.placeholder = "Enter number of blocks";
-                        priceUnitLabel.textContent = "Price per block";
-                        const blockType = document.getElementById('pithType').value;
-                        const availableStock = blockType === 'NORMAL' ? normalBlockStock : lowEcBlockStock;
-                        quantityHelp.textContent = `Available stock: ${availableStock} blocks`;
-                        quantityInput.max = availableStock;
-                    }
-                });
-
-                // Add event listeners for type-specific selects
                 pithTypeSelect.addEventListener('change', function() {
-                    if (productTypeSelect.value === 'PITH') {
-                        const availableStock = this.value === 'NORMAL' ? currentPithStock : currentLowEcPithStock;
-                        pithStockHelp.textContent = `Available stock: ${availableStock} kg`;
-                        quantityInput.max = availableStock;
-                    }
+                    const selectedType = this.value;
+                    const availableStock = selectedType === 'NORMAL' ? currentPithStock : currentLowEcPithStock;
+                    pithStockHelp.textContent = `Available stock: ${availableStock} kg`;
+                    pithQuantityInput.max = availableStock;
+                    updatePithValidation();
                 });
+
+                pithQuantityInput.addEventListener('input', updatePithValidation);
+
+                function updatePithValidation() {
+                    const quantity = parseFloat(pithQuantityInput.value);
+                    const selectedType = pithTypeSelect.value;
+                    
+                    if (!selectedType) return;
+                    
+                    const availableStock = selectedType === 'NORMAL' ? currentPithStock : currentLowEcPithStock;
+                    console.log("Pith validation:", { quantity, availableStock, valid: !(quantity > availableStock) });
+                    
+                    if (isNaN(quantity) || quantity <= 0) {
+                        pithQuantityInput.classList.remove('is-invalid');
+                        pithStockWarning.classList.add('d-none');
+                        return;
+                    }
+                    
+                    if (quantity > availableStock) {
+                        pithQuantityInput.classList.add('is-invalid');
+                        availablePithStock.textContent = availableStock;
+                        pithStockWarning.classList.remove('d-none');
+                    } else {
+                        pithQuantityInput.classList.remove('is-invalid');
+                        pithStockWarning.classList.add('d-none');
+                    }
+                }
+
+                // Fiber sale validations
+                const fiberTypeSelect = document.getElementById('fiberType');
+                const fiberQuantityInput = document.getElementById('fiberQuantity');
+                const fiberStockWarning = document.getElementById('fiberStockWarning');
+                const availableFiberStock = document.getElementById('availableFiberStock');
+                const fiberStockHelp = document.getElementById('fiberStockHelp');
 
                 fiberTypeSelect.addEventListener('change', function() {
-                    if (productTypeSelect.value === 'FIBER') {
-                        const availableStock = this.value === 'WHITE' ? whiteFiberStock : brownFiberStock;
-                        fiberStockHelp.textContent = `Available stock: ${availableStock} bales`;
-                        quantityInput.max = availableStock;
-                    }
+                    const selectedType = this.value;
+                    const availableStock = selectedType === 'WHITE' ? whiteFiberStock : brownFiberStock;
+                    fiberStockHelp.textContent = `Available stock: ${availableStock} bales`;
+                    fiberQuantityInput.max = availableStock;
+                    updateFiberValidation();
                 });
 
-                // Add block type change listener
-                document.getElementById('pithType').addEventListener('change', function() {
-                    if (productTypeSelect.value === 'BLOCK') {
-                        const availableStock = this.value === 'NORMAL' ? normalBlockStock : lowEcBlockStock;
-                        quantityHelp.textContent = `Available stock: ${availableStock} blocks`;
-                        quantityInput.max = availableStock;
+                fiberQuantityInput.addEventListener('input', updateFiberValidation);
+
+                function updateFiberValidation() {
+                    const quantity = parseFloat(fiberQuantityInput.value);
+                    const selectedType = fiberTypeSelect.value;
+                    
+                    if (!selectedType) return;
+                    
+                    const availableStock = selectedType === 'WHITE' ? whiteFiberStock : brownFiberStock;
+                    console.log("Fiber validation:", { quantity, availableStock, valid: !(quantity > availableStock) });
+                    
+                    if (isNaN(quantity) || quantity <= 0) {
+                        fiberQuantityInput.classList.remove('is-invalid');
+                        fiberStockWarning.classList.add('d-none');
+                        return;
                     }
+                    
+                    if (quantity > availableStock) {
+                        fiberQuantityInput.classList.add('is-invalid');
+                        availableFiberStock.textContent = availableStock;
+                        fiberStockWarning.classList.remove('d-none');
+                    } else {
+                        fiberQuantityInput.classList.remove('is-invalid');
+                        fiberStockWarning.classList.add('d-none');
+                    }
+                }
+
+                // Block sale validations
+                const blockTypeSelect = document.getElementById('blockType');
+                const blockQuantityInput = document.getElementById('blockQuantity');
+                const blockStockWarning = document.getElementById('blockStockWarning');
+                const availableBlockStock = document.getElementById('availableBlockStock');
+                const blockStockHelp = document.getElementById('blockStockHelp');
+
+                blockTypeSelect.addEventListener('change', function() {
+                    const selectedType = this.value;
+                    const availableStock = selectedType === 'NORMAL' ? normalBlockStock : lowEcBlockStock;
+                    blockStockHelp.textContent = `Available stock: ${availableStock} blocks`;
+                    blockQuantityInput.max = availableStock;
+                    updateBlockValidation();
                 });
+
+                blockQuantityInput.addEventListener('input', updateBlockValidation);
+
+                function updateBlockValidation() {
+                    const quantity = parseFloat(blockQuantityInput.value);
+                    const selectedType = blockTypeSelect.value;
+                    
+                    if (!selectedType) return;
+                    
+                    const availableStock = selectedType === 'NORMAL' ? normalBlockStock : lowEcBlockStock;
+                    console.log("Block validation:", { quantity, availableStock, valid: !(quantity > availableStock) });
+                    
+                    if (isNaN(quantity) || quantity <= 0) {
+                        blockQuantityInput.classList.remove('is-invalid');
+                        blockStockWarning.classList.add('d-none');
+                        return;
+                    }
+                    
+                    if (quantity > availableStock) {
+                        blockQuantityInput.classList.add('is-invalid');
+                        availableBlockStock.textContent = availableStock;
+                        blockStockWarning.classList.remove('d-none');
+                    } else {
+                        blockQuantityInput.classList.remove('is-invalid');
+                        blockStockWarning.classList.add('d-none');
+                    }
+                }
+
+                // Form validations
+                document.querySelectorAll('.saleForm').forEach(form => {
+                    form.addEventListener('submit', function(e) {
+                        const productType = this.querySelector('input[name="productType"]').value;
+                        
+                        if (productType === 'PITH') {
+                            const quantity = parseFloat(pithQuantityInput.value);
+                            const selectedType = pithTypeSelect.value;
+                            const availableStock = selectedType === 'NORMAL' ? currentPithStock : currentLowEcPithStock;
+                            
+                            if (quantity > availableStock) {
+                                e.preventDefault();
+                                alert('Insufficient stock available for this sale');
+                            }
+                        } else if (productType === 'FIBER') {
+                            const quantity = parseFloat(fiberQuantityInput.value);
+                            const selectedType = fiberTypeSelect.value;
+                            const availableStock = selectedType === 'WHITE' ? whiteFiberStock : brownFiberStock;
+                            
+                            if (quantity > availableStock) {
+                                e.preventDefault();
+                                alert('Insufficient stock available for this sale');
+                            }
+                        } else if (productType === 'BLOCK') {
+                            const quantity = parseFloat(blockQuantityInput.value);
+                            const selectedType = blockTypeSelect.value;
+                            const availableStock = selectedType === 'NORMAL' ? normalBlockStock : lowEcBlockStock;
+                            
+                            if (quantity > availableStock) {
+                                e.preventDefault();
+                                alert('Insufficient stock available for this sale');
+                            }
+                        }
+                    });
+                });
+
+                // Set initial values for type selects
+                if (pithTypeSelect) {
+                    pithTypeSelect.dispatchEvent(new Event('change'));
+                }
+                if (fiberTypeSelect) {
+                    fiberTypeSelect.dispatchEvent(new Event('change'));
+                }
+                if (blockTypeSelect) {
+                    blockTypeSelect.dispatchEvent(new Event('change'));
+                }
+
+                // Save active tab to sessionStorage
+                $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+                    const tabId = $(e.target).attr('id');
+                    sessionStorage.setItem('lastSaleTab', tabId);
+                });
+                
+                // Restore last active tab if available
+                const lastTab = sessionStorage.getItem('lastSaleTab');
+                if (lastTab && $('#' + lastTab).length) {
+                    $('#' + lastTab).tab('show');
+                }
             });
         </script>
     </th:block>
