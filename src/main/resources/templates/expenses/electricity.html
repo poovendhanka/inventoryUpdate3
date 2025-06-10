@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<head>
+    <title>Electricity & Bills Expenses</title>
+</head>
+<body>
+    <div id="pageTitle">
+        <h1>Electricity & Bills Expenses</h1>
+    </div>
+    
+    <div id="content">
+        <!-- Expense Management Tabs -->
+        <div th:replace="~{expenses/layout :: expenseTabs}"></div>
+        
+        <!-- Electricity Expense Form with Extra Fields -->
+        <div th:with="extraFields=~{::extraFields}, columnSize=3">
+            <div th:replace="~{expenses/layout :: expenseForm(${expenseType}, 'Add Electricity/Bills Expense', ~{::extraFields}, ${columnSize})}">
+                <!-- Extra Fields -->
+                <div th:fragment="extraFields" class="col-md-3">
+                    <div class="mb-3">
+                        <label for="unitsConsumed" class="form-label">Units Consumed</label>
+                        <input type="number" class="form-control" id="unitsConsumed" th:field="*{unitsConsumed}" min="0" required>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Electricity Expenses Table with Extra Columns -->
+        <div th:with="columns=~{::tableColumns}">
+            <div th:replace="~{expenses/layout :: recentExpenses(~{::tableColumns})}">
+                <th:block th:fragment="tableColumns">
+                    <th>Units Consumed</th>
+                </th:block>
+            </div>
+        </div>
+        
+        <!-- Additional info or guidance can be added here -->
+        <div class="alert alert-info mt-4">
+            <i class="fas fa-info-circle"></i> Track electricity bills, generator expenses, and other utility bills here.
+        </div>
+    </div>
+    
+    <!-- Page-specific scripts -->
+    <div id="pagescript">
+        <script>
+            // Any page-specific JavaScript can go here
+            $(document).ready(function() {
+                console.log("Electricity expenses page loaded");
+            });
+        </script>
+    </div>
+</body>
+</html> 

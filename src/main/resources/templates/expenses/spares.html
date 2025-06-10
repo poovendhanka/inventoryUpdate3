@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<head>
+    <title>Spares & Parts Expenses</title>
+</head>
+<body>
+    <div id="pageTitle">
+        <h1>Spares & Parts Expenses</h1>
+    </div>
+    
+    <div id="content">
+        <!-- Expense Management Tabs -->
+        <div th:replace="~{expenses/layout :: expenseTabs}"></div>
+        
+        <!-- Spares Expense Form with Extra Fields -->
+        <div th:with="extraFields=~{::extraFields}, columnSize=3">
+            <div th:replace="~{expenses/layout :: expenseForm(${expenseType}, 'Add Spares/Parts Expense', ~{::extraFields}, ${columnSize})}">
+                <!-- Extra Fields -->
+                <div th:fragment="extraFields">
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="partName" class="form-label">Part Name</label>
+                            <input type="text" class="form-control" id="partName" th:field="*{partName}" placeholder="e.g. Bearing, Belt, Motor" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="replacementDetails" class="form-label">Replacement Details</label>
+                            <input type="text" class="form-control" id="replacementDetails" th:field="*{replacementDetails}" placeholder="e.g. Machine 1, Line 2" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Spares Expenses Table with Extra Columns -->
+        <div th:with="columns=~{::tableColumns}">
+            <div th:replace="~{expenses/layout :: recentExpenses(~{::tableColumns})}">
+                <th:block th:fragment="tableColumns">
+                    <th>Part Name</th>
+                    <th>Replacement Details</th>
+                </th:block>
+            </div>
+        </div>
+        
+        <!-- Additional info or guidance can be added here -->
+        <div class="alert alert-info mt-4">
+            <i class="fas fa-info-circle"></i> Track expenses for spare parts and replacements for machinery and equipment.
+        </div>
+    </div>
+    
+    <!-- Page-specific scripts -->
+    <div id="pagescript">
+        <script>
+            // Any page-specific JavaScript can go here
+            $(document).ready(function() {
+                console.log("Spares expenses page loaded");
+            });
+        </script>
+    </div>
+</body>
+</html> 

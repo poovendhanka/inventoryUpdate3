@@ -5,7 +5,7 @@
     <title>Production Report</title>
 </head>
 <body>
-    <h1 id="pageTitle">Production Report for <span th:text="${#temporals.format(date, 'dd-MM-yyyy')}">Date</span></h1>
+    <th:block id="pageTitle"><h1 class="main-page-title">Production Report for <span th:text="${#temporals.format(date, 'dd-MM-yyyy')}">Date</span></h1></th:block>
     
     <div id="content">
         <!-- First Shift -->

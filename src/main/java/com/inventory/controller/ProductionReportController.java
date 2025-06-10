@@ -95,6 +95,9 @@ public class ProductionReportController extends BaseController {
             // Get all productions within the date range
             allProductions = productionService.getProductionsByDateRange(fromDate, toDate);
 
+            // Sort all productions by date and time
+            allProductions.sort((p1, p2) -> p1.getBatchCompletionTime().compareTo(p2.getBatchCompletionTime()));
+
             // Calculate durations for productions in date range
             Map<LocalDate, List<Production>> productionsByDate = allProductions.stream()
                     .collect(Collectors.groupingBy(p -> p.getBatchCompletionTime().toLocalDate()));
@@ -136,13 +139,12 @@ public class ProductionReportController extends BaseController {
 
             try (PrintWriter writer = response.getWriter()) {
                 // Write CSV header
-                writer.println("Date & Time,Shift,Batch #,Fiber Type,Duration,Bales,Boxes,Pith (kg)");
+                writer.println("Date & Time,Shift,Fiber Type,Duration,Bales,Pith (kg)");
 
                 // Write data rows
                 for (Production prod : allProductions) {
                     String fiberType = prod.getFiberType() != null ? prod.getFiberType().toString() : "";
                     int bales = prod.getNumBales() != null ? prod.getNumBales() : 0;
-                    int boxes = prod.getNumBoxes() != null ? prod.getNumBoxes() : 0;
                     double pith = prod.getPithQuantity() != null ? prod.getPithQuantity() : 0;
                     String duration = prod.getTimeTaken() != null
                             ? prod.getTimeTaken().toHours() + "h " + prod.getTimeTaken().toMinutesPart() + "m"
@@ -153,16 +155,14 @@ public class ProductionReportController extends BaseController {
                     writer.println(String.join(",",
                             dateTime,
                             prod.getShift().toString(),
-                            String.valueOf(prod.getBatchNumber()),
                             fiberType,
                             duration,
                             String.valueOf(bales),
-                            String.valueOf(boxes),
                             pith + " kg"));
                 }
 
                 // Write total row
-                writer.println("TOTAL,,,,,," + totalBales + "," + totalBoxes + ",");
+                writer.println("TOTAL,,,,," + totalBales + ",");
             }
             return null;
         }

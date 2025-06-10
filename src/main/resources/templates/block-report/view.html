@@ -5,15 +5,15 @@
     <title>Block Production Report</title>
 </head>
 <body>
-    <h1 id="pageTitle">Block Production Report</h1>
+    <th:block id="pageTitle"><h1 class="main-page-title">Block Production Report</h1></th:block>
     
     <div id="content">
         <div class="row mb-3">
             <div class="col-md-12">
-                <a th:href="@{/block-report}" class="btn btn-secondary">
+                <a th:href="@{/block-report}" class="btn btn-success">
                     <i class="fas fa-arrow-left"></i> Back to Report Selection
                 </a>
-                <button class="btn btn-primary ms-2" onclick="window.print()">
+                <button class="btn btn-success ms-2" onclick="window.print()">
                     <i class="fas fa-print"></i> Print Report
                 </button>
             </div>

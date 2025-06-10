@@ -7,54 +7,9 @@
 <body>
     <!-- Page Title -->
     <h1 id="pageTitle">Production Management</h1>
-    
     <!-- Main Content -->
     <div id="content">
         <div class="row">
-            <!-- Current Stock Card -->
-            <div class="col-md-12 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Current Stock</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <!-- Normal EC Pith -->
-                            <div class="col-md-3">
-                                <div class="alert alert-info mb-0">
-                                    <h6 class="alert-heading small mb-1">Normal EC Pith</h6>
-                                    <p class="h6 mb-0" th:text="${currentPithStock + ' kg'}">0 kg</p>
-                                </div>
-                            </div>
-                            
-                            <!-- Low EC Pith -->
-                            <div class="col-md-3">
-                                <div class="alert alert-info mb-0">
-                                    <h6 class="alert-heading small mb-1">Low EC Pith</h6>
-                                    <p class="h6 mb-0" th:text="${currentLowEcPithStock + ' kg'}">0 kg</p>
-                                </div>
-                            </div>
-                            
-                            <!-- White Fiber -->
-                            <div class="col-md-3">
-                                <div class="alert alert-info mb-0">
-                                    <h6 class="alert-heading small mb-1">White Fiber</h6>
-                                    <p class="h6 mb-0" th:text="${whiteFiberStock + ' bales'}">0 bales</p>
-                                </div>
-                            </div>
-                            
-                            <!-- Brown Fiber -->
-                            <div class="col-md-3">
-                                <div class="alert alert-info mb-0">
-                                    <h6 class="alert-heading small mb-1">Brown Fiber</h6>
-                                    <p class="h6 mb-0" th:text="${brownFiberStock + ' bales'}">0 bales</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- New Production Entry Card -->
             <div class="col-md-12 mb-4">
                 <div class="card">
@@ -100,7 +55,7 @@
                             </div>
 
                             <div class="text-end">
-                                <button type="submit" class="btn btn-primary">Save Production</button>
+                                <button type="submit" class="btn btn-success">Save Production</button>
                             </div>
                         </form>
                     </div>
