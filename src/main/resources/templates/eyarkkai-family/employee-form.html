@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Employee Form</title>
+</head>
+<body>
+    <th:block id="pageTitle">
+        <h1 class="main-page-title" th:text="${employee.id != null ? 'Edit Employee - ' + employee.name : 'Add Employee'}">Employee Form</h1>
+    </th:block>
+    
+    <div id="content">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/eyarkkai-family}">Eyarkkai Family</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a th:href="@{/eyarkkai-family?tab=employees}">Employees</a>
+                </li>
+                <li class="breadcrumb-item active" th:text="${employee.id != null ? 'Edit Employee' : 'Add Employee'}">Employee Form</li>
+            </ol>
+        </nav>
+        
+        <div class="card">
+            <div class="card-header">
+                <h4 th:text="${employee.id != null ? 'Edit Employee' : 'Add New Employee'}">Employee Form</h4>
+            </div>
+            <div class="card-body">
+                <!-- Display general error message if any -->
+                <div th:if="${errorMessage}" class="alert alert-danger">
+                    <span th:text="${errorMessage}"></span>
+                </div>
+                
+                <form th:action="@{${employee.id == null ? '/eyarkkai-family/employees/add' : '/eyarkkai-family/employees/' + employee.id + '/edit'}}" 
+                      th:object="${employee}" 
+                      method="post">
+                    <!-- Display validation errors INSIDE the form -->
+                    <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+                        <h6>Please correct the following errors:</h6>
+                        <ul class="mb-0">
+                            <li th:each="error : ${#fields.errors('*')}" th:text="${error}"></li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Hidden field for employee ID when editing -->
+                    <input type="hidden" th:field="*{id}" th:if="${employee.id != null}">
+                    
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name: <span class="text-danger">*</span></label>
+                        <input type="text" 
+                               id="name"
+                               class="form-control" 
+                               th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''"
+                               th:field="*{name}" 
+                               required>
+                        <div th:if="${#fields.hasErrors('name')}" class="invalid-feedback">
+                            <span th:errors="*{name}"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="dateOfBirth" class="form-label">Date of Birth: <span class="text-danger">*</span></label>
+                        <input type="date" 
+                               id="dateOfBirth"
+                               class="form-control" 
+                               th:classappend="${#fields.hasErrors('dateOfBirth')} ? 'is-invalid' : ''"
+                               th:field="*{dateOfBirth}" 
+                               required>
+                        <div th:if="${#fields.hasErrors('dateOfBirth')}" class="invalid-feedback">
+                            <span th:errors="*{dateOfBirth}"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="aadharNumber" class="form-label">Aadhar Number: <span class="text-danger">*</span></label>
+                        <input type="text" 
+                               id="aadharNumber"
+                               class="form-control" 
+                               th:classappend="${#fields.hasErrors('aadharNumber')} ? 'is-invalid' : ''"
+                               th:field="*{aadharNumber}" 
+                               placeholder="Enter exactly 12 digits"
+                               maxlength="12"
+                               required>
+                        <div th:if="${#fields.hasErrors('aadharNumber')}" class="invalid-feedback">
+                            <span th:errors="*{aadharNumber}"></span>
+                        </div>
+                        <small class="form-text text-muted">Must be exactly 12 digits</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="contact" class="form-label">Contact: <span class="text-danger">*</span></label>
+                        <input type="text" 
+                               id="contact"
+                               class="form-control" 
+                               th:classappend="${#fields.hasErrors('contact')} ? 'is-invalid' : ''"
+                               th:field="*{contact}" 
+                               placeholder="Enter exactly 10 digits"
+                               maxlength="10"
+                               required>
+                        <div th:if="${#fields.hasErrors('contact')}" class="invalid-feedback">
+                            <span th:errors="*{contact}"></span>
+                        </div>
+                        <small class="form-text text-muted">Must be exactly 10 digits</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Gender: <span class="text-danger">*</span></label><br>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" 
+                                   type="radio" 
+                                   th:field="*{gender}" 
+                                   value="MALE" 
+                                   id="male"
+                                   required>
+                            <label class="form-check-label" for="male">Male</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" 
+                                   type="radio" 
+                                   th:field="*{gender}" 
+                                   value="FEMALE" 
+                                   id="female"
+                                   required>
+                            <label class="form-check-label" for="female">Female</label>
+                        </div>
+                        <div th:if="${#fields.hasErrors('gender')}" class="text-danger">
+                            <small th:errors="*{gender}"></small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address: <span class="text-danger">*</span></label>
+                        <textarea id="address"
+                                  class="form-control" 
+                                  th:classappend="${#fields.hasErrors('address')} ? 'is-invalid' : ''"
+                                  th:field="*{address}" 
+                                  rows="3"
+                                  required></textarea>
+                        <div th:if="${#fields.hasErrors('address')}" class="invalid-feedback">
+                            <span th:errors="*{address}"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a th:href="@{/eyarkkai-family?tab=employees}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> 
+                            <span th:text="${employee.id != null ? 'Update Employee' : 'Save Employee'}">Save Employee</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <th:block id="pagescript">
+        <script>
+            console.log('Employee form loaded');
+            
+            // Auto-format inputs to only allow digits
+            document.getElementById('aadharNumber').addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '');
+            });
+            
+            document.getElementById('contact').addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '');
+            });
+        </script>
+        
+        <style>
+            .breadcrumb-item > a {
+                color: #229954;
+                text-decoration: none;
+            }
+            
+            .breadcrumb-item > a:hover {
+                color: #145a32;
+            }
+            
+            .card {
+                border: 1px solid #229954;
+            }
+            
+            .card-header {
+                background-color: #f8f9fa;
+                border-bottom: 1px solid #229954;
+            }
+            
+            .btn-success {
+                background-color: #229954;
+                border-color: #229954;
+            }
+            
+            .btn-success:hover {
+                background-color: #1e7e4a;
+                border-color: #1e7e4a;
+            }
+        </style>
+    </th:block>
+</body>
+</html> 

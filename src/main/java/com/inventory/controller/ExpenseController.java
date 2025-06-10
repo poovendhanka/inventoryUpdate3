@@ -49,17 +49,8 @@ public class ExpenseController extends BaseController {
 
     @GetMapping("/labour")
     public String showLabourExpensesPage(Model model) {
-        model.addAttribute("activeTab", "expenses");
-        model.addAttribute("activeSubTab", "labour");
-
-        // Create a new expense with pre-filled type
-        Expense expense = new Expense();
-        expense.setExpenseType(ExpenseType.LABOUR);
-        model.addAttribute("expense", expense);
-
-        model.addAttribute("expenseType", ExpenseType.LABOUR);
-        model.addAttribute("recentExpenses", expenseService.getExpensesByType(ExpenseType.LABOUR));
-        return getViewPath("expenses/labour");
+        // Redirect to the new labour entries system
+        return "redirect:/expenses/labour/entries";
     }
 
     @GetMapping("/maintenance")
