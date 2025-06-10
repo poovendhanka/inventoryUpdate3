@@ -2,17 +2,19 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout/base :: html}">
 <head>
-    <title>Raw Materials</title>
+    <title>Purchase Management</title>
 </head>
 <body>
-    <h1 id="pageTitle">Raw Materials Management</h1>
     
+    <!-- Page Title -->
+    
+    <h1 id="pageTitle">Purchase Management</h1>
     <div id="content">
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h1>Raw Materials Entry</h1>
+                        <h5 class="card-title mb-0">Raw Materials Entry</h5>
                     </div>
                     <div class="card-body">
                         <!-- Entry Form -->
@@ -67,7 +69,7 @@
                                 </div>
                             </div>
 
-                            <button type="submit" class="btn btn-primary">Generate Receipt</button>
+                            <button type="submit" class="btn btn-success">Generate Receipt</button>
                         </form>
 
                         <!-- Recent Entries Table -->

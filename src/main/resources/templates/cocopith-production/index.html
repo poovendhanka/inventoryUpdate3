@@ -6,55 +6,11 @@
 </head>
 <body>
     <!-- Page Title -->
-    <h1 id="pageTitle">Cocopith Production</h1>
     
+    <h1 id="pageTitle">Cocopith Production</h1>
     <!-- Main Content -->
     <div id="content">
         <div class="row">
-            <!-- Current Stock Card -->
-            <div class="col-md-12 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Current Stock</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <!-- Normal EC Pith -->
-                            <div class="col-md-3">
-                                <div class="alert alert-info mb-0">
-                                    <h6 class="alert-heading small mb-1">Normal EC Pith</h6>
-                                    <p class="h6 mb-0" th:text="${currentPithStock + ' kg'}" id="normalPithStockDisplay">0 kg</p>
-                                </div>
-                            </div>
-                            
-                            <!-- Low EC Pith -->
-                            <div class="col-md-3">
-                                <div class="alert alert-info mb-0">
-                                    <h6 class="alert-heading small mb-1">Low EC Pith</h6>
-                                    <p class="h6 mb-0" th:text="${currentLowEcPithStock + ' kg'}" id="lowEcPithStockDisplay">0 kg</p>
-                                </div>
-                            </div>
-
-                            <!-- Normal EC Blocks -->
-                            <div class="col-md-3">
-                                <div class="alert alert-info mb-0">
-                                    <h6 class="alert-heading small mb-1">Normal EC Blocks</h6>
-                                    <p class="h6 mb-0" th:text="${normalBlockStock + ' blocks'}" id="normalBlockStockDisplay">0 blocks</p>
-                                </div>
-                            </div>
-
-                            <!-- Low EC Blocks -->
-                            <div class="col-md-3">
-                                <div class="alert alert-info mb-0">
-                                    <h6 class="alert-heading small mb-1">Low EC Blocks</h6>
-                                    <p class="h6 mb-0" th:text="${lowEcBlockStock + ' blocks'}" id="lowEcBlockStockDisplay">0 blocks</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Cocopith Production Card -->
             <div class="col-md-12 mb-4">
                 <div class="card">
@@ -88,7 +44,7 @@
                                 Warning: Insufficient normal EC pith stock available. Current stock: <span id="availablePithStock">0</span> kg.
                             </div>
                             <div class="text-end">
-                                <button type="submit" class="btn btn-primary">Convert to Low EC Pith</button>
+                                <button type="submit" class="btn btn-success">Convert to Low EC Pith</button>
                             </div>
                         </form>
                     </div>
@@ -135,7 +91,7 @@
                                 Warning: Insufficient pith stock available for this many blocks. Max blocks possible: <span id="maxBlocksPossible">0</span>.
                             </div>
                             <div class="text-end">
-                                <button type="submit" class="btn btn-primary">Record Block Production</button>
+                                <button type="submit" class="btn btn-success">Record Block Production</button>
                             </div>
                         </form>
                     </div>
@@ -155,9 +111,9 @@
                 // Set for all datetime inputs
                 $('.datetime-input').val(nowStr);
                 
-                // Get stock values
-                const currentPithStock = parseFloat(document.getElementById('normalPithStockDisplay').innerText);
-                const currentLowEcPithStock = parseFloat(document.getElementById('lowEcPithStockDisplay').innerText);
+                // Get stock values from Thymeleaf model
+                const currentPithStock = /*[[${currentPithStock}]]*/ 0;
+                const currentLowEcPithStock = /*[[${currentLowEcPithStock}]]*/ 0;
                 
                 // Each block requires 5kg of pith (this is a business rule)
                 const PITH_PER_BLOCK = 5; 

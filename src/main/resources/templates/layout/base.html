@@ -83,26 +83,31 @@
             left: 0;
             z-index: 100;
             padding: 48px 0 0;
-            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
-            background-color: #f8f9fa;
+            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .07);
+            background: linear-gradient(180deg, #e8f8f5 0%, #d4efdf 100%);
             width: 15%;
         }
         
         .sidebar .nav-link {
-            font-weight: 500;
-            color: #333;
+            font-weight: 600;
+            color: #229954;
             padding: 1rem 1rem;
             border-left: 3px solid transparent;
+            border-radius: 0 2rem 2rem 0;
+            background: transparent;
+            transition: background 0.2s, color 0.2s;
         }
         
         .sidebar .nav-link:hover {
-            background-color: #e9ecef;
+            background: #d1f2eb;
+            color: #145a32;
         }
         
         .sidebar .nav-link.active {
-            color: #2470dc;
-            background-color: #e9ecef;
-            border-left: 3px solid #2470dc;
+            color: #fff;
+            background: linear-gradient(90deg, #27ae60 0%, #229954 100%);
+            border-left: 3px solid #229954;
+            box-shadow: 0 2px 8px rgba(34, 153, 84, 0.10);
         }
         
         .sidebar .nav-link i {
@@ -241,23 +246,100 @@
                 background-color: transparent !important;
             }
         }
+
+        /* --- HEADER STYLES --- */
+        .main-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 101;
+            background: linear-gradient(90deg, #2ecc40 0%, #27ae60 100%);
+            color: #fff;
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: 800;
+            padding: 0.75rem 0 0.75rem 0;
+            box-shadow: 0 2px 8px rgba(44, 204, 64, 0.10);
+            letter-spacing: 2px;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            border-bottom: 3px solid #229954;
+        }
+        .main-header span {
+            letter-spacing: 3px;
+            text-shadow: 0 2px 8px rgba(34, 153, 84, 0.10);
+        }
+
+        /* --- TABS STYLES --- */
+        .nav-tabs {
+            border-bottom: 2px solid #229954 !important;
+            margin-bottom: 1.5rem;
+        }
+        .nav-tabs .nav-link {
+            color: #229954;
+            font-weight: 600;
+            font-size: 1.08rem;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 0;
+            background: none;
+            transition: background 0.2s, color 0.2s;
+        }
+        .nav-tabs .nav-link.active, .nav-tabs .nav-link:focus, .nav-tabs .nav-link:hover {
+            color: #fff !important;
+            background: linear-gradient(90deg, #27ae60 0%, #229954 100%);
+            border: none;
+            box-shadow: 0 2px 8px rgba(34, 153, 84, 0.10);
+        }
+        .nav-tabs .nav-link i {
+            margin-right: 8px;
+        }
+        .nav-tabs .nav-item {
+            margin-bottom: -2px;
+        }
+        /* --- END TABS STYLES --- */
+
+        /* Main page title style for all tabs */
+        .main-page-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 1.2rem;
+            margin-top: 0.5rem;
+            letter-spacing: 1px;
+            text-align: left;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+        }
+
+        /* Green alert for stock boxes */
+        .alert-green {
+            background: linear-gradient(135deg, #eafaf1 0%, #d4efdf 100%);
+            border: 1.5px solid #27ae60;
+            color: #145a32;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(39, 174, 96, 0.07);
+        }
     </style>
 </head>
 <body>
+    <!-- Persistent Eyarkkai fibres Header -->
+    <header class="main-header">
+        <span>EYARKKAI FIBRES</span>
+    </header>
+
     <!-- Mobile Menu Button -->
-    <button class="mobile-menu-btn" id="mobileSidebarToggle">
+    <button class="mobile-menu-btn" id="mobileSidebarToggle" style="top:60px;">
         <i class="fas fa-bars"></i>
     </button>
 
     <!-- Sidebar -->
-    <nav class="sidebar" id="sidebar">
+    <nav class="sidebar" id="sidebar" style="top:60px;">
         <div class="position-sticky">
             <ul class="nav flex-column">
                 <li class="nav-item">
                     <a class="nav-link" th:classappend="${activeTab == 'raw-materials'} ? 'active' : ''" 
                        th:href="@{/raw-materials}">
-                        <i class="fas fa-box"></i> Raw Materials
-                    </a>
+                        <i class="fas fa-box"></i>Purchase</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" th:classappend="${activeTab == 'accounts'} ? 'active' : ''" 
@@ -268,13 +350,19 @@
                 <li class="nav-item">
                     <a class="nav-link" th:classappend="${activeTab == 'production'} ? 'active' : ''" 
                        th:href="@{/production}">
-                        <i class="fas fa-industry"></i> Production
+                        <i class="fas fa-industry"></i> Production Management
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" th:classappend="${activeTab == 'cocopith-production'} ? 'active' : ''" 
                        th:href="@{/cocopith-production}">
-                        <i class="fas fa-leaf"></i> Cocopith Production
+                        <i class="fas fa-leaf"></i> Cocopith & Block Production
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeTab == 'production-inventory'} ? 'active' : ''" 
+                       th:href="@{/production-inventory}">
+                        <i class="fas fa-boxes"></i> Production Inventory
                     </a>
                 </li>
                 <li class="nav-item">
@@ -287,6 +375,12 @@
                     <a class="nav-link" th:classappend="${activeTab == 'sales'} ? 'active' : ''" 
                        th:href="@{/sales}">
                         <i class="fas fa-shopping-cart"></i> Sales
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeTab == 'expenses'} ? 'active' : ''" 
+                       th:href="@{/expenses}">
+                        <i class="fas fa-money-bill-wave"></i> Expenses
                     </a>
                 </li>
                 <li class="nav-item">
@@ -306,15 +400,20 @@
     </nav>
     
     <!-- Main content -->
-    <main>
+    <main style="margin-top:60px;">
         <!-- Top navbar -->
         <nav class="navbar">
             <div class="container-fluid">
                 <div class="navbar-title-container">
-                    <span class="navbar-brand mb-0 h1" th:replace="~{:: #pageTitle}">Title</span>
+                    <!-- Removed page title from here -->
                 </div>
             </div>
         </nav>
+        
+        <!-- Page Title below navbar -->
+        <div id="pageTitleContainer" style="margin-top:1.5rem;">
+            <th:block th:replace="~{:: #pageTitle}"></th:block>
+        </div>
         
         <!-- Page content -->
         <div class="content-wrapper">

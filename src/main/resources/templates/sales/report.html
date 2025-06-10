@@ -5,6 +5,7 @@
     <title>Sales Report</title>
 </head>
 <body>
+    
     <h1 id="pageTitle">Sales Report - <span th:text="${#temporals.format(fromDate, 'dd-MM-yyyy')}">From Date</span> 
         <span th:if="${fromDate != toDate}">to <span th:text="${#temporals.format(toDate, 'dd-MM-yyyy')}">To Date</span></span>
     </h1>

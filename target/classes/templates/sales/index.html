@@ -5,8 +5,10 @@
     <title>Sales</title>
 </head>
 <body>
-    <h1 id="pageTitle">Sales Management</h1>
     
+     <!-- Page Title -->
+    
+     <h1 id="pageTitle">Sales Management</h1>
     <div id="content">
         <div class="row">
             <!-- Current Stock Card -->
@@ -19,7 +21,7 @@
                         <div class="row g-3">
                             <!-- Normal EC Pith Stock -->
                             <div class="col-md-2">
-                                <div class="alert alert-info mb-0">
+                                <div class="alert alert-green mb-0">
                                     <h6 class="alert-heading small mb-1">Normal EC Pith</h6>
                                     <p class="h6 mb-0" th:text="${currentPithStock + ' kg'}">0 kg</p>
                                 </div>
@@ -27,7 +29,7 @@
                             
                             <!-- Low EC Pith Stock -->
                             <div class="col-md-2">
-                                <div class="alert alert-info mb-0">
+                                <div class="alert alert-green mb-0">
                                     <h6 class="alert-heading small mb-1">Low EC Pith</h6>
                                     <p class="h6 mb-0" th:text="${currentLowEcPithStock + ' kg'}">0 kg</p>
                                 </div>
@@ -35,7 +37,7 @@
                             
                             <!-- White Fiber Stock -->
                             <div class="col-md-2">
-                                <div class="alert alert-info mb-0">
+                                <div class="alert alert-green mb-0">
                                     <h6 class="alert-heading small mb-1">White Fiber</h6>
                                     <p class="h6 mb-0" th:text="${whiteFiberStock + ' bales'}">0 bales</p>
                                 </div>
@@ -43,7 +45,7 @@
                             
                             <!-- Brown Fiber Stock -->
                             <div class="col-md-2">
-                                <div class="alert alert-info mb-0">
+                                <div class="alert alert-green mb-0">
                                     <h6 class="alert-heading small mb-1">Brown Fiber</h6>
                                     <p class="h6 mb-0" th:text="${brownFiberStock + ' bales'}">0 bales</p>
                                 </div>
@@ -51,13 +53,13 @@
 
                             <!-- Block Stock -->
                             <div class="col-md-2">
-                                <div class="alert alert-info mb-0">
+                                <div class="alert alert-green mb-0">
                                     <h6 class="alert-heading small mb-1">Normal EC Blocks</h6>
                                     <p class="h6 mb-0" th:text="${normalBlockStock + ' blocks'}">0 blocks</p>
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <div class="alert alert-info mb-0">
+                                <div class="alert alert-green mb-0">
                                     <h6 class="alert-heading small mb-1">Low EC Blocks</h6>
                                     <p class="h6 mb-0" th:text="${lowEcBlockStock + ' blocks'}">0 blocks</p>
                                 </div>
@@ -152,7 +154,7 @@
                                     </div>
 
                                     <div class="text-end">
-                                        <button type="submit" class="btn btn-primary">Create Pith Sale</button>
+                                        <button type="submit" class="btn btn-success">Create Pith Sale</button>
                                     </div>
                                 </form>
                             </div>
@@ -208,7 +210,7 @@
                                     </div>
 
                                     <div class="text-end">
-                                        <button type="submit" class="btn btn-primary">Create Fiber Sale</button>
+                                        <button type="submit" class="btn btn-success">Create Fiber Sale</button>
                                     </div>
                                 </form>
                             </div>
@@ -262,7 +264,7 @@
                                     </div>
 
                                     <div class="text-end">
-                                        <button type="submit" class="btn btn-primary">Create Block Sale</button>
+                                        <button type="submit" class="btn btn-success">Create Block Sale</button>
                                     </div>
                                 </form>
                             </div>
@@ -299,7 +301,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <button type="submit" class="btn btn-primary d-block w-100">View Report</button>
+                                    <button type="submit" class="btn btn-success d-block w-100">View Report</button>
                                 </div>
                             </div>
                         </form>
@@ -364,7 +366,7 @@
                 document.querySelector('input[name="toDate"]').value = formatDate(lastDay);
                 
                 // Get initial stock values - Fix the extraction method
-                const stockElements = document.querySelectorAll('.alert-info .h6');
+                const stockElements = document.querySelectorAll('.alert-green .h6');
                 const currentPithStock = parseFloat(stockElements[0].innerText.replace(/[^\d.]/g, '')) || 0;
                 const currentLowEcPithStock = parseFloat(stockElements[1].innerText.replace(/[^\d.]/g, '')) || 0;
                 const whiteFiberStock = parseFloat(stockElements[2].innerText.replace(/[^\d.]/g, '')) || 0;
