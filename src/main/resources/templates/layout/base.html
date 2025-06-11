@@ -395,6 +395,11 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeTab == 'pl-report'} ? 'active' : ''" th:href="@{/pl-report}">
+                        <i class="fas fa-file-invoice-dollar"></i> P&amp;L Report
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" th:classappend="${activeTab == 'backup' ? 'active' : ''}" href="/backup">
                         <i class="fas fa-database"></i>
                         <span>Backup</span>
