@@ -24,6 +24,11 @@ import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.UUID;
+import com.inventory.service.BillPdfService;
+import com.inventory.service.BillNumberService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 @Controller
 @RequestMapping("/sales")
@@ -33,6 +38,8 @@ public class SaleController extends BaseController {
     private final SaleService saleService;
     private final DealerService dealerService;
     private final StockService stockService;
+    private final BillPdfService billPdfService;
+    private final BillNumberService billNumberService;
 
     @GetMapping
     public String showSalesPage(Model model, HttpServletRequest request) {
@@ -217,6 +224,26 @@ public class SaleController extends BaseController {
         } catch (Exception e) {
             model.addAttribute("error", "Error generating report: " + e.getMessage());
             return "error";
+        }
+    }
+
+    @GetMapping("/{id}/bill")
+    public ResponseEntity<byte[]> downloadBill(@PathVariable Long id) {
+        try {
+            Sale sale = saleService.getSaleById(id);
+            if (sale == null) {
+                return ResponseEntity.notFound().build();
+            }
+            Dealer dealer = sale.getDealer();
+            String billNumber = sale.getInvoiceNumber();
+            byte[] pdfBytes = billPdfService.generateBillPdf(sale, dealer, billNumber);
+            String filename = "Bill-" + billNumber + ".pdf";
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(pdfBytes);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

@@ -325,6 +325,7 @@
                                         <th>Product</th>
                                         <th>Quantity</th>
                                         <th>Price</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -334,6 +335,11 @@
                                         <td th:text="${sale.productType}">Product</td>
                                         <td th:text="${sale.quantity}">Quantity</td>
                                         <td th:text="${sale.pricePerUnit}">Price</td>
+                                        <td>
+                                            <a th:href="@{'/sales/' + ${sale.id} + '/bill'}" class="btn btn-outline-primary btn-sm" target="_blank">
+                                                Download Bill
+                                            </a>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>

@@ -90,4 +90,8 @@ public class SaleService {
         LocalDateTime endOfDay = toDate.plusDays(1).atStartOfDay();
         return saleRepository.findBySaleDateBetweenOrderBySaleDateDesc(startOfDay, endOfDay);
     }
+
+    public Sale getSaleById(Long id) {
+        return saleRepository.findById(id).orElse(null);
+    }
 }
