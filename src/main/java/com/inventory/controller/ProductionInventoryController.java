@@ -2,6 +2,7 @@ package com.inventory.controller;
 
 import com.inventory.model.FiberType;
 import com.inventory.model.PithType;
+import com.inventory.model.HuskType;
 import com.inventory.service.StockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -29,6 +30,8 @@ public class ProductionInventoryController extends BaseController {
             double brownFiberStock = stockService.getCurrentFiberStock(FiberType.BROWN);
             int blocks5kgStock = stockService.getCurrentBlockStock(PithType.NORMAL);
             int blocks650gStock = stockService.getCurrentBlockStock(PithType.LOW);
+            double greenHuskStock = stockService.getCurrentHuskStock(HuskType.GREEN);
+            double brownHuskStock = stockService.getCurrentHuskStock(HuskType.BROWN);
 
             // Add stock values to model
             model.addAttribute("normalEcPithStock", normalEcPithStock);
@@ -37,6 +40,8 @@ public class ProductionInventoryController extends BaseController {
             model.addAttribute("brownFiberStock", brownFiberStock);
             model.addAttribute("blocks5kgStock", blocks5kgStock);
             model.addAttribute("blocks650gStock", blocks650gStock);
+            model.addAttribute("greenHuskStock", greenHuskStock);
+            model.addAttribute("brownHuskStock", brownHuskStock);
 
             // Set active tab for sidebar highlighting
             model.addAttribute("activeTab", "production-inventory");

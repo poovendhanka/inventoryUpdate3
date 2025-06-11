@@ -15,6 +15,8 @@ import com.inventory.model.Account;
 import com.inventory.repository.AccountRepository;
 import com.inventory.model.TransactionType;
 import lombok.extern.slf4j.Slf4j;
+import com.inventory.model.HuskType;
+import com.inventory.service.StockService;
 
 import java.util.List;
 import java.time.LocalDate;
@@ -27,6 +29,7 @@ public class RawMaterialService {
     private final RawMaterialRepository rawMaterialRepository;
     private final ProcessedRawMaterialRepository processedRepository;
     private final AccountRepository accountRepository;
+    private final StockService stockService;
 
     @Transactional
     public RawMaterial createRawMaterial(RawMaterial rawMaterial) {
@@ -80,6 +83,11 @@ public class RawMaterialService {
 
         LocalDateTime now = LocalDateTime.now();
         log.info("Processing date: {}", now);
+
+        // Add husk stock if husk type and cft are present
+        if (rawMaterial.getHuskType() != null && rawMaterial.getCft() != null) {
+            stockService.addHuskStock(rawMaterial.getHuskType(), rawMaterial.getCft());
+        }
 
         // Create ProcessedRawMaterial entry
         ProcessedRawMaterial processed = new ProcessedRawMaterial();

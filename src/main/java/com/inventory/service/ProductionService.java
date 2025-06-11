@@ -7,6 +7,7 @@ import com.inventory.model.FiberStock;
 import com.inventory.model.BlockProduction;
 import com.inventory.model.CocopithProduction;
 import com.inventory.model.PithType;
+import com.inventory.model.HuskType;
 import com.inventory.repository.ProductionRepository;
 import com.inventory.repository.PithStockRepository;
 import com.inventory.repository.FiberStockRepository;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.time.format.DateTimeFormatter;
+import com.inventory.service.StockService;
 
 @Service
 @Transactional
@@ -27,6 +29,7 @@ public class ProductionService {
     private final ProductionRepository productionRepository;
     private final PithStockService pithStockService;
     private final FibreStockService fibreStockService;
+    private final StockService stockService;
 
     public void createProduction(Production production) {
         // Generate batch number
@@ -49,6 +52,13 @@ public class ProductionService {
         // Update fiber stock
         if (production.getFiberBales() != null && production.getFiberBales() > 0) {
             fibreStockService.addStock(production.getFiberBales().doubleValue(), production.getFiberType());
+        }
+
+        // Reduce husk stock based on pith production
+        if (production.getPithQuantity() != null && production.getHuskType() != null) {
+            double pithQty = production.getPithQuantity();
+            double huskToReduce = (pithQty / 750.0) * 2100.0; // 2100 CFT per 750kg pith
+            stockService.reduceHuskStock(production.getHuskType(), huskToReduce);
         }
     }
 

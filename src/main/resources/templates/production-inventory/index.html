@@ -57,6 +57,12 @@
                             <i class="fas fa-cube"></i> Block Inventory
                         </button>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="husk-tab" data-bs-toggle="tab" data-bs-target="#husk" 
+                                type="button" role="tab" aria-controls="husk" aria-selected="false">
+                            <i class="fas fa-box"></i> Husk Inventory
+                        </button>
+                    </li>
                 </ul>
                 
                 <!-- Tab Content -->
@@ -189,6 +195,51 @@
                                                     <div class="d-flex justify-content-between">
                                                         <span>Current Stock:</span>
                                                         <span class="fw-bold" th:text="${blocks650gStock ?: '0'} + ' pcs'">0 pcs</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Husk Inventory Tab -->
+                    <div class="tab-pane fade" id="husk" role="tabpanel" aria-labelledby="husk-tab">
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Husk Inventory</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <!-- Green Husk -->
+                                            <div class="col-md-6 col-lg-4 mb-4">
+                                                <div class="alert alert-green p-3">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h5 class="mb-0">Green Husk</h5>
+                                                        <i class="fas fa-box fa-2x text-success"></i>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="d-flex justify-content-between">
+                                                        <span>Current Stock:</span>
+                                                        <span class="fw-bold" th:text="${#numbers.formatDecimal(greenHuskStock ?: 0, 1, 2)} + ' CFT'">0 CFT</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Brown Husk -->
+                                            <div class="col-md-6 col-lg-4 mb-4">
+                                                <div class="alert alert-green p-3">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h5 class="mb-0">Brown Husk</h5>
+                                                        <i class="fas fa-box fa-2x text-success"></i>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="d-flex justify-content-between">
+                                                        <span>Current Stock:</span>
+                                                        <span class="fw-bold" th:text="${#numbers.formatDecimal(brownHuskStock ?: 0, 1, 2)} + ' CFT'">0 CFT</span>
                                                     </div>
                                                 </div>
                                             </div>

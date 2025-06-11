@@ -14,6 +14,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.time.Duration;
+import com.inventory.model.HuskType;
+import com.inventory.service.HuskStockService;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +26,7 @@ public class StockService {
     private final CocopithProductionRepository cocopithProductionRepository;
     private final BlockProductionRepository blockProductionRepository;
     private final SaleRepository saleRepository;
+    private final HuskStockService huskStockService;
 
     public Double getCurrentPithStock() {
         return pithStockService.getCurrentStock();
@@ -135,5 +138,23 @@ public class StockService {
 
     public Integer getCurrentBlockStock() {
         return getCurrentBlockStock(PithType.NORMAL) + getCurrentBlockStock(PithType.LOW);
+    }
+
+    public Double getCurrentHuskStock(HuskType huskType) {
+        return huskStockService.getCurrentStock(huskType);
+    }
+
+    @Transactional
+    public void addHuskStock(HuskType huskType, Double quantity) {
+        huskStockService.addStock(huskType, quantity);
+    }
+
+    @Transactional
+    public void reduceHuskStock(HuskType huskType, Double quantity) {
+        Double currentStock = getCurrentHuskStock(huskType);
+        if (currentStock < quantity) {
+            throw new RuntimeException("Insufficient " + huskType.getDisplayName() + " stock");
+        }
+        huskStockService.addStock(huskType, -quantity);
     }
 }
