@@ -154,7 +154,7 @@
                                 <div class="card-body">
                                     <form th:action="@{/admin/set-cost}" method="post" th:object="${productCost}">
                                         <div class="mb-3">
-                                            <label class="form-label">Block (Normal EC)</label>
+                                            <label class="form-label">Block (High EC)</label>
                                             <input type="number" class="form-control" th:field="*{blockNormalCost}" step="0.01" required>
                                         </div>
                                         <div class="mb-3">
@@ -162,7 +162,7 @@
                                             <input type="number" class="form-control" th:field="*{blockLowCost}" step="0.01" required>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label">Pith (Normal EC)</label>
+                                            <label class="form-label">Pith (High EC)</label>
                                             <input type="number" class="form-control" th:field="*{pithNormalCost}" step="0.01" required>
                                         </div>
                                         <div class="mb-3">

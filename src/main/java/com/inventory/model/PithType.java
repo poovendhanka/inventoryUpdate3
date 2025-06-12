@@ -1,7 +1,7 @@
 package com.inventory.model;
 
 public enum PithType {
-    NORMAL("Normal EC"),
+    NORMAL("High EC"),
     LOW("Low EC");
 
     private final String displayName;

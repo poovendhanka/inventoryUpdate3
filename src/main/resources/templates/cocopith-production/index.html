@@ -25,7 +25,7 @@
                                     <input type="number" step="0.01" class="form-control" id="pithQuantityUsed" 
                                            name="pithQuantityUsed" required>
                                     <div class="invalid-feedback" id="pithQuantityFeedback">
-                                        Insufficient normal EC pith stock available.
+                                        Insufficient high EC pith stock available.
                                     </div>
                                 </div>
                                 <div class="col-md-4 mb-3">
@@ -39,9 +39,12 @@
                                            name="supervisorName" required>
                                 </div>
                             </div>
+                            <div class="alert alert-danger" th:if="${error}">
+                                Insufficient high EC pith stock available.
+                            </div>
                             <div class="alert alert-warning d-none" id="pithStockWarning">
                                 <i class="fas fa-exclamation-triangle me-2"></i>
-                                Warning: Insufficient normal EC pith stock available. Current stock: <span id="availablePithStock">0</span> kg.
+                                Warning: Insufficient high EC pith stock available. Current stock: <span id="availablePithStock">0</span> kg.
                             </div>
                             <div class="text-end">
                                 <button type="submit" class="btn btn-success">Convert to Low EC Pith</button>
@@ -63,7 +66,7 @@
                                 <div class="col-md-3 mb-3">
                                     <label for="pithType" class="form-label">Pith Type</label>
                                     <select class="form-select" id="pithType" name="pithType" required>
-                                        <option value="NORMAL">Normal EC Pith</option>
+                                        <option value="NORMAL">High EC Pith</option>
                                         <option value="LOW">Low EC Pith</option>
                                     </select>
                                 </div>

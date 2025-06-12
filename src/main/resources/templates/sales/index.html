@@ -19,10 +19,10 @@
                     </div>
                     <div class="card-body">
                         <div class="row g-3">
-                            <!-- Normal EC Pith Stock -->
+                            <!-- High EC Pith Stock -->
                             <div class="col-md-2">
                                 <div class="alert alert-green mb-0">
-                                    <h6 class="alert-heading small mb-1">Normal EC Pith</h6>
+                                    <h6 class="alert-heading small mb-1">High EC Pith</h6>
                                     <p class="h6 mb-0" th:text="${currentPithStock + ' kg'}">0 kg</p>
                                 </div>
                             </div>
@@ -54,7 +54,7 @@
                             <!-- Block Stock -->
                             <div class="col-md-2">
                                 <div class="alert alert-green mb-0">
-                                    <h6 class="alert-heading small mb-1">Normal EC Blocks</h6>
+                                    <h6 class="alert-heading small mb-1">High EC Blocks</h6>
                                     <p class="h6 mb-0" th:text="${normalBlockStock + ' blocks'}">0 blocks</p>
                                 </div>
                             </div>
@@ -238,7 +238,7 @@
                                         <div class="col-md-6 mb-3">
                                             <label for="blockType" class="form-label">Block Type</label>
                                             <select class="form-select" id="blockType" name="pithType" required>
-                                                <option value="NORMAL">Normal EC Block</option>
+                                                <option value="NORMAL">High EC Block</option>
                                                 <option value="LOW">Low EC Block</option>
                                             </select>
                                             <small class="text-muted" id="blockStockHelp"></small>
