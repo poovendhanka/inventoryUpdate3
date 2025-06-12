@@ -10,6 +10,9 @@
     
     <h1 id="pageTitle">Admin Panel</h1>
     <div id="content">
+        <!-- Success and Error Messages -->
+        <div th:replace="~{fragments/messages :: messages}"></div>
+        
         <div class="container mt-4">
             <ul class="nav nav-tabs" id="adminTabs" role="tablist">
                 <li class="nav-item" role="presentation">

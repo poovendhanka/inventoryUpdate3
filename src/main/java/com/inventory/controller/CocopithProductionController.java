@@ -46,7 +46,9 @@ public class CocopithProductionController extends BaseController {
             LocalDateTime systemTime = LocalDateTime.now();
             Duration duration = Duration.between(productionTime, systemTime);
             stockService.convertToLowEcPith(pithQuantityUsed, supervisorName, duration, productionTime);
-            redirectAttributes.addFlashAttribute("success", "Cocopith production completed successfully");
+            redirectAttributes.addFlashAttribute("success", 
+                "Cocopith production completed successfully! " + pithQuantityUsed + 
+                " kg High EC pith converted to Low EC pith by " + supervisorName + ".");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
@@ -70,7 +72,9 @@ public class CocopithProductionController extends BaseController {
             stockService.processBlockProduction(blockProduction);
             blockProductionRepository.save(blockProduction);
 
-            redirectAttributes.addFlashAttribute("success", "Block production recorded successfully");
+            redirectAttributes.addFlashAttribute("success", 
+                "Block production recorded successfully! " + blocksProduced + " blocks (" + 
+                pithType.getDisplayName() + ") produced by " + supervisorName + ".");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }

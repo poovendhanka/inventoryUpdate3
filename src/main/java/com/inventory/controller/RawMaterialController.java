@@ -37,7 +37,9 @@ public class RawMaterialController extends BaseController {
     public String createRawMaterial(@ModelAttribute RawMaterial rawMaterial, RedirectAttributes redirectAttributes) {
         try {
             rawMaterialService.createRawMaterial(rawMaterial);
-            redirectAttributes.addFlashAttribute("success", "Raw material added successfully");
+            redirectAttributes.addFlashAttribute("success", 
+                "Raw material entry saved successfully! Receipt #" + rawMaterial.getReceiptNumber() + 
+                " for " + rawMaterial.getCft() + " CFT from " + rawMaterial.getParty().getName());
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }

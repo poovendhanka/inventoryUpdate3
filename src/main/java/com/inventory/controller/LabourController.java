@@ -69,7 +69,10 @@ public class LabourController extends BaseController {
             labourEntry.setEmployee(employeeOpt.get());
             labourEntryService.saveLabourEntry(labourEntry);
             
-            redirectAttributes.addFlashAttribute("success", "Labour entry saved successfully");
+            redirectAttributes.addFlashAttribute("success", 
+                "Labour entry saved successfully! " + labourEntry.getEmployee().getName() + 
+                " - " + labourEntry.getHoursWorked() + " hours on " + labourEntry.getWorkDate() + 
+                " (Total: ₹" + labourEntry.getTotalCost() + ")");
             log.info("Labour entry saved for employee: {} on date: {}", 
                     labourEntry.getEmployee().getName(), labourEntry.getWorkDate());
             

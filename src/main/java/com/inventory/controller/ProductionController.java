@@ -87,7 +87,9 @@ public class ProductionController {
             productionService.createProduction(production);
 
             redirectAttributes.addFlashAttribute("successMessage",
-                    "Production batch recorded successfully!");
+                    "Production batch #" + production.getBatchNumber() + " recorded successfully! " +
+                    production.getNumBales() + " bales of " + production.getFiberType().getDisplayName() + 
+                    " fiber and " + production.getPithQuantity() + " kg pith produced.");
         } catch (Exception e) {
             log.error("Error creating production: {}", e.getMessage(), e);
             redirectAttributes.addFlashAttribute("errorMessage",

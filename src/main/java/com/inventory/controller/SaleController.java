@@ -132,7 +132,17 @@ public class SaleController extends BaseController {
             // Save the sale and update stock
             saleService.createSale(sale);
 
-            redirectAttributes.addFlashAttribute("success", "Sale completed successfully");
+            String productDescription = sale.getProductType().name();
+            if (sale.getPithType() != null) {
+                productDescription = sale.getPithType().getDisplayName();
+            } else if (sale.getFiberType() != null) {
+                productDescription = sale.getFiberType().getDisplayName() + " Fiber";
+            }
+            
+            redirectAttributes.addFlashAttribute("success", 
+                "Sale completed successfully! Invoice #" + sale.getInvoiceNumber() + 
+                " - " + sale.getQuantity() + " units of " + productDescription + 
+                " sold to " + sale.getDealer().getName() + " for ₹" + sale.getTotalWithTax());
             return "redirect:/sales";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error processing sale: " + e.getMessage());

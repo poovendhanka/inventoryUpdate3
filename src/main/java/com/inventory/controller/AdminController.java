@@ -35,7 +35,8 @@ public class AdminController extends BaseController {
     public String saveParty(@ModelAttribute Party party, RedirectAttributes redirectAttributes) {
         try {
             partyService.saveParty(party);
-            redirectAttributes.addFlashAttribute("success", "Party added successfully");
+            redirectAttributes.addFlashAttribute("success", 
+                "Supplier '" + party.getName() + "' added successfully with phone: " + party.getPhoneNumber());
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
@@ -46,7 +47,8 @@ public class AdminController extends BaseController {
     public String saveDealer(@ModelAttribute Dealer dealer, RedirectAttributes redirectAttributes) {
         try {
             dealerService.saveDealer(dealer);
-            redirectAttributes.addFlashAttribute("success", "Dealer added successfully");
+            redirectAttributes.addFlashAttribute("success", 
+                "Dealer '" + dealer.getName() + "' added successfully with GST: " + dealer.getGstNumber());
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
@@ -79,7 +81,8 @@ public class AdminController extends BaseController {
     public String saveProductCost(@ModelAttribute ProductCost productCost, RedirectAttributes redirectAttributes) {
         try {
             productCostService.saveCost(productCost);
-            redirectAttributes.addFlashAttribute("success", "Product costs updated successfully");
+            redirectAttributes.addFlashAttribute("success", 
+                "Product costs updated successfully! New rates applied for all product types.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }

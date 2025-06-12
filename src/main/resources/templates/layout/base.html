@@ -322,6 +322,50 @@
             font-weight: 600;
             box-shadow: 0 2px 8px rgba(39, 174, 96, 0.07);
         }
+
+        /* Enhanced success message styling */
+        .alert-success {
+            background: linear-gradient(135deg, #eafaf1 0%, #d4efdf 100%);
+            border: 1.5px solid #27ae60;
+            color: #145a32;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.15);
+            border-radius: 8px;
+            animation: slideInTop 0.5s ease-out;
+        }
+
+        .alert-success .fas {
+            color: #27ae60;
+            margin-right: 8px;
+        }
+
+        /* Enhanced error message styling */
+        .alert-danger {
+            background: linear-gradient(135deg, #fdf2f2 0%, #fecaca 100%);
+            border: 1.5px solid #dc2626;
+            color: #7f1d1d;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+            border-radius: 8px;
+            animation: slideInTop 0.5s ease-out;
+        }
+
+        .alert-danger .fas {
+            color: #dc2626;
+            margin-right: 8px;
+        }
+
+        /* Animation for messages */
+        @keyframes slideInTop {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body>

@@ -133,7 +133,9 @@ public class ExpenseController extends BaseController {
             }
 
             expenseService.saveExpense(expense);
-            redirectAttributes.addFlashAttribute("success", "Expense saved successfully");
+            redirectAttributes.addFlashAttribute("success", 
+                "Expense saved successfully! ₹" + expense.getAmount() + " " + 
+                expense.getExpenseType().getDisplayName() + " expense recorded.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error saving expense: " + e.getMessage());
         }
