@@ -104,7 +104,8 @@
     </div>
     
     <th:block id="pagescript">
-        <script>
+        <script th:inline="javascript">
+            /*<![CDATA[*/
             $(document).ready(function() {
                 // Set default datetime to now for all datetime-local inputs
                 var now = new Date();
@@ -115,8 +116,10 @@
                 $('.datetime-input').val(nowStr);
                 
                 // Get stock values from Thymeleaf model
-                const currentPithStock = /*[[${currentPithStock}]]*/ 0;
-                const currentLowEcPithStock = /*[[${currentLowEcPithStock}]]*/ 0;
+                const currentPithStock = parseFloat("[[${currentPithStock}]]");
+                const currentLowEcPithStock = parseFloat("[[${currentLowEcPithStock}]]");
+                
+                console.log("Stock values loaded:", { currentPithStock, currentLowEcPithStock });
                 
                 // Each block requires 5kg of pith (this is a business rule)
                 const PITH_PER_BLOCK = 5; 
@@ -197,6 +200,7 @@
                 validatePithQuantity();
                 validateBlockProduction();
             });
+            /*]]>*/
         </script>
     </th:block>
 </body>

@@ -124,11 +124,7 @@ public class SaleController extends BaseController {
             // Set the sale date
             sale.setSaleDate(LocalDateTime.now());
 
-            // Calculate total amount using BigDecimal for precision
-            BigDecimal quantity = BigDecimal.valueOf(sale.getQuantity());
-            BigDecimal price = BigDecimal.valueOf(sale.getPricePerUnit());
-            double totalAmount = quantity.multiply(price).doubleValue();
-            sale.setTotalAmount(totalAmount);
+            // Total amount and tax calculations will be handled by @PrePersist method
 
             // Create invoice number with better uniqueness
             sale.setInvoiceNumber(generateInvoiceNumber());
@@ -176,7 +172,7 @@ public class SaleController extends BaseController {
 
             List<Sale> sales = saleService.getSalesByDateRange(fromDate, toDate);
             Double totalAmount = sales.stream()
-                    .mapToDouble(Sale::getTotalAmount)
+                    .mapToDouble(sale -> sale.getTotalWithTax() != null ? sale.getTotalWithTax() : 0.0)
                     .sum();
 
             // Handle CSV export if requested
@@ -187,7 +183,7 @@ public class SaleController extends BaseController {
 
                 try (PrintWriter writer = response.getWriter()) {
                     // Write CSV header
-                    writer.println("Date & Time,Dealer,Product,Quantity,Price Per Unit,Total Amount");
+                    writer.println("Date & Time,Dealer,Product,Quantity,Price Per Unit,Tax Amount,Total Amount");
 
                     // Write data rows
                     for (Sale sale : sales) {
@@ -210,11 +206,12 @@ public class SaleController extends BaseController {
                                 "\"" + product + "\"",
                                 "\"" + quantity + "\"",
                                 "₹" + sale.getPricePerUnit(),
-                                "₹" + sale.getTotalAmount()));
+                                "₹" + (sale.getTaxAmount() != null ? sale.getTaxAmount() : 0.0),
+                                "₹" + (sale.getTotalWithTax() != null ? sale.getTotalWithTax() : 0.0)));
                     }
 
                     // Write total row
-                    writer.println(",,,,,\"₹" + totalAmount + "\"");
+                    writer.println(",,,,,,\"₹" + totalAmount + "\"");
                 }
                 return null;
             }

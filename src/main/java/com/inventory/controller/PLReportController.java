@@ -33,8 +33,8 @@ public class PLReportController {
         double purchaseAmount = rawMaterialService.getProcessedReport(startDate, endDate).getTotalCost();
         // Expenses
         double expenses = expenseService.getTotalExpenseAmountByDateRange(startDate, endDate);
-        // Sales Revenue
-        double revenue = saleService.getSalesByDateRange(startDate, endDate).stream().mapToDouble(s -> s.getTotalAmount() != null ? s.getTotalAmount() : 0.0).sum();
+        // Sales Revenue (including tax as that's our total revenue)
+        double revenue = saleService.getSalesByDateRange(startDate, endDate).stream().mapToDouble(s -> s.getTotalWithTax() != null ? s.getTotalWithTax() : 0.0).sum();
         // Profit & Loss
         double profit = revenue - (purchaseAmount + expenses);
 

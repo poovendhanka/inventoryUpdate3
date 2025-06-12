@@ -3,6 +3,7 @@ package com.inventory.service;
 import com.inventory.config.CompanyInfoProperties;
 import com.inventory.model.Sale;
 import com.inventory.model.Dealer;
+import com.inventory.util.ProductNameUtil;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.*;
 import lombok.RequiredArgsConstructor;
@@ -80,16 +81,18 @@ public class BillPdfService {
         addTableHeader(itemsTable, thFont, "S.NO.", "ITEMS", "HSN", "QTY.", "RATE", "TAX", "AMOUNT");
         Font tdFont = new Font(Font.HELVETICA, 10);
         DecimalFormat df = new DecimalFormat("#,##0.00");
-        double amount = sale.getQuantity() * sale.getPricePerUnit();
-        double cgst = 0, sgst = 0, totalTax = 0;
+        double amount = sale.getTotalAmount() != null ? sale.getTotalAmount() : 0.0;
+        double cgst = sale.getCgstAmount() != null ? sale.getCgstAmount() : 0.0;
+        double sgst = sale.getSgstAmount() != null ? sale.getSgstAmount() : 0.0;
+        double totalTax = sale.getTaxAmount() != null ? sale.getTaxAmount() : 0.0;
         String taxStr = "";
         if (sale.getProductType().name().equalsIgnoreCase("BLOCK")) {
-            cgst = amount * companyInfoProperties.getCgst() / 100.0;
-            sgst = amount * companyInfoProperties.getSgst() / 100.0;
-            totalTax = cgst + sgst;
             taxStr = df.format(totalTax) + " (" + df.format(companyInfoProperties.getBlockTax()) + "%)";
         }
-        addTableRow(itemsTable, tdFont, "1", sale.getProductType().name(), companyInfoProperties.getHsn(), df.format(sale.getQuantity()), df.format(sale.getPricePerUnit()), taxStr, df.format(amount + totalTax));
+        String productName = ProductNameUtil.getFullProductName(sale.getProductType(), sale.getPithType(), sale.getFiberType());
+        String quantityWithUnit = df.format(sale.getQuantity()) + " " + getUnitForProduct(sale.getProductType());
+        double totalWithTax = sale.getTotalWithTax() != null ? sale.getTotalWithTax() : amount + totalTax;
+        addTableRow(itemsTable, tdFont, "1", productName, companyInfoProperties.getHsn(), quantityWithUnit, df.format(sale.getPricePerUnit()), taxStr, df.format(totalWithTax));
         document.add(itemsTable);
 
         // Totals row
@@ -97,7 +100,7 @@ public class BillPdfService {
         totalTable.setWidthPercentage(40);
         totalTable.setHorizontalAlignment(Element.ALIGN_RIGHT);
         totalTable.addCell(getCell("TOTAL", thFont, Element.ALIGN_LEFT, Rectangle.BOX, Color.LIGHT_GRAY));
-        totalTable.addCell(getCell(df.format(amount + totalTax), thFont, Element.ALIGN_RIGHT, Rectangle.BOX, Color.LIGHT_GRAY));
+        totalTable.addCell(getCell(df.format(totalWithTax), thFont, Element.ALIGN_RIGHT, Rectangle.BOX, Color.LIGHT_GRAY));
         document.add(Chunk.NEWLINE);
         document.add(totalTable);
         document.add(Chunk.NEWLINE);
@@ -125,7 +128,7 @@ public class BillPdfService {
         document.add(Chunk.NEWLINE);
 
         // Total Amount in Words
-        String amountInWords = "Total Amount (in words): " + convertNumberToWords((long) Math.round(amount + totalTax)) + " Rupees";
+        String amountInWords = "Total Amount (in words): " + convertNumberToWords((long) Math.round(totalWithTax)) + " Rupees";
         document.add(new Paragraph(amountInWords, new Font(Font.HELVETICA, 10, Font.BOLD)));
         document.add(Chunk.NEWLINE);
 
@@ -194,6 +197,19 @@ public class BillPdfService {
         cell.setBackgroundColor(bgColor);
         cell.setPadding(5);
         return cell;
+    }
+
+    private String getUnitForProduct(com.inventory.model.ProductType productType) {
+        switch (productType) {
+            case PITH:
+                return "kg";
+            case FIBER:
+                return "bales";
+            case BLOCK:
+                return "blocks";
+            default:
+                return "";
+        }
     }
 
     // Simple number to words (for rupees, up to crores)

@@ -327,7 +327,9 @@
                                         <th>Dealer</th>
                                         <th>Product</th>
                                         <th>Quantity</th>
-                                        <th>Price</th>
+                                        <th>Price per Unit</th>
+                                        <th>Tax Amount</th>
+                                        <th>Total with Tax</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -335,9 +337,15 @@
                                     <tr th:each="sale : ${recentSales}">
                                         <td th:text="${#temporals.format(sale.saleDate, 'dd-MM-yyyy HH:mm')}">Date</td>
                                         <td th:text="${sale.dealer.name}">Dealer</td>
-                                        <td th:text="${sale.productType}">Product</td>
-                                        <td th:text="${sale.quantity}">Quantity</td>
-                                        <td th:text="${sale.pricePerUnit}">Price</td>
+                                        <td th:text="${T(com.inventory.util.ProductNameUtil).getFullProductName(sale.productType, sale.pithType, sale.fiberType)}">Product</td>
+                                        <td>
+                                            <span th:if="${sale.productType.name() == 'PITH'}" th:text="${sale.quantity + ' kg'}"></span>
+                                            <span th:if="${sale.productType.name() == 'FIBER'}" th:text="${sale.quantity + ' bales'}"></span>
+                                            <span th:if="${sale.productType.name() == 'BLOCK'}" th:text="${sale.quantity + ' blocks'}"></span>
+                                        </td>
+                                        <td th:text="'Rs. ' + ${#numbers.formatDecimal(sale.pricePerUnit, 1, 2)}">Price</td>
+                                        <td th:text="'Rs. ' + ${#numbers.formatDecimal(sale.taxAmount != null ? sale.taxAmount : 0.0, 1, 2)}">Tax</td>
+                                        <td th:text="'Rs. ' + ${#numbers.formatDecimal(sale.totalWithTax != null ? sale.totalWithTax : 0.0, 1, 2)}">Total</td>
                                         <td>
                                             <a th:href="@{'/sales/' + ${sale.id} + '/bill'}" class="btn btn-outline-primary btn-sm" target="_blank">
                                                 Download Bill
