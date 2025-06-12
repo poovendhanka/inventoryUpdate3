@@ -27,7 +27,8 @@
                                         <th>Party</th>
                                         <th>Husk Type</th>
                                         <th>CFT</th>
-                                        <th>Cost</th>
+                                        <th>Cost per CFT</th>
+                                        <th>Total Cost</th>
                                         <th>Supervisor</th>
                                         <th>Action</th>
                                     </tr>
@@ -47,16 +48,21 @@
                                                   class="process-form">
                                                 <input type="hidden" name="rawMaterialId" th:value="${entry.id}">
                                                 <input type="number" 
-                                                       name="cost" 
-                                                       class="form-control form-control-sm" 
+                                                       name="costPerCft" 
+                                                       class="form-control form-control-sm cost-per-cft" 
                                                        required 
-                                                       step="0.01">
+                                                       step="0.01"
+                                                       placeholder="Cost per CFT"
+                                                       th:data-cft="${entry.cft}">
                                                 <input type="text" 
                                                        name="supervisorName" 
                                                        class="form-control form-control-sm mt-1" 
                                                        placeholder="Supervisor Name" 
                                                        required>
                                             </form>
+                                        </td>
+                                        <td>
+                                            <span th:id="'total-cost-' + ${entry.id}" class="total-cost-display text-success font-weight-bold">-</span>
                                         </td>
                                         <td th:text="${entry.supervisorName}"></td>
                                         <td>
@@ -104,9 +110,29 @@
                         e.preventDefault();
                     }
                 });
+                
                 // Set default date to today
                 var today = new Date().toISOString().split('T')[0];
                 $('input[type="date"]').val(today);
+                
+                // Calculate total cost dynamically
+                $('.cost-per-cft').on('input', function() {
+                    var costPerCft = parseFloat($(this).val()) || 0;
+                    var cft = parseFloat($(this).data('cft')) || 0;
+                    var totalCost = costPerCft * cft;
+                    
+                    var formId = $(this).closest('form').attr('id');
+                    var entryId = formId.split('-')[1];
+                    var totalCostSpan = $('#total-cost-' + entryId);
+                    
+                    if (costPerCft > 0 && cft > 0) {
+                        totalCostSpan.text('₹' + totalCost.toFixed(2));
+                        totalCostSpan.removeClass('text-muted').addClass('text-success');
+                    } else {
+                        totalCostSpan.text('-');
+                        totalCostSpan.removeClass('text-success').addClass('text-muted');
+                    }
+                });
             });
         </script>
     </th:block>

@@ -78,7 +78,7 @@ public class RawMaterialController extends BaseController {
         try (PrintWriter writer = response.getWriter()) {
             // Write CSV header
             writer.println(
-                    "Receipt Number,Date,Vehicle Number,Party,Supervisor,Cost,Processed Date,Accounts Supervisor");
+                    "Receipt Number,Date,Vehicle Number,Party,Supervisor,Cost per CFT,Total Cost,Processed Date,Accounts Supervisor");
 
             // Write data rows
             for (ProcessedRawMaterial entry : report.getProcessedEntries()) {
@@ -89,7 +89,8 @@ public class RawMaterialController extends BaseController {
                         rawMaterial.getVehicleNumber(),
                         rawMaterial.getParty() != null ? "\"" + rawMaterial.getParty().getName() + "\"" : "",
                         "\"" + rawMaterial.getSupervisorName() + "\"",
-                        entry.getCost().toString(),
+                        entry.getCostPerCft() != null ? entry.getCostPerCft().toString() : "0.0",
+                        entry.getTotalCost() != null ? entry.getTotalCost().toString() : "0.0",
                         entry.getProcessedDate().toLocalDate().toString(),
                         "\"" + entry.getAccountsSupervisor() + "\""));
             }

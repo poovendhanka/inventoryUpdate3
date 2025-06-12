@@ -16,12 +16,23 @@ public class ProcessedRawMaterial {
     @JoinColumn(name = "raw_material_id", unique = true)
     private RawMaterial rawMaterial;
     
-    @Column(name = "cost")
-    private Double cost;
+    @Column(name = "cost_per_cft")
+    private Double costPerCft;
+    
+    @Column(name = "total_cost")
+    private Double totalCost;
     
     @Column(name = "accounts_supervisor")
     private String accountsSupervisor;
     
     @Column(name = "processed_date")
     private LocalDateTime processedDate;
+    
+    @PrePersist
+    @PreUpdate
+    public void calculateTotalCost() {
+        if (costPerCft != null && rawMaterial != null && rawMaterial.getCft() != null) {
+            this.totalCost = costPerCft * rawMaterial.getCft();
+        }
+    }
 } 

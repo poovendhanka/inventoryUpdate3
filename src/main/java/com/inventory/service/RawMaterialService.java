@@ -69,7 +69,7 @@ public class RawMaterialService {
     }
 
     @Transactional
-    public ProcessedRawMaterial processRawMaterial(Long rawMaterialId, Double cost, String supervisor) {
+    public ProcessedRawMaterial processRawMaterial(Long rawMaterialId, Double costPerCft, String supervisor) {
         RawMaterial rawMaterial = rawMaterialRepository.findById(rawMaterialId)
                 .orElseThrow(() -> new RuntimeException("Raw Material not found"));
 
@@ -92,18 +92,18 @@ public class RawMaterialService {
         // Create ProcessedRawMaterial entry
         ProcessedRawMaterial processed = new ProcessedRawMaterial();
         processed.setRawMaterial(rawMaterial);
-        processed.setCost(cost);
+        processed.setCostPerCft(costPerCft);
         processed.setAccountsSupervisor(supervisor);
         processed.setProcessedDate(now);
 
-        // Save ProcessedRawMaterial first
+        // Save ProcessedRawMaterial first (this will calculate totalCost automatically via @PrePersist)
         ProcessedRawMaterial savedProcessed = processedRepository.save(processed);
         log.info("Saved ProcessedRawMaterial with ID: {}", savedProcessed.getId());
 
-        // Create Account entry
+        // Create Account entry using the calculated total cost
         Account account = new Account();
-        account.setAmount(cost);
-        account.setCost(cost);
+        account.setAmount(savedProcessed.getTotalCost());
+        account.setCost(savedProcessed.getTotalCost());
         account.setDescription("Raw Material Processing - Receipt #" + rawMaterial.getReceiptNumber());
         account.setIsExpense(true);
         account.setProcessedAt(now);
@@ -164,7 +164,7 @@ public class RawMaterialService {
 
         // Calculate totals
         double totalCost = processedEntries.stream()
-                .mapToDouble(ProcessedRawMaterial::getCost)
+                .mapToDouble(processed -> processed.getTotalCost() != null ? processed.getTotalCost() : 0.0)
                 .sum();
 
         return ProcessedRawMaterialReport.builder()

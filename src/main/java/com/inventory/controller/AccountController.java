@@ -30,13 +30,13 @@ public class AccountController extends BaseController {
     
     @PostMapping("/process")
     public String processRawMaterial(@RequestParam Long rawMaterialId,
-                                   @RequestParam Double cost,
+                                   @RequestParam Double costPerCft,
                                    @RequestParam String supervisorName) {
-        log.info("Processing raw material ID: {} with cost: {} and supervisor: {}", 
-                rawMaterialId, cost, supervisorName);
+        log.info("Processing raw material ID: {} with cost per CFT: {} and supervisor: {}", 
+                rawMaterialId, costPerCft, supervisorName);
                 
         try {
-            ProcessedRawMaterial processed = rawMaterialService.processRawMaterial(rawMaterialId, cost, supervisorName);
+            ProcessedRawMaterial processed = rawMaterialService.processRawMaterial(rawMaterialId, costPerCft, supervisorName);
             log.info("Successfully processed raw material. ProcessedRawMaterial ID: {}", processed.getId());
             return "redirect:/accounts";
         } catch (Exception e) {
