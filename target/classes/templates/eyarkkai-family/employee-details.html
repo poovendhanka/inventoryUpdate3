@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Employee Details</title>
+</head>
+<body>
+    <!-- Page Title -->
+    <th:block id="pageTitle">
+        <h1 class="main-page-title">Employee Details</h1>
+    </th:block>
+    
+    <!-- Main Content -->
+    <div id="content">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/eyarkkai-family}">Eyarkkai Family</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a th:href="@{/eyarkkai-family?tab=employees}">Employees</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <span th:text="${employee.name}">Employee Name</span>
+                </li>
+            </ol>
+        </nav>
+        
+        <div class="row">
+            <!-- Employee Profile Card -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>
+                            <i class="fas fa-user"></i>
+                            <span th:text="${employee.name}">Employee Name</span>
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Profile Picture Section -->
+                            <div class="col-md-4 text-center mb-3">
+                                <div class="profile-picture">
+                                    <i class="fas fa-user-circle fa-8x text-success"></i>
+                                </div>
+                                <h5 class="mt-3" th:text="${employee.name}">Employee Name</h5>
+                                <p class="text-muted">
+                                    <i class="fas fa-venus-mars"></i>
+                                    <span th:text="${employee.gender}">Gender</span>
+                                </p>
+                            </div>
+                            
+                            <!-- Personal Information -->
+                            <div class="col-md-8">
+                                <h5><i class="fas fa-info-circle"></i> Personal Information</h5>
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <td><strong><i class="fas fa-calendar"></i> Date of Birth:</strong></td>
+                                        <td th:text="${#temporals.format(employee.dateOfBirth, 'dd MMMM yyyy')}">Date</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong><i class="fas fa-birthday-cake"></i> Age:</strong></td>
+                                        <td>
+                                            <span th:text="${#temporals.year(#temporals.createNow()) - #temporals.year(employee.dateOfBirth)}">Age</span> years
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong><i class="fas fa-id-card"></i> Aadhar Number:</strong></td>
+                                        <td>
+                                            <span th:text="${#strings.substring(employee.aadharNumber, 0, 4)}">XXXX</span>
+                                            <span th:text="${#strings.substring(employee.aadharNumber, 4, 8)}">XXXX</span>
+                                            <span th:text="${#strings.substring(employee.aadharNumber, 8, 12)}">XXXX</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong><i class="fas fa-phone"></i> Contact:</strong></td>
+                                        <td>+91 <span th:text="${employee.contact}">XXXXXXXXXX</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong><i class="fas fa-map-marker-alt"></i> Address:</strong></td>
+                                        <td th:text="${employee.address}">Address</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Statistics and Actions Card -->
+            <div class="col-md-4">
+                <!-- Quick Stats -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5><i class="fas fa-chart-bar"></i> Quick Stats</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center">
+                            <div class="mb-3">
+                                <h3 class="text-success" th:text="${#temporals.year(#temporals.createNow()) - #temporals.year(employee.dateOfBirth)}">Age</h3>
+                                <small class="text-muted">Years Old</small>
+                            </div>
+                            <div class="mb-3">
+                                <h3 class="text-info">Active</h3>
+                                <small class="text-muted">Employee Status</small>
+                            </div>
+                            <div>
+                                <h3 class="text-warning" th:text="${employee.gender}">Gender</h3>
+                                <small class="text-muted">Gender</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-cogs"></i> Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a th:href="@{/eyarkkai-family/employees/{id}/edit(id=${employee.id})}"
+                               class="btn btn-warning">
+                                <i class="fas fa-edit"></i> Edit Details
+                            </a>
+                            <button type="button"
+                                    class="btn btn-danger"
+                                    th:attr="data-employee-id=${employee.id},data-employee-name=${employee.name}"
+                                    onclick="confirmDelete(this)">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                            <a th:href="@{/eyarkkai-family?tab=employees}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to List
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete employee <strong id="employeeName"></strong>?</p>
+                    <p class="text-danger">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form id="deleteForm" method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Page specific scripts -->
+    <th:block id="pagescript">
+        <script>
+            function confirmDelete(button) {
+                var employeeId = button.getAttribute('data-employee-id');
+                var employeeName = button.getAttribute('data-employee-name');
+                document.getElementById('employeeName').textContent = employeeName;
+                document.getElementById('deleteForm').action = '/eyarkkai-family/employees/' + employeeId + '/delete';
+                var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+                modal.show();
+            }
+        </script>
+        
+        <style>
+            .profile-picture {
+                margin-bottom: 1rem;
+            }
+            
+            .table td {
+                padding: 0.5rem 0;
+                vertical-align: top;
+            }
+            
+            .table td:first-child {
+                width: 40%;
+            }
+            
+            .card {
+                border: 1px solid #229954;
+            }
+            
+            .card-header {
+                background-color: #f8f9fa;
+                border-bottom: 1px solid #229954;
+            }
+            
+            .text-success {
+                color: #229954 !important;
+            }
+            
+            .breadcrumb-item > a {
+                color: #229954;
+                text-decoration: none;
+            }
+            
+            .breadcrumb-item > a:hover {
+                color: #145a32;
+            }
+        </style>
+    </th:block>
+</body>
+</html> 

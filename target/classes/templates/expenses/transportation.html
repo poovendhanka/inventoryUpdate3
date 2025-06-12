@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<head>
+    <title>Transportation Expenses</title>
+</head>
+<body>
+    <div id="pageTitle">
+        <h1>Transportation Expenses</h1>
+    </div>
+    
+    <div id="content">
+        <!-- Expense Management Tabs -->
+        <div th:replace="~{expenses/layout :: expenseTabs}"></div>
+        
+        <!-- Transportation Expense Form with Extra Fields -->
+        <div th:with="extraFields=~{::extraFields}, columnSize=3">
+            <div th:replace="~{expenses/layout :: expenseForm(${expenseType}, 'Add Transportation Expense', ~{::extraFields}, ${columnSize})}">
+                <!-- Extra Fields -->
+                <div th:fragment="extraFields">
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="fuelQuantity" class="form-label">Fuel Quantity (L)</label>
+                            <input type="number" class="form-control" id="fuelQuantity" th:field="*{fuelQuantity}" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label for="vehicleDetails" class="form-label">Vehicle Details</label>
+                            <input type="text" class="form-control" id="vehicleDetails" th:field="*{vehicleDetails}" placeholder="e.g. Truck 1, Forklift 2" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Transportation Expenses Table with Extra Columns -->
+        <div th:with="columns=~{::tableColumns}">
+            <div th:replace="~{expenses/layout :: recentExpenses(~{::tableColumns})}">
+                <th:block th:fragment="tableColumns">
+                    <th>Fuel (L)</th>
+                    <th>Vehicle</th>
+                </th:block>
+            </div>
+        </div>
+        
+        <!-- Additional info or guidance can be added here -->
+        <div class="alert alert-info mt-4">
+            <i class="fas fa-info-circle"></i> Track fuel expenses, vehicle maintenance, and other transportation-related costs.
+        </div>
+    </div>
+    
+    <!-- Page-specific scripts -->
+    <div id="pagescript">
+        <script>
+            // Any page-specific JavaScript can go here
+            $(document).ready(function() {
+                console.log("Transportation expenses page loaded");
+            });
+        </script>
+    </div>
+</body>
+</html> 

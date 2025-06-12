@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<head>
+    <title>Miscellaneous Expenses</title>
+</head>
+<body>
+    <div id="pageTitle">
+        <h1>Miscellaneous Expenses</h1>
+    </div>
+    
+    <div id="content">
+        <!-- Expense Management Tabs -->
+        <div th:replace="~{expenses/layout :: expenseTabs}"></div>
+        
+        <!-- Miscellaneous Expense Form -->
+        <div th:with="extraFields=~{::extraFields}, columnSize=4">
+            <div th:replace="~{expenses/layout :: expenseForm(${expenseType}, 'Add Miscellaneous Expense', ~{::extraFields}, ${columnSize})}">
+                <!-- No extra fields for miscellaneous expenses -->
+                <div th:fragment="extraFields">
+                    <!-- Placeholder for extra fields if needed in the future -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Miscellaneous Expenses Table -->
+        <div th:with="columns=~{::tableColumns}">
+            <div th:replace="~{expenses/layout :: recentExpenses(~{::tableColumns})}">
+                <th:block th:fragment="tableColumns">
+                    <!-- No extra columns for miscellaneous expenses -->
+                </th:block>
+            </div>
+        </div>
+        
+        <!-- Additional info or guidance can be added here -->
+        <div class="alert alert-info mt-4">
+            <i class="fas fa-info-circle"></i> Track miscellaneous expenses that don't fit into other categories, such as office supplies, cleaning materials, etc.
+        </div>
+    </div>
+    
+    <!-- Page-specific scripts -->
+    <div id="pagescript">
+        <script>
+            // Any page-specific JavaScript can go here
+            $(document).ready(function() {
+                console.log("Miscellaneous expenses page loaded");
+            });
+        </script>
+    </div>
+</body>
+</html> 
