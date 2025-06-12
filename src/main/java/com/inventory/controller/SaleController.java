@@ -29,6 +29,8 @@ import com.inventory.service.BillNumberService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import com.inventory.service.ProductCostService;
+import com.inventory.model.ProductCost;
 
 @Controller
 @RequestMapping("/sales")
@@ -40,6 +42,7 @@ public class SaleController extends BaseController {
     private final StockService stockService;
     private final BillPdfService billPdfService;
     private final BillNumberService billNumberService;
+    private final ProductCostService productCostService;
 
     @GetMapping
     public String showSalesPage(Model model, HttpServletRequest request) {
@@ -60,6 +63,7 @@ public class SaleController extends BaseController {
         model.addAttribute("lowEcBlockStock", stockService.getCurrentBlockStock(PithType.LOW));
 
         model.addAttribute("recentSales", saleService.getRecentSales());
+        model.addAttribute("productCost", productCostService.getCurrentCost());
         return getViewPath("sales/index");
     }
 

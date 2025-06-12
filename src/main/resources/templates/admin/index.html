@@ -10,114 +10,177 @@
     
     <h1 id="pageTitle">Admin Panel</h1>
     <div id="content">
-        <div class="row">
-            <!-- Party Management -->
-            <div class="col-md-6">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Manage Suppliers</h5>
-                    </div>
-                    <div class="card-body">
-                        <form th:action="@{/admin/parties}" method="post" th:object="${party}">
-                            <div class="mb-3">
-                                <label for="partyName" class="form-label">Name</label>
-                                <input type="text" class="form-control" id="partyName" th:field="*{name}" required>
+        <div class="container mt-4">
+            <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="supplier-tab" data-bs-toggle="tab" data-bs-target="#supplier" type="button" role="tab" aria-controls="supplier" aria-selected="true">Add Supplier</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="dealer-tab" data-bs-toggle="tab" data-bs-target="#dealer" type="button" role="tab" aria-controls="dealer" aria-selected="false">Add Dealer</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="cost-tab" data-bs-toggle="tab" data-bs-target="#cost" type="button" role="tab" aria-controls="cost" aria-selected="false">Set Cost</button>
+                </li>
+            </ul>
+            <div class="tab-content" id="adminTabsContent">
+                <!-- Supplier Tab -->
+                <div class="tab-pane fade show active" id="supplier" role="tabpanel" aria-labelledby="supplier-tab">
+                    <div class="row mt-3">
+                        <div class="col-md-8 col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header"><h5 class="card-title mb-0">Add Supplier</h5></div>
+                                <div class="card-body">
+                                    <form th:action="@{/admin/parties}" method="post" th:object="${party}">
+                                        <div class="mb-3">
+                                            <label for="partyName" class="form-label">Name</label>
+                                            <input type="text" class="form-control" id="partyName" th:field="*{name}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="partyPhone" class="form-label">Phone Number</label>
+                                            <input type="text" class="form-control" id="partyPhone" th:field="*{phoneNumber}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="partySin" class="form-label">SIN Number</label>
+                                            <input type="text" class="form-control" id="partySin" th:field="*{sinNumber}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="partyAddress" class="form-label">Address</label>
+                                            <textarea class="form-control" id="partyAddress" th:field="*{address}" rows="2"></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-success">Add Supplier</button>
+                                    </form>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="partyPhone" class="form-label">Phone Number</label>
-                                <input type="text" class="form-control" id="partyPhone" th:field="*{phoneNumber}">
+                        </div>
+                        <div class="col-md-12">
+                            <!-- Supplier Table (reuse existing) -->
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Phone</th>
+                                            <th>SIN</th>
+                                            <th>Address</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="party : ${parties}">
+                                            <td th:text="${party.name}"></td>
+                                            <td th:text="${party.phoneNumber}"></td>
+                                            <td th:text="${party.sinNumber}"></td>
+                                            <td th:text="${party.address}"></td>
+                                            <td>
+                                                <form th:action="@{/admin/parties/{id}(id=${party.id})}" method="post" style="display: inline;">
+                                                    <input type="hidden" name="_method" value="DELETE">
+                                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
-                            <div class="mb-3">
-                                <label for="partySin" class="form-label">SIN Number</label>
-                                <input type="text" class="form-control" id="partySin" th:field="*{sinNumber}">
-                            </div>
-                            <button type="submit" class="btn btn-success">Add Supplier</button>
-                        </form>
-                        
-                        <hr>
-                        
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Phone</th>
-                                        <th>SIN</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="party : ${parties}">
-                                        <td th:text="${party.name}"></td>
-                                        <td th:text="${party.phoneNumber}"></td>
-                                        <td th:text="${party.sinNumber}"></td>
-                                        <td>
-                                            <form th:action="@{/admin/parties/{id}(id=${party.id})}" method="post" style="display: inline;">
-                                                <input type="hidden" name="_method" value="DELETE">
-                                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Dealer Management -->
-            <div class="col-md-6">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Manage Dealers</h5>
+                <!-- Dealer Tab -->
+                <div class="tab-pane fade" id="dealer" role="tabpanel" aria-labelledby="dealer-tab">
+                    <div class="row mt-3">
+                        <div class="col-md-8 col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header"><h5 class="card-title mb-0">Add Dealer</h5></div>
+                                <div class="card-body">
+                                    <form th:action="@{/admin/dealers}" method="post" th:object="${dealer}">
+                                        <div class="mb-3">
+                                            <label for="dealerName" class="form-label">Name</label>
+                                            <input type="text" class="form-control" id="dealerName" th:field="*{name}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="dealerPhone" class="form-label">Phone Number</label>
+                                            <input type="text" class="form-control" id="dealerPhone" th:field="*{phoneNumber}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="dealerAddress" class="form-label">Address</label>
+                                            <textarea class="form-control" id="dealerAddress" th:field="*{address}" rows="2"></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="dealerGst" class="form-label">GST Number</label>
+                                            <input type="text" class="form-control" id="dealerGst" th:field="*{gstNumber}">
+                                        </div>
+                                        <button type="submit" class="btn btn-success">Add Dealer</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <!-- Dealer Table (reuse existing) -->
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Phone</th>
+                                            <th>GST</th>
+                                            <th>Address</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="dealer : ${dealers}">
+                                            <td th:text="${dealer.name}"></td>
+                                            <td th:text="${dealer.phoneNumber}"></td>
+                                            <td th:text="${dealer.gstNumber}"></td>
+                                            <td th:text="${dealer.address}"></td>
+                                            <td>
+                                                <form th:action="@{/admin/dealers/{id}(id=${dealer.id})}" method="post" style="display: inline;">
+                                                    <input type="hidden" name="_method" value="DELETE">
+                                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <form th:action="@{/admin/dealers}" method="post" th:object="${dealer}">
-                            <div class="mb-3">
-                                <label for="dealerName" class="form-label">Name</label>
-                                <input type="text" class="form-control" id="dealerName" th:field="*{name}" required>
+                </div>
+                <!-- Set Cost Tab -->
+                <div class="tab-pane fade" id="cost" role="tabpanel" aria-labelledby="cost-tab">
+                    <div class="row mt-3">
+                        <div class="col-md-8 col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header"><h5 class="card-title mb-0">Set Product Cost</h5></div>
+                                <div class="card-body">
+                                    <form th:action="@{/admin/set-cost}" method="post" th:object="${productCost}">
+                                        <div class="mb-3">
+                                            <label class="form-label">Block (Normal EC)</label>
+                                            <input type="number" class="form-control" th:field="*{blockNormalCost}" step="0.01" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Block (Low EC)</label>
+                                            <input type="number" class="form-control" th:field="*{blockLowCost}" step="0.01" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Pith (Normal EC)</label>
+                                            <input type="number" class="form-control" th:field="*{pithNormalCost}" step="0.01" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Pith (Low EC)</label>
+                                            <input type="number" class="form-control" th:field="*{pithLowCost}" step="0.01" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Fiber (White)</label>
+                                            <input type="number" class="form-control" th:field="*{fiberWhiteCost}" step="0.01" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Fiber (Brown)</label>
+                                            <input type="number" class="form-control" th:field="*{fiberBrownCost}" step="0.01" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-success">Save Costs</button>
+                                    </form>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="dealerPhone" class="form-label">Phone Number</label>
-                                <input type="text" class="form-control" id="dealerPhone" th:field="*{phoneNumber}">
-                            </div>
-                            <div class="mb-3">
-                                <label for="dealerAddress" class="form-label">Address</label>
-                                <input type="text" class="form-control" id="dealerAddress" th:field="*{address}">
-                            </div>
-                            <div class="mb-3">
-                                <label for="dealerGst" class="form-label">GST Number</label>
-                                <input type="text" class="form-control" id="dealerGst" th:field="*{gstNumber}">
-                            </div>
-                            <button type="submit" class="btn btn-success">Add Dealer</button>
-                        </form>
-                        
-                        <hr>
-                        
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Phone</th>
-                                        <th>GST</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="dealer : ${dealers}">
-                                        <td th:text="${dealer.name}"></td>
-                                        <td th:text="${dealer.phoneNumber}"></td>
-                                        <td th:text="${dealer.gstNumber}"></td>
-                                        <td>
-                                            <form th:action="@{/admin/dealers/{id}(id=${dealer.id})}" method="post" style="display: inline;">
-                                                <input type="hidden" name="_method" value="DELETE">
-                                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
                         </div>
                     </div>
                 </div>

@@ -140,11 +140,12 @@
                                             <small class="text-muted" id="pithQuantityHelp"></small>
                                         </div>
 
-                                        <!-- Price per Unit -->
+                                        <!-- Price per Unit for Pith -->
                                         <div class="col-md-6 mb-3">
                                             <label for="pithPricePerUnit" class="form-label">Price per kg</label>
                                             <input type="number" class="form-control" id="pithPricePerUnit" 
-                                                   name="pricePerUnit" step="0.01" required min="0">
+                                                   name="pricePerUnitDisplay" step="0.01" required min="0" readonly>
+                                            <input type="hidden" id="pithPricePerUnitHidden" name="pricePerUnit">
                                         </div>
                                     </div>
 
@@ -196,11 +197,12 @@
                                             <small class="text-muted" id="fiberQuantityHelp"></small>
                                         </div>
 
-                                        <!-- Price per Unit -->
+                                        <!-- Price per Unit for Fiber -->
                                         <div class="col-md-6 mb-3">
                                             <label for="fiberPricePerUnit" class="form-label">Price per bale</label>
                                             <input type="number" class="form-control" id="fiberPricePerUnit" 
-                                                   name="pricePerUnit" step="0.01" required min="0">
+                                                   name="pricePerUnitDisplay" step="0.01" required min="0" readonly>
+                                            <input type="hidden" id="fiberPricePerUnitHidden" name="pricePerUnit">
                                         </div>
                                     </div>
 
@@ -250,11 +252,12 @@
                                             <small class="text-muted" id="blockQuantityHelp"></small>
                                         </div>
 
-                                        <!-- Price per Unit -->
+                                        <!-- Price per Unit for Block -->
                                         <div class="col-md-6 mb-3">
                                             <label for="blockPricePerUnit" class="form-label">Price per block</label>
                                             <input type="number" class="form-control" id="blockPricePerUnit" 
-                                                   name="pricePerUnit" step="0.01" required min="0">
+                                                   name="pricePerUnitDisplay" step="0.01" required min="0" readonly>
+                                            <input type="hidden" id="blockPricePerUnitHidden" name="pricePerUnit">
                                         </div>
                                     </div>
 
@@ -573,6 +576,45 @@
                 if (lastTab && $('#' + lastTab).length) {
                     $('#' + lastTab).tab('show');
                 }
+
+                // Product cost values from backend
+                var productCost = {
+                    pithNormal: parseFloat("[[${productCost.pithNormalCost} ?: 0]]"),
+                    pithLow: parseFloat("[[${productCost.pithLowCost} ?: 0]]"),
+                    fiberWhite: parseFloat("[[${productCost.fiberWhiteCost} ?: 0]]"),
+                    fiberBrown: parseFloat("[[${productCost.fiberBrownCost} ?: 0]]"),
+                    blockNormal: parseFloat("[[${productCost.blockNormalCost} ?: 0]]"),
+                    blockLow: parseFloat("[[${productCost.blockLowCost} ?: 0]]")
+                };
+
+                function updatePithPrice() {
+                    var type = document.getElementById('pithType').value;
+                    var price = type === 'LOW' ? productCost.pithLow : productCost.pithNormal;
+                    document.getElementById('pithPricePerUnit').value = price;
+                    document.getElementById('pithPricePerUnitHidden').value = price;
+                }
+                function updateFiberPrice() {
+                    var type = document.getElementById('fiberType').value;
+                    var price = type === 'BROWN' ? productCost.fiberBrown : productCost.fiberWhite;
+                    document.getElementById('fiberPricePerUnit').value = price;
+                    document.getElementById('fiberPricePerUnitHidden').value = price;
+                }
+                function updateBlockPrice() {
+                    var type = document.getElementById('blockType').value;
+                    var price = type === 'LOW' ? productCost.blockLow : productCost.blockNormal;
+                    document.getElementById('blockPricePerUnit').value = price;
+                    document.getElementById('blockPricePerUnitHidden').value = price;
+                }
+
+                // Initialize prices and set up event listeners
+                updatePithPrice();
+                updateFiberPrice();
+                updateBlockPrice();
+                
+                // Add event listeners for price updates
+                document.getElementById('pithType').addEventListener('change', updatePithPrice);
+                document.getElementById('fiberType').addEventListener('change', updateFiberPrice);
+                document.getElementById('blockType').addEventListener('change', updateBlockPrice);
             });
         </script>
     </th:block>

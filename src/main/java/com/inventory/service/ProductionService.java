@@ -57,7 +57,7 @@ public class ProductionService {
         // Reduce husk stock based on pith production
         if (production.getPithQuantity() != null && production.getHuskType() != null) {
             double pithQty = production.getPithQuantity();
-            double huskToReduce = (pithQty / 750.0) * 2100.0; // 2100 CFT per 750kg pith
+            double huskToReduce = pithQty * 2.0; // 2 CFT per 1kg pith
             stockService.reduceHuskStock(production.getHuskType(), huskToReduce);
         }
     }

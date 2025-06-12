@@ -14,4 +14,5 @@ public class Party {
     private String name;
     private String sinNumber;
     private String phoneNumber;
+    private String address;
 } 

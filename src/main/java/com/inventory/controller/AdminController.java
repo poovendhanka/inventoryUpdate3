@@ -2,8 +2,10 @@ package com.inventory.controller;
 
 import com.inventory.model.Party;
 import com.inventory.model.Dealer;
+import com.inventory.model.ProductCost;
 import com.inventory.service.PartyService;
 import com.inventory.service.DealerService;
+import com.inventory.service.ProductCostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +19,7 @@ public class AdminController extends BaseController {
     
     private final PartyService partyService;
     private final DealerService dealerService;
+    private final ProductCostService productCostService;
     
     @GetMapping
     public String showAdminPage(Model model) {
@@ -70,5 +73,21 @@ public class AdminController extends BaseController {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/admin";
+    }
+    
+    @PostMapping("/set-cost")
+    public String saveProductCost(@ModelAttribute ProductCost productCost, RedirectAttributes redirectAttributes) {
+        try {
+            productCostService.saveCost(productCost);
+            redirectAttributes.addFlashAttribute("success", "Product costs updated successfully");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/admin";
+    }
+
+    @ModelAttribute("productCost")
+    public ProductCost productCost() {
+        return productCostService.getCurrentCost();
     }
 } 
