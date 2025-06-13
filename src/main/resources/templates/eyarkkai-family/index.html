@@ -217,7 +217,7 @@
                                                             class="btn btn-sm btn-danger"
                                                             th:attr="data-employee-id=${employee.id},data-employee-name=${employee.name}"
                                                             onclick="confirmDelete(this)">
-                                                        <i class="fas fa-user-times"></i> Move to Old
+                                                        <i class="fas fa-user-times"></i> Delete Employee
                                                     </button>
                                                 </td>
                                             </tr>
@@ -334,7 +334,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Confirm Move to Old Employees</h5>
+                        <h5 class="modal-title">Confirm Delete Employee</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
@@ -344,7 +344,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <form id="deleteForm" method="post" style="display: inline;">
-                            <button type="submit" class="btn btn-danger">Move to Old Employees</button>
+                            <button type="submit" class="btn btn-danger">Delete Employee</button>
                         </form>
                     </div>
                 </div>

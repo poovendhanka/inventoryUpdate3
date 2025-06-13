@@ -92,10 +92,12 @@
                     <div class="card-body">
                         <form th:action="@{/accounts-report/raw-materials}" method="get" class="row g-3 mb-4">
                             <div class="col-auto">
+                                <label class="form-label">Select Date <span class="text-danger">*</span></label>
                                 <input type="date" class="form-control" name="date" required>
                             </div>
                             <div class="col-auto">
-                                <button type="submit" class="btn btn-success">View Report</button>
+                                <label class="form-label">&nbsp;</label>
+                                <button type="submit" class="btn btn-success d-block">View Report</button>
                             </div>
                         </form>
                     </div>
@@ -112,7 +114,7 @@
                         <!-- Date Selection Form -->
                         <form th:action="@{/accounts}" method="get" class="row g-3 mb-4">
                             <div class="col-auto">
-                                <label for="processedDate" class="form-label">Select Date:</label>
+                                <label for="processedDate" class="form-label">Select Date <span class="text-danger">*</span></label>
                                 <input type="date" 
                                        id="processedDate"
                                        class="form-control" 

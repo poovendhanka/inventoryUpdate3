@@ -2,16 +2,23 @@ package com.inventory.controller;
 
 import com.inventory.model.Employee;
 import com.inventory.service.EmployeeService;
+import com.inventory.service.LabourEntryService;
+import com.inventory.dto.EmployeeWorkReportDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Controller
 @RequestMapping("/eyarkkai-family")
@@ -19,6 +26,9 @@ public class EyarkkaiController {
     
     @Autowired
     private EmployeeService employeeService;
+    
+    @Autowired
+    private LabourEntryService labourEntryService;
     
     @GetMapping
     public String eyarkkaiFamily(@RequestParam(defaultValue = "about") String tab, 
@@ -195,5 +205,185 @@ public class EyarkkaiController {
         model.addAttribute("activeTab", "eyarkkai-family");
         model.addAttribute("currentTab", "connect");
         return "eyarkkai-family/index";
+    }
+    
+    // Employee Work Report Endpoints
+    @GetMapping("/employees/{id}/work-report")
+    public String employeeWorkReport(@PathVariable Long id,
+                                   @RequestParam(required = false) String fromDate,
+                                   @RequestParam(required = false) String toDate,
+                                   Model model) {
+        Optional<Employee> employeeOpt = employeeService.getActiveEmployeeById(id);
+        if (!employeeOpt.isPresent()) {
+            return "redirect:/eyarkkai-family?tab=employees";
+        }
+        
+        Employee employee = employeeOpt.get();
+        model.addAttribute("activeTab", "eyarkkai-family");
+        model.addAttribute("employee", employee);
+        model.addAttribute("isOldEmployee", false);
+        
+        // If date parameters are provided, generate the report
+        if (fromDate != null && toDate != null && !fromDate.trim().isEmpty() && !toDate.trim().isEmpty()) {
+            try {
+                LocalDate startDate = LocalDate.parse(fromDate);
+                LocalDate endDate = LocalDate.parse(toDate);
+                
+                EmployeeWorkReportDTO workReportData = labourEntryService.generateEmployeeWorkReport(employee, startDate, endDate);
+                model.addAttribute("workReportData", workReportData);
+                model.addAttribute("fromDate", startDate);
+                model.addAttribute("toDate", endDate);
+            } catch (Exception e) {
+                model.addAttribute("errorMessage", "Error generating report: " + e.getMessage());
+            }
+        }
+        
+        return "eyarkkai-family/employee-details";
+    }
+    
+    @GetMapping("/old-employees/{id}/work-report")
+    public String oldEmployeeWorkReport(@PathVariable Long id,
+                                      @RequestParam(required = false) String fromDate,
+                                      @RequestParam(required = false) String toDate,
+                                      Model model) {
+        Optional<Employee> employeeOpt = employeeService.getAnyEmployeeById(id);
+        if (!employeeOpt.isPresent() || !Boolean.TRUE.equals(employeeOpt.get().getDeleted())) {
+            return "redirect:/eyarkkai-family?tab=employees&employeeType=old";
+        }
+        
+        Employee employee = employeeOpt.get();
+        model.addAttribute("activeTab", "eyarkkai-family");
+        model.addAttribute("employee", employee);
+        model.addAttribute("isOldEmployee", true);
+        
+        // If date parameters are provided, generate the report
+        if (fromDate != null && toDate != null && !fromDate.trim().isEmpty() && !toDate.trim().isEmpty()) {
+            try {
+                LocalDate startDate = LocalDate.parse(fromDate);
+                LocalDate endDate = LocalDate.parse(toDate);
+                
+                EmployeeWorkReportDTO workReportData = labourEntryService.generateEmployeeWorkReport(employee, startDate, endDate);
+                model.addAttribute("workReportData", workReportData);
+                model.addAttribute("fromDate", startDate);
+                model.addAttribute("toDate", endDate);
+            } catch (Exception e) {
+                model.addAttribute("errorMessage", "Error generating report: " + e.getMessage());
+            }
+        }
+        
+        return "eyarkkai-family/employee-details";
+    }
+    
+    @GetMapping("/employees/{id}/work-report/export")
+    public ResponseEntity<String> exportEmployeeWorkReport(@PathVariable Long id,
+                                                          @RequestParam String fromDate,
+                                                          @RequestParam String toDate) {
+        Optional<Employee> employeeOpt = employeeService.getActiveEmployeeById(id);
+        if (!employeeOpt.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        Employee employee = employeeOpt.get();
+        
+        try {
+            LocalDate startDate = LocalDate.parse(fromDate);
+            LocalDate endDate = LocalDate.parse(toDate);
+            
+            EmployeeWorkReportDTO workReportData = labourEntryService.generateEmployeeWorkReport(employee, startDate, endDate);
+            
+            // Generate CSV content
+            StringBuilder csvContent = new StringBuilder();
+            csvContent.append("Employee Work Report\n");
+            csvContent.append("Employee Name,").append(employee.getName()).append("\n");
+            csvContent.append("Report Period,").append(startDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+                     .append(" to ").append(endDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))).append("\n");
+            csvContent.append("Total Working Days,").append(workReportData.getTotalDays()).append("\n");
+            csvContent.append("Total Hours Worked,").append(workReportData.getTotalHours()).append("\n");
+            csvContent.append("Total Salary Paid,₹").append(String.format("%.2f", workReportData.getTotalSalary())).append("\n");
+            csvContent.append("Average Per Day,₹").append(String.format("%.2f", workReportData.getAveragePerDay())).append("\n\n");
+            
+            csvContent.append("Date,Shift,Hours Worked,Cost per Hour,Total Cost,Description\n");
+            
+            workReportData.getLabourEntries().forEach(entry -> {
+                csvContent.append(entry.getWorkDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))).append(",")
+                         .append(entry.getShift()).append(",")
+                         .append(entry.getHoursWorked()).append(",")
+                         .append("₹").append(String.format("%.2f", entry.getCostPerHour())).append(",")
+                         .append("₹").append(String.format("%.2f", entry.getTotalCost())).append(",")
+                         .append(entry.getDescription() != null ? entry.getDescription() : "").append("\n");
+            });
+            
+            String filename = "employee_work_report_" + employee.getName().replaceAll("\\s+", "_") + 
+                            "_" + startDate.format(DateTimeFormatter.ofPattern("ddMMyyyy")) + 
+                            "_to_" + endDate.format(DateTimeFormatter.ofPattern("ddMMyyyy")) + ".csv";
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            headers.setContentDispositionFormData("attachment", filename);
+            
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(csvContent.toString());
+                    
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    @GetMapping("/old-employees/{id}/work-report/export")
+    public ResponseEntity<String> exportOldEmployeeWorkReport(@PathVariable Long id,
+                                                             @RequestParam String fromDate,
+                                                             @RequestParam String toDate) {
+        Optional<Employee> employeeOpt = employeeService.getAnyEmployeeById(id);
+        if (!employeeOpt.isPresent() || !Boolean.TRUE.equals(employeeOpt.get().getDeleted())) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        Employee employee = employeeOpt.get();
+        
+        try {
+            LocalDate startDate = LocalDate.parse(fromDate);
+            LocalDate endDate = LocalDate.parse(toDate);
+            
+            EmployeeWorkReportDTO workReportData = labourEntryService.generateEmployeeWorkReport(employee, startDate, endDate);
+            
+            // Generate CSV content
+            StringBuilder csvContent = new StringBuilder();
+            csvContent.append("Employee Work Report (Historical)\n");
+            csvContent.append("Employee Name,").append(employee.getName()).append("\n");
+            csvContent.append("Employee Status,Inactive (Old Employee)\n");
+            csvContent.append("Report Period,").append(startDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+                     .append(" to ").append(endDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))).append("\n");
+            csvContent.append("Total Working Days,").append(workReportData.getTotalDays()).append("\n");
+            csvContent.append("Total Hours Worked,").append(workReportData.getTotalHours()).append("\n");
+            csvContent.append("Total Salary Paid,₹").append(String.format("%.2f", workReportData.getTotalSalary())).append("\n");
+            csvContent.append("Average Per Day,₹").append(String.format("%.2f", workReportData.getAveragePerDay())).append("\n\n");
+            
+            csvContent.append("Date,Shift,Hours Worked,Cost per Hour,Total Cost,Description\n");
+            
+            workReportData.getLabourEntries().forEach(entry -> {
+                csvContent.append(entry.getWorkDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))).append(",")
+                         .append(entry.getShift()).append(",")
+                         .append(entry.getHoursWorked()).append(",")
+                         .append("₹").append(String.format("%.2f", entry.getCostPerHour())).append(",")
+                         .append("₹").append(String.format("%.2f", entry.getTotalCost())).append(",")
+                         .append(entry.getDescription() != null ? entry.getDescription() : "").append("\n");
+            });
+            
+            String filename = "old_employee_work_report_" + employee.getName().replaceAll("\\s+", "_") + 
+                            "_" + startDate.format(DateTimeFormatter.ofPattern("ddMMyyyy")) + 
+                            "_to_" + endDate.format(DateTimeFormatter.ofPattern("ddMMyyyy")) + ".csv";
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            headers.setContentDispositionFormData("attachment", filename);
+            
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(csvContent.toString());
+                    
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 } 

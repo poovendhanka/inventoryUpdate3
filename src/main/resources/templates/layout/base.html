@@ -517,5 +517,159 @@
             <!-- Page specific scripts will be inserted here -->
         </th:block>
     </div>
+
+    <!-- Global Form Validation Script -->
+    <script>
+        // Global form validation function
+        function validateForm(form) {
+            let isValid = true;
+            const requiredFields = form.querySelectorAll('[required]');
+            
+            requiredFields.forEach(field => {
+                const value = field.value.trim();
+                
+                // Remove existing validation classes
+                field.classList.remove('is-invalid', 'is-valid');
+                
+                // Check if field is empty
+                if (!value) {
+                    field.classList.add('is-invalid');
+                    isValid = false;
+                    
+                    // Show custom error message if not already present
+                    let feedback = field.parentNode.querySelector('.invalid-feedback');
+                    if (!feedback) {
+                        feedback = document.createElement('div');
+                        feedback.className = 'invalid-feedback';
+                        field.parentNode.appendChild(feedback);
+                    }
+                    feedback.textContent = 'This field is required.';
+                } else {
+                    // Additional validation for specific field types
+                    if (field.type === 'email' && !isValidEmail(value)) {
+                        field.classList.add('is-invalid');
+                        isValid = false;
+                        
+                        let feedback = field.parentNode.querySelector('.invalid-feedback');
+                        if (!feedback) {
+                            feedback = document.createElement('div');
+                            feedback.className = 'invalid-feedback';
+                            field.parentNode.appendChild(feedback);
+                        }
+                        feedback.textContent = 'Please enter a valid email address.';
+                    } else if (field.type === 'number' && (isNaN(value) || parseFloat(value) < 0)) {
+                        field.classList.add('is-invalid');
+                        isValid = false;
+                        
+                        let feedback = field.parentNode.querySelector('.invalid-feedback');
+                        if (!feedback) {
+                            feedback = document.createElement('div');
+                            feedback.className = 'invalid-feedback';
+                            field.parentNode.appendChild(feedback);
+                        }
+                        feedback.textContent = 'Please enter a valid positive number.';
+                    } else if (field.tagName === 'SELECT' && !value) {
+                        field.classList.add('is-invalid');
+                        isValid = false;
+                        
+                        let feedback = field.parentNode.querySelector('.invalid-feedback');
+                        if (!feedback) {
+                            feedback = document.createElement('div');
+                            feedback.className = 'invalid-feedback';
+                            field.parentNode.appendChild(feedback);
+                        }
+                        feedback.textContent = 'Please select an option.';
+                    } else {
+                        field.classList.add('is-valid');
+                    }
+                }
+            });
+            
+            return isValid;
+        }
+        
+        // Email validation helper
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        // Apply validation to all forms on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const forms = document.querySelectorAll('form');
+            
+            forms.forEach(form => {
+                // Skip forms that already have custom validation
+                if (form.classList.contains('no-global-validation')) {
+                    return;
+                }
+                
+                form.addEventListener('submit', function(e) {
+                    if (!validateForm(form)) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        // Show alert to user
+                        const firstInvalidField = form.querySelector('.is-invalid');
+                        if (firstInvalidField) {
+                            firstInvalidField.focus();
+                            
+                            // Show toast notification
+                            showValidationToast('Please fill in all required fields correctly.');
+                        }
+                    }
+                });
+                
+                // Real-time validation on input change
+                const requiredFields = form.querySelectorAll('[required]');
+                requiredFields.forEach(field => {
+                    field.addEventListener('blur', function() {
+                        validateForm(form);
+                    });
+                });
+            });
+        });
+        
+        // Show validation toast notification
+        function showValidationToast(message) {
+            // Create toast element if it doesn't exist
+            let toastContainer = document.getElementById('validation-toast-container');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'validation-toast-container';
+                toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+                toastContainer.style.zIndex = '9999';
+                document.body.appendChild(toastContainer);
+            }
+            
+            // Create toast
+            const toastId = 'validation-toast-' + Date.now();
+            const toastHtml = `
+                <div id="${toastId}" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="fas fa-exclamation-triangle me-2"></i>${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `;
+            
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+            
+            // Show toast
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement, {
+                autohide: true,
+                delay: 5000
+            });
+            toast.show();
+            
+            // Remove toast element after it's hidden
+            toastElement.addEventListener('hidden.bs.toast', function() {
+                toastElement.remove();
+            });
+        }
+    </script>
 </body>
 </html> 

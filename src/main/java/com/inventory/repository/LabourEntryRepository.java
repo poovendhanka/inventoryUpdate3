@@ -17,6 +17,8 @@ public interface LabourEntryRepository extends JpaRepository<LabourEntry, Long> 
 
     List<LabourEntry> findByEmployeeOrderByWorkDateDescEntryDateDesc(Employee employee);
 
+    List<LabourEntry> findByEmployeeAndWorkDateBetweenOrderByWorkDateDesc(Employee employee, LocalDate startDate, LocalDate endDate);
+
     List<LabourEntry> findByWorkDateOrderByEntryDateDesc(LocalDate workDate);
 
     @Query("SELECT le FROM LabourEntry le ORDER BY le.workDate DESC, le.entryDate DESC")

@@ -21,25 +21,25 @@
                         <h5 class="card-title mb-0">Cocopith Production</h5>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/cocopith-production/cocopith}" method="post" id="cocopithForm">
+                        <form th:action="@{/cocopith-production/cocopith}" method="post" id="cocopithForm" class="no-global-validation">
                             <div class="row">
                                 <div class="col-md-4 mb-3">
-                                    <label for="pithQuantityUsed" class="form-label">Pith Quantity for Processing (kg)</label>
-                                    <input type="number" step="0.01" class="form-control" id="pithQuantityUsed" 
-                                           name="pithQuantityUsed" required>
+                                    <label for="pithQuantityUsed" class="form-label">Pith Quantity for Processing (kg) <span class="text-danger">*</span></label>
+                                    <input type="number" step="0.01" min="0" class="form-control" id="pithQuantityUsed" 
+                                           name="pithQuantityUsed" required placeholder="Enter quantity in kg">
                                     <div class="invalid-feedback" id="pithQuantityFeedback">
                                         Insufficient high EC pith stock available.
                                     </div>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label for="productionTime" class="form-label">Production Time</label>
+                                    <label for="productionTime" class="form-label">Production Time <span class="text-danger">*</span></label>
                                     <input type="datetime-local" class="form-control datetime-input" id="productionTime" 
                                            name="productionTime" required>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label for="cocopithSupervisorName" class="form-label">Supervisor Name</label>
+                                    <label for="cocopithSupervisorName" class="form-label">Supervisor Name <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="cocopithSupervisorName" 
-                                           name="supervisorName" required>
+                                           name="supervisorName" required placeholder="Enter supervisor name">
                                 </div>
                             </div>
                             <div class="alert alert-danger" th:if="${error}">
@@ -64,32 +64,33 @@
                         <h5 class="card-title mb-0">Block Production</h5>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/cocopith-production/block}" method="post" id="blockForm">
+                        <form th:action="@{/cocopith-production/block}" method="post" id="blockForm" class="no-global-validation">
                             <div class="row">
                                 <div class="col-md-3 mb-3">
-                                    <label for="pithType" class="form-label">Pith Type</label>
+                                    <label for="pithType" class="form-label">Pith Type <span class="text-danger">*</span></label>
                                     <select class="form-select" id="pithType" name="pithType" required>
+                                        <option value="">Select Pith Type</option>
                                         <option value="NORMAL">High EC Pith</option>
                                         <option value="LOW">Low EC Pith</option>
                                     </select>
                                 </div>
                                 <div class="col-md-3 mb-3">
-                                    <label for="blocksProduced" class="form-label">Number of Blocks</label>
+                                    <label for="blocksProduced" class="form-label">Number of Blocks <span class="text-danger">*</span></label>
                                     <input type="number" class="form-control" id="blocksProduced" 
-                                           name="blocksProduced" required min="1">
+                                           name="blocksProduced" required min="1" placeholder="Enter number of blocks">
                                     <div class="invalid-feedback" id="blocksProducedFeedback">
                                         Insufficient pith stock available for this many blocks.
                                     </div>
                                 </div>
                                 <div class="col-md-3 mb-3">
-                                    <label for="blockProductionTime" class="form-label">Production Time</label>
+                                    <label for="blockProductionTime" class="form-label">Production Time <span class="text-danger">*</span></label>
                                     <input type="datetime-local" class="form-control datetime-input" id="blockProductionTime" 
                                            name="productionTime" required>
                                 </div>
                                 <div class="col-md-3 mb-3">
-                                    <label for="blockSupervisorName" class="form-label">Supervisor Name</label>
+                                    <label for="blockSupervisorName" class="form-label">Supervisor Name <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="blockSupervisorName" 
-                                           name="supervisorName" required>
+                                           name="supervisorName" required placeholder="Enter supervisor name">
                                 </div>
                             </div>
                             <div class="alert alert-warning d-none" id="blockStockWarning">

@@ -108,13 +108,13 @@
                         <div class="tab-content" id="saleTypeTabsContent">
                             <!-- Pith Sale Tab -->
                             <div class="tab-pane fade show active" id="pith-sale" role="tabpanel" aria-labelledby="pith-tab">
-                                <form th:action="@{/sales}" method="post" id="pithSaleForm" class="saleForm">
+                                <form th:action="@{/sales}" method="post" id="pithSaleForm" class="saleForm no-global-validation">
                                     <input type="hidden" name="productType" value="PITH">
                                     
                                     <div class="row">
                                         <!-- Dealer Selection -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="pithDealer" class="form-label">Dealer</label>
+                                            <label for="pithDealer" class="form-label">Dealer <span class="text-danger">*</span></label>
                                             <select class="form-select dealer-select" id="pithDealer" name="dealer.id" required>
                                                 <option value="">Select Dealer</option>
                                                 <option th:each="dealer : ${dealers}" 
@@ -125,7 +125,7 @@
 
                                         <!-- Pith Type Selection -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="pithType" class="form-label">Pith Type</label>
+                                            <label for="pithType" class="form-label">Pith Type <span class="text-danger">*</span></label>
                                             <select class="form-select" id="pithType" name="pithType" required>
                                                 <option value="">Select Pith Type</option>
                                                 <option th:each="type : ${T(com.inventory.model.PithType).values()}"
@@ -137,17 +137,17 @@
 
                                         <!-- Quantity Input -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="pithQuantity" class="form-label">Quantity (kg)</label>
+                                            <label for="pithQuantity" class="form-label">Quantity (kg) <span class="text-danger">*</span></label>
                                             <input type="number" class="form-control" id="pithQuantity" name="quantity" 
-                                                   step="0.01" required min="0" placeholder="Enter quantity in kg">
+                                                   step="0.01" required min="0.01" placeholder="Enter quantity in kg">
                                             <small class="text-muted" id="pithQuantityHelp"></small>
                                         </div>
 
                                         <!-- Price per Unit for Pith -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="pithPricePerUnit" class="form-label">Price per kg</label>
+                                            <label for="pithPricePerUnit" class="form-label">Price per kg <span class="text-danger">*</span></label>
                                             <input type="number" class="form-control" id="pithPricePerUnit" 
-                                                   name="pricePerUnitDisplay" step="0.01" required min="0" readonly>
+                                                   name="pricePerUnitDisplay" step="0.01" required min="0.01" readonly>
                                             <input type="hidden" id="pithPricePerUnitHidden" name="pricePerUnit">
                                         </div>
                                     </div>
@@ -165,13 +165,13 @@
                             
                             <!-- Fiber Sale Tab -->
                             <div class="tab-pane fade" id="fiber-sale" role="tabpanel" aria-labelledby="fiber-tab">
-                                <form th:action="@{/sales}" method="post" id="fiberSaleForm" class="saleForm">
+                                <form th:action="@{/sales}" method="post" id="fiberSaleForm" class="saleForm no-global-validation">
                                     <input type="hidden" name="productType" value="FIBER">
                                     
                                     <div class="row">
                                         <!-- Dealer Selection -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="fiberDealer" class="form-label">Dealer</label>
+                                            <label for="fiberDealer" class="form-label">Dealer <span class="text-danger">*</span></label>
                                             <select class="form-select dealer-select" id="fiberDealer" name="dealer.id" required>
                                                 <option value="">Select Dealer</option>
                                                 <option th:each="dealer : ${dealers}" 
@@ -182,7 +182,7 @@
 
                                         <!-- Fiber Type Selection -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="fiberType" class="form-label">Fiber Type</label>
+                                            <label for="fiberType" class="form-label">Fiber Type <span class="text-danger">*</span></label>
                                             <select class="form-select" id="fiberType" name="fiberType" required>
                                                 <option value="">Select Fiber Type</option>
                                                 <option th:each="type : ${T(com.inventory.model.FiberType).values()}"
@@ -194,17 +194,17 @@
 
                                         <!-- Quantity Input -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="fiberQuantity" class="form-label">Quantity (bales)</label>
+                                            <label for="fiberQuantity" class="form-label">Quantity (bales) <span class="text-danger">*</span></label>
                                             <input type="number" class="form-control" id="fiberQuantity" name="quantity" 
-                                                   step="1" required min="0" placeholder="Enter number of bales">
+                                                   step="1" required min="1" placeholder="Enter number of bales">
                                             <small class="text-muted" id="fiberQuantityHelp"></small>
                                         </div>
 
                                         <!-- Price per Unit for Fiber -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="fiberPricePerUnit" class="form-label">Price per bale</label>
+                                            <label for="fiberPricePerUnit" class="form-label">Price per bale <span class="text-danger">*</span></label>
                                             <input type="number" class="form-control" id="fiberPricePerUnit" 
-                                                   name="pricePerUnitDisplay" step="0.01" required min="0" readonly>
+                                                   name="pricePerUnitDisplay" step="0.01" required min="0.01" readonly>
                                             <input type="hidden" id="fiberPricePerUnitHidden" name="pricePerUnit">
                                         </div>
                                     </div>
@@ -222,13 +222,13 @@
                             
                             <!-- Block Sale Tab -->
                             <div class="tab-pane fade" id="block-sale" role="tabpanel" aria-labelledby="block-tab">
-                                <form th:action="@{/sales}" method="post" id="blockSaleForm" class="saleForm">
+                                <form th:action="@{/sales}" method="post" id="blockSaleForm" class="saleForm no-global-validation">
                                     <input type="hidden" name="productType" value="BLOCK">
                                     
                                     <div class="row">
                                         <!-- Dealer Selection -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="blockDealer" class="form-label">Dealer</label>
+                                            <label for="blockDealer" class="form-label">Dealer <span class="text-danger">*</span></label>
                                             <select class="form-select dealer-select" id="blockDealer" name="dealer.id" required>
                                                 <option value="">Select Dealer</option>
                                                 <option th:each="dealer : ${dealers}" 
@@ -239,8 +239,9 @@
 
                                         <!-- Block Type Selection -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="blockType" class="form-label">Block Type</label>
+                                            <label for="blockType" class="form-label">Block Type <span class="text-danger">*</span></label>
                                             <select class="form-select" id="blockType" name="pithType" required>
+                                                <option value="">Select Block Type</option>
                                                 <option value="NORMAL">High EC Block</option>
                                                 <option value="LOW">Low EC Block</option>
                                             </select>
@@ -249,17 +250,17 @@
 
                                         <!-- Quantity Input -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="blockQuantity" class="form-label">Quantity (blocks)</label>
+                                            <label for="blockQuantity" class="form-label">Quantity (blocks) <span class="text-danger">*</span></label>
                                             <input type="number" class="form-control" id="blockQuantity" name="quantity" 
-                                                   step="1" required min="0" placeholder="Enter number of blocks">
+                                                   step="1" required min="1" placeholder="Enter number of blocks">
                                             <small class="text-muted" id="blockQuantityHelp"></small>
                                         </div>
 
                                         <!-- Price per Unit for Block -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="blockPricePerUnit" class="form-label">Price per block</label>
+                                            <label for="blockPricePerUnit" class="form-label">Price per block <span class="text-danger">*</span></label>
                                             <input type="number" class="form-control" id="blockPricePerUnit" 
-                                                   name="pricePerUnitDisplay" step="0.01" required min="0" readonly>
+                                                   name="pricePerUnitDisplay" step="0.01" required min="0.01" readonly>
                                             <input type="hidden" id="blockPricePerUnitHidden" name="pricePerUnit">
                                         </div>
                                     </div>
