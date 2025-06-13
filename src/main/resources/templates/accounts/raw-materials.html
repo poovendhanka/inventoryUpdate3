@@ -14,6 +14,9 @@
                     <div class="card-header">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-0">Processed Raw Materials for <span th:text="${#temporals.format(selectedDate, 'dd-MM-yyyy')}">Date</span></h5>
+                            <a th:href="@{/accounts}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Accounts
+                            </a>
                         </div>
                     </div>
                     <div class="card-body">
@@ -50,7 +53,7 @@
                                         <td colspan="5"><strong>Total</strong></td>
                                         <td><strong th:text="${#aggregates.sum(report.processedEntries.![rawMaterial.cft])}">0</strong></td>
                                         <td><strong>-</strong></td>
-                                        <td><strong th:text="${'₹' + #numbers.formatDecimal(report.totalCost != null ? report.totalCost : 0.0, 1, 2)}">₹0.00</strong></td>
+                                        <td><strong th:text="${'₹' + #numbers.formatDecimal(#aggregates.sum(report.processedEntries.![totalCost != null ? totalCost : 0.0]), 1, 2)}">₹0.00</strong></td>
                                         <td></td>
                                     </tr>
                                 </tfoot>

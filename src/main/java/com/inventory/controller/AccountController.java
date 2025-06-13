@@ -28,10 +28,20 @@ public class AccountController extends BaseController {
     private final BillPdfService billPdfService;
     
     @GetMapping
-    public String showAccountsPage(Model model, HttpServletRequest request) {
+    public String showAccountsPage(@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate processedDate,
+                                  Model model, HttpServletRequest request) {
         model.addAttribute("activeTab", "accounts");
         model.addAttribute("unprocessedEntries", rawMaterialService.getUnprocessedEntries());
-        model.addAttribute("recentProcessedEntries", rawMaterialService.getRecentProcessedEntries());
+        
+        if (processedDate != null) {
+            // Show processed entries for specific date
+            model.addAttribute("processedEntriesForDate", rawMaterialService.getProcessedEntriesByDate(processedDate));
+            model.addAttribute("selectedProcessedDate", processedDate);
+        } else {
+            // Show recent processed entries (default behavior)
+            model.addAttribute("recentProcessedEntries", rawMaterialService.getRecentProcessedEntries());
+        }
+        
         return getViewPath("accounts/index");
     }
     

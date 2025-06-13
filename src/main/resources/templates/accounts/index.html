@@ -106,9 +106,43 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Recent Processed Raw Materials</h5>
+                        <h5 class="card-title mb-0">Processed Raw Materials by Date</h5>
                     </div>
                     <div class="card-body">
+                        <!-- Date Selection Form -->
+                        <form th:action="@{/accounts}" method="get" class="row g-3 mb-4">
+                            <div class="col-auto">
+                                <label for="processedDate" class="form-label">Select Date:</label>
+                                <input type="date" 
+                                       id="processedDate"
+                                       class="form-control" 
+                                       name="processedDate" 
+                                       th:value="${selectedProcessedDate != null ? selectedProcessedDate : ''}"
+                                       required>
+                            </div>
+                            <div class="col-auto">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="submit" class="btn btn-primary d-block">View Processed Materials</button>
+                            </div>
+                            <div class="col-auto" th:if="${selectedProcessedDate != null}">
+                                <label class="form-label">&nbsp;</label>
+                                <a th:href="@{/accounts}" class="btn btn-secondary d-block">Show Recent</a>
+                            </div>
+                        </form>
+                        
+                        <!-- Results Section -->
+                        <div th:if="${selectedProcessedDate != null}">
+                            <h6 class="text-primary mb-3">
+                                <i class="fas fa-calendar-day"></i> 
+                                Processed Raw Materials for <span th:text="${#temporals.format(selectedProcessedDate, 'dd MMMM yyyy')}">Selected Date</span>
+                            </h6>
+                        </div>
+                        <div th:if="${selectedProcessedDate == null}">
+                            <h6 class="text-info mb-3">
+                                <i class="fas fa-clock"></i> Recent Processed Raw Materials
+                            </h6>
+                        </div>
+                        
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
@@ -126,10 +160,13 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:if="${recentProcessedEntries.empty}">
-                                        <td colspan="10" class="text-center">No recent processed entries found</td>
+                                    <tr th:if="${(selectedProcessedDate != null ? processedEntriesForDate : recentProcessedEntries).empty}">
+                                        <td colspan="10" class="text-center">
+                                            <span th:if="${selectedProcessedDate != null}">No processed entries found for selected date</span>
+                                            <span th:if="${selectedProcessedDate == null}">No recent processed entries found</span>
+                                        </td>
                                     </tr>
-                                    <tr th:each="entry : ${recentProcessedEntries}">
+                                    <tr th:each="entry : ${selectedProcessedDate != null ? processedEntriesForDate : recentProcessedEntries}">
                                         <td th:text="${entry.rawMaterial.receiptNumber}"></td>
                                         <td th:text="${#temporals.format(entry.processedDate, 'dd-MM-yyyy HH:mm')}"></td>
                                         <td th:text="${entry.rawMaterial.vehicleNumber}"></td>
@@ -148,6 +185,16 @@
                                         </td>
                                     </tr>
                                 </tbody>
+                                <!-- Add totals footer when viewing specific date -->
+                                <tfoot th:if="${selectedProcessedDate != null and !(selectedProcessedDate != null ? processedEntriesForDate : recentProcessedEntries).empty}">
+                                    <tr class="table-info">
+                                        <td colspan="5"><strong>Total</strong></td>
+                                        <td><strong th:text="${#aggregates.sum((selectedProcessedDate != null ? processedEntriesForDate : recentProcessedEntries).![rawMaterial.cft])}">0</strong></td>
+                                        <td><strong>-</strong></td>
+                                        <td><strong th:text="${'₹' + #numbers.formatDecimal(#aggregates.sum((selectedProcessedDate != null ? processedEntriesForDate : recentProcessedEntries).![totalCost != null ? totalCost : 0.0]), 1, 2)}">₹0.00</strong></td>
+                                        <td colspan="2"></td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
@@ -170,6 +217,11 @@
                 // Set default date to today
                 var today = new Date().toISOString().split('T')[0];
                 $('input[type="date"]').val(today);
+                
+                // Set default date for processed date picker if no date is selected
+                if ($('#processedDate').val() === '') {
+                    $('#processedDate').val(today);
+                }
                 
                 // Calculate total cost dynamically
                 $('.cost-per-cft').on('input', function() {

@@ -45,7 +45,8 @@ public class SaleController extends BaseController {
     private final ProductCostService productCostService;
 
     @GetMapping
-    public String showSalesPage(Model model, HttpServletRequest request) {
+    public String showSalesPage(@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate saleDate,
+                               Model model, HttpServletRequest request) {
         model.addAttribute("activeTab", "sales");
         model.addAttribute("sale", new Sale());
         model.addAttribute("dealers", dealerService.getAllDealers());
@@ -62,7 +63,15 @@ public class SaleController extends BaseController {
         model.addAttribute("normalBlockStock", stockService.getCurrentBlockStock(PithType.NORMAL));
         model.addAttribute("lowEcBlockStock", stockService.getCurrentBlockStock(PithType.LOW));
 
-        model.addAttribute("recentSales", saleService.getRecentSales());
+        if (saleDate != null) {
+            // Show sales for specific date
+            model.addAttribute("salesForDate", saleService.getSalesByDate(saleDate));
+            model.addAttribute("selectedSaleDate", saleDate);
+        } else {
+            // Show recent sales (default behavior)
+            model.addAttribute("recentSales", saleService.getRecentSales());
+        }
+
         model.addAttribute("productCost", productCostService.getCurrentCost());
         return getViewPath("sales/index");
     }

@@ -319,9 +319,43 @@
             <div class="col-md-12 mt-4">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Recent Sales</h5>
+                        <h5 class="card-title mb-0">Sales by Date</h5>
                     </div>
                     <div class="card-body">
+                        <!-- Date Selection Form -->
+                        <form th:action="@{/sales}" method="get" class="row g-3 mb-4">
+                            <div class="col-auto">
+                                <label for="saleDate" class="form-label">Select Date:</label>
+                                <input type="date" 
+                                       id="saleDate"
+                                       class="form-control" 
+                                       name="saleDate" 
+                                       th:value="${selectedSaleDate != null ? selectedSaleDate : ''}"
+                                       required>
+                            </div>
+                            <div class="col-auto">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="submit" class="btn btn-primary d-block">View Sales</button>
+                            </div>
+                            <div class="col-auto" th:if="${selectedSaleDate != null}">
+                                <label class="form-label">&nbsp;</label>
+                                <a th:href="@{/sales}" class="btn btn-secondary d-block">Show Recent</a>
+                            </div>
+                        </form>
+                        
+                        <!-- Results Section -->
+                        <div th:if="${selectedSaleDate != null}">
+                            <h6 class="text-primary mb-3">
+                                <i class="fas fa-calendar-day"></i> 
+                                Sales for <span th:text="${#temporals.format(selectedSaleDate, 'dd MMMM yyyy')}">Selected Date</span>
+                            </h6>
+                        </div>
+                        <div th:if="${selectedSaleDate == null}">
+                            <h6 class="text-info mb-3">
+                                <i class="fas fa-clock"></i> Recent Sales
+                            </h6>
+                        </div>
+                        
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
@@ -337,7 +371,13 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:each="sale : ${recentSales}">
+                                    <tr th:if="${(selectedSaleDate != null ? salesForDate : recentSales).empty}">
+                                        <td colspan="8" class="text-center">
+                                            <span th:if="${selectedSaleDate != null}">No sales found for selected date</span>
+                                            <span th:if="${selectedSaleDate == null}">No recent sales found</span>
+                                        </td>
+                                    </tr>
+                                    <tr th:each="sale : ${selectedSaleDate != null ? salesForDate : recentSales}">
                                         <td th:text="${#temporals.format(sale.saleDate, 'dd-MM-yyyy HH:mm')}">Date</td>
                                         <td th:text="${sale.dealer.name}">Dealer</td>
                                         <td>
@@ -350,16 +390,27 @@
                                             <span th:if="${sale.productType.name() == 'FIBER'}" th:text="${sale.quantity + ' bales'}"></span>
                                             <span th:if="${sale.productType.name() == 'BLOCK'}" th:text="${sale.quantity + ' blocks'}"></span>
                                         </td>
-                                        <td th:text="'Rs. ' + ${#numbers.formatDecimal(sale.pricePerUnit, 1, 2)}">Price</td>
-                                        <td th:text="'Rs. ' + ${#numbers.formatDecimal(sale.taxAmount != null ? sale.taxAmount : 0.0, 1, 2)}">Tax</td>
-                                        <td th:text="'Rs. ' + ${#numbers.formatDecimal(sale.totalWithTax != null ? sale.totalWithTax : 0.0, 1, 2)}">Total</td>
+                                        <td th:text="'₹' + ${#numbers.formatDecimal(sale.pricePerUnit, 1, 2)}">Price</td>
+                                        <td th:text="'₹' + ${#numbers.formatDecimal(sale.taxAmount != null ? sale.taxAmount : 0.0, 1, 2)}">Tax</td>
+                                        <td th:text="'₹' + ${#numbers.formatDecimal(sale.totalWithTax != null ? sale.totalWithTax : 0.0, 1, 2)}">Total</td>
                                         <td>
-                                            <a th:href="@{'/sales/' + ${sale.id} + '/bill'}" class="btn btn-outline-primary btn-sm" target="_blank">
-                                                Download Bill
+                                            <a th:href="@{'/sales/' + ${sale.id} + '/bill'}" 
+                                               class="btn btn-sm btn-success" 
+                                               title="Download Bill"
+                                               target="_blank">
+                                                <i class="fas fa-download"></i> Bill
                                             </a>
                                         </td>
                                     </tr>
                                 </tbody>
+                                <!-- Add totals footer when viewing specific date -->
+                                <tfoot th:if="${selectedSaleDate != null and !(selectedSaleDate != null ? salesForDate : recentSales).empty}">
+                                    <tr class="table-info">
+                                        <td colspan="6"><strong>Total</strong></td>
+                                        <td><strong th:text="${'₹' + #numbers.formatDecimal(#aggregates.sum((selectedSaleDate != null ? salesForDate : recentSales).![totalWithTax != null ? totalWithTax : 0.0]), 1, 2)}">₹0.00</strong></td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
@@ -388,6 +439,12 @@
                 // Set default values for date fields
                 document.querySelector('input[name="fromDate"]').value = formatDate(firstDay);
                 document.querySelector('input[name="toDate"]').value = formatDate(lastDay);
+                
+                // Set default date for sale date picker if no date is selected
+                const saleDateInput = document.getElementById('saleDate');
+                if (saleDateInput && saleDateInput.value === '') {
+                    saleDateInput.value = formatDate(today);
+                }
                 
                 // Get initial stock values - Fix the extraction method
                 const stockElements = document.querySelectorAll('.alert-green .h6');

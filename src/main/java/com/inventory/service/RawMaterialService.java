@@ -68,6 +68,17 @@ public class RawMaterialService {
         return processedRepository.findTop10ByOrderByProcessedDateDesc();
     }
 
+    public List<ProcessedRawMaterial> getProcessedEntriesByDate(LocalDate date) {
+        LocalDateTime startDate = date.atStartOfDay();
+        LocalDateTime endDate = date.plusDays(1).atStartOfDay();
+        
+        log.info("Fetching processed entries for date: {}", date);
+        List<ProcessedRawMaterial> entries = processedRepository.findByProcessedDateBetween(startDate, endDate);
+        log.info("Found {} processed entries for date {}", entries.size(), date);
+        
+        return entries;
+    }
+
     public ProcessedRawMaterial getProcessedById(Long id) {
         return processedRepository.findById(id).orElse(null);
     }
