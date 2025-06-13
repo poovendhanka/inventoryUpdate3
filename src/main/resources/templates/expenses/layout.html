@@ -54,6 +54,9 @@
     
     <!-- Generic expense entry form -->
     <div th:fragment="expenseForm(expenseType, title, extraFields, columnSize)">
+        <!-- Success and Error Messages -->
+        <div th:replace="~{fragments/messages :: messages}"></div>
+        
         <div class="card mb-4">
             <div class="card-header">
                 <h5 class="card-title mb-0" th:text="${title}">Add Expense</h5>
