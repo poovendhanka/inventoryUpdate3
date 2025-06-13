@@ -1,27 +1,20 @@
 package com.inventory.controller;
 
-import com.inventory.model.Sale;
-import com.inventory.model.ProductType;
+import com.inventory.model.*;
 import com.inventory.service.SaleService;
 import com.inventory.service.DealerService;
 import com.inventory.service.StockService;
-import com.inventory.util.ProductNameUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 import com.inventory.model.PithType;
 import com.inventory.model.FiberType;
 import com.inventory.model.Dealer;
-import java.math.BigDecimal;
-import java.util.List;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.UUID;
 import com.inventory.service.BillPdfService;
@@ -30,7 +23,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import com.inventory.service.ProductCostService;
-import com.inventory.model.ProductCost;
 
 @Controller
 @RequestMapping("/sales")
@@ -164,87 +156,6 @@ public class SaleController extends BaseController {
         LocalDate today = LocalDate.now();
         String uuid = UUID.randomUUID().toString().substring(0, 8);
         return String.format("INV-%s-%s", today.toString(), uuid);
-    }
-
-    @GetMapping("/report")
-    public String viewReport(
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate,
-            @RequestParam(defaultValue = "false") boolean exportCsv,
-            Model model,
-            HttpServletResponse response) throws IOException {
-        try {
-            // Handle legacy single date param
-            if (date != null && fromDate == null && toDate == null) {
-                fromDate = date;
-                toDate = date;
-            }
-
-            // If dates are not provided, use current date as default
-            if (fromDate == null) {
-                fromDate = LocalDate.now();
-            }
-            if (toDate == null) {
-                toDate = LocalDate.now();
-            }
-
-            List<Sale> sales = saleService.getSalesByDateRange(fromDate, toDate);
-            Double totalAmount = sales.stream()
-                    .mapToDouble(sale -> sale.getTotalWithTax() != null ? sale.getTotalWithTax() : 0.0)
-                    .sum();
-
-            // Handle CSV export if requested
-            if (exportCsv) {
-                response.setContentType("text/csv");
-                response.setHeader("Content-Disposition",
-                        "attachment; filename=sales_report_" + fromDate + "_to_" + toDate + ".csv");
-
-                try (PrintWriter writer = response.getWriter()) {
-                    // Write CSV header
-                    writer.println("Date & Time,Dealer,Product,Quantity,Price Per Unit,Tax Amount,Total Amount");
-
-                    // Write data rows
-                    for (Sale sale : sales) {
-                        String product = ProductNameUtil.getFullProductName(sale.getProductType(), sale.getPithType(),
-                                sale.getFiberType());
-                        String quantity = "";
-                        if (sale.getProductType() == ProductType.BLOCK) {
-                            quantity = sale.getBlockCount() + " blocks";
-                        } else if (sale.getProductType() == ProductType.PITH) {
-                            quantity = sale.getQuantity() + " kg";
-                        } else if (sale.getProductType() == ProductType.FIBER) {
-                            quantity = sale.getQuantity() + " bales";
-                        }
-
-                        writer.println(String.join(",",
-                                "\"" + sale.getSaleDate()
-                                        .format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"))
-                                        + "\"",
-                                "\"" + sale.getDealer().getName() + "\"",
-                                "\"" + product + "\"",
-                                "\"" + quantity + "\"",
-                                "₹" + sale.getPricePerUnit(),
-                                "₹" + (sale.getTaxAmount() != null ? sale.getTaxAmount() : 0.0),
-                                "₹" + (sale.getTotalWithTax() != null ? sale.getTotalWithTax() : 0.0)));
-                    }
-
-                    // Write total row
-                    writer.println(",,,,,,\"₹" + totalAmount + "\"");
-                }
-                return null;
-            }
-
-            model.addAttribute("fromDate", fromDate);
-            model.addAttribute("toDate", toDate);
-            model.addAttribute("sales", sales);
-            model.addAttribute("totalAmount", totalAmount);
-            model.addAttribute("activeTab", "sales");
-            return "sales/report";
-        } catch (Exception e) {
-            model.addAttribute("error", "Error generating report: " + e.getMessage());
-            return "error";
-        }
     }
 
     @GetMapping("/{id}/bill")

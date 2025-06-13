@@ -279,42 +279,6 @@
                 </div>
             </div>
 
-            <!-- Sales Report Card -->
-            <div class="col-md-12 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Sales Report</h5>
-                    </div>
-                    <div class="card-body">
-                        <form th:action="@{/sales/report}" method="get">
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label class="form-label">From Date</label>
-                                    <input type="date" class="form-control" name="fromDate" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">To Date</label>
-                                    <input type="date" class="form-control" name="toDate" required>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <div class="form-check mb-3">
-                                        <input class="form-check-input" type="checkbox" name="exportCsv" id="exportCsv" value="true">
-                                        <label class="form-check-label" for="exportCsv">
-                                            Download as CSV
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <button type="submit" class="btn btn-success d-block w-100">View Report</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
             <!-- Recent Sales Table -->
             <div class="col-md-12 mt-4">
                 <div class="card">
@@ -421,24 +385,16 @@
     
     <th:block id="pagescript">
         <script th:inline="javascript">
-            // Initialize date field for sales report to current date
+            // Initialize date fields for sales management
             document.addEventListener('DOMContentLoaded', function() {
-                // Get first day of current month
+                // Get today's date for sale date picker
                 const today = new Date();
-                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-                const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-                
-                // Format dates as YYYY-MM-DD
                 const formatDate = (date) => {
                     const year = date.getFullYear();
                     const month = String(date.getMonth() + 1).padStart(2, '0');
                     const day = String(date.getDate()).padStart(2, '0');
                     return `${year}-${month}-${day}`;
                 };
-                
-                // Set default values for date fields
-                document.querySelector('input[name="fromDate"]').value = formatDate(firstDay);
-                document.querySelector('input[name="toDate"]').value = formatDate(lastDay);
                 
                 // Set default date for sale date picker if no date is selected
                 const saleDateInput = document.getElementById('saleDate');
