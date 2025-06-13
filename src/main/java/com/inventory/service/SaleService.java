@@ -91,6 +91,48 @@ public class SaleService {
         return saleRepository.findBySaleDateBetweenOrderBySaleDateDesc(startOfDay, endOfDay);
     }
 
+    public List<Sale> getSalesByDateRangeWithFilters(LocalDate fromDate, LocalDate toDate, String productType, Long dealerId) {
+        LocalDateTime startOfDay = fromDate.atStartOfDay();
+        LocalDateTime endOfDay = toDate.plusDays(1).atStartOfDay();
+        
+        List<Sale> sales = saleRepository.findBySaleDateBetweenOrderBySaleDateDesc(startOfDay, endOfDay);
+        
+        // Apply product type filter
+        if (productType != null && !productType.trim().isEmpty()) {
+            sales = sales.stream()
+                    .filter(sale -> matchesProductType(sale, productType))
+                    .collect(java.util.stream.Collectors.toList());
+        }
+        
+        // Apply dealer filter
+        if (dealerId != null) {
+            sales = sales.stream()
+                    .filter(sale -> sale.getDealer() != null && sale.getDealer().getId().equals(dealerId))
+                    .collect(java.util.stream.Collectors.toList());
+        }
+        
+        return sales;
+    }
+    
+    private boolean matchesProductType(Sale sale, String productType) {
+        switch (productType) {
+            case "HIGH_EC_PITH":
+                return sale.getProductType() == ProductType.PITH && sale.getPithType() == PithType.NORMAL;
+            case "LOW_EC_PITH":
+                return sale.getProductType() == ProductType.PITH && sale.getPithType() == PithType.LOW;
+            case "WHITE_FIBER":
+                return sale.getProductType() == ProductType.FIBER && sale.getFiberType() == FiberType.WHITE;
+            case "BROWN_FIBER":
+                return sale.getProductType() == ProductType.FIBER && sale.getFiberType() == FiberType.BROWN;
+            case "HIGH_EC_BLOCKS":
+                return sale.getProductType() == ProductType.BLOCK && sale.getPithType() == PithType.NORMAL;
+            case "LOW_EC_BLOCKS":
+                return sale.getProductType() == ProductType.BLOCK && sale.getPithType() == PithType.LOW;
+            default:
+                return true; // No filter or unknown filter
+        }
+    }
+
     public Sale getSaleById(Long id) {
         return saleRepository.findById(id).orElse(null);
     }

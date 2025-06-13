@@ -5,15 +5,23 @@
     <title>Processed Raw Materials Report</title>
 </head>
 <body>
+    
+    <!-- Print Header (only visible when printing) -->
+    <div class="print-header" style="display: none;">
+        <h1>EYARKKAI FIBERS</h1>
+        <p>Processed Raw Materials Report</p>
+        <p th:text="'Period: ' + #temporals.format(startDate, 'dd MMMM yyyy') + ' to ' + #temporals.format(endDate, 'dd MMMM yyyy')">Date Range</p>
+    </div>
+    
     <th:block id="pageTitle"><h1 class="main-page-title">Processed Raw Materials Report</h1></th:block>
     
     <div id="content">
-        <div class="row mb-3">
+        <div class="row mb-3 no-print">
             <div class="col-md-12">
                 <a th:href="@{/raw-materials/processed}" class="btn btn-success">
                     <i class="fas fa-arrow-left"></i> Back to Report Selection
                 </a>
-                <button class="btn btn-success ms-2" onclick="window.print()">
+                <button class="btn btn-success ms-2" onclick="printReport()">
                     <i class="fas fa-print"></i> Print Report
                 </button>
                 <a th:href="@{/raw-materials/processed/export(startDate=${startDate},endDate=${endDate})}" class="btn btn-success ms-2">
@@ -100,25 +108,70 @@
             </div>
         </div>
     </div>
+
+    <!-- Print Footer (only visible when printing) -->
+    <div class="print-footer" style="display: none;">
+        Generated on <span th:text="${#temporals.format(#temporals.createNow(), 'dd MMMM yyyy HH:mm')}">Current Date</span> | EYARKKAI FIBERS
+    </div>
     
     <th:block id="pagescript">
         <script>
             $(document).ready(function() {
-                // Add print-specific styling
+                // Show print header and footer only when printing
                 $('<style>')
-                    .append('@media print { .btn, .navbar, .sidebar, .mobile-menu-btn { display: none !important; } }')
-                    .append('@media print { body { padding: 0; margin: 0; } }')
-                    .append('@media print { main { margin-left: 0 !important; width: 100% !important; padding: 0 !important; } }')
-                    .append('@media print { .card { border: none !important; } }')
-                    .append('@media print { .card-header { background-color: #f8f9fa !important; -webkit-print-color-adjust: exact; } }')
-                    .append('@media print { .table-dark th { background-color: #212529 !important; color: white !important; -webkit-print-color-adjust: exact; } }')
-                    .append('@media print { .table-secondary th { background-color: #e2e3e5 !important; -webkit-print-color-adjust: exact; } }')
-                    .append('@media print { .bg-light { background-color: #f8f9fa !important; -webkit-print-color-adjust: exact; } }')
-                    .append('@media print { .bg-primary { background-color: #0d6efd !important; color: white !important; -webkit-print-color-adjust: exact; } }')
-                    .append('@media print { .bg-success { background-color: #198754 !important; color: white !important; -webkit-print-color-adjust: exact; } }')
-                    .append('@media print { .bg-info { background-color: #0dcaf0 !important; color: white !important; -webkit-print-color-adjust: exact; } }')
+                    .append('@media print { .print-header, .print-footer { display: block !important; } }')
+                    .append('@media print { .no-print { display: none !important; } }')
+                    .append('@media print { #pageTitle, .main-page-title { display: none !important; } }')
                     .appendTo('head');
             });
+            
+            // Enhanced print function to control browser behavior
+            function printReport() {
+                // Temporarily change the document title
+                const originalTitle = document.title;
+                document.title = 'EYARKKAI FIBERS - Processed Raw Materials Report';
+                
+                // Add print-specific styling
+                const printStyle = document.createElement('style');
+                printStyle.id = 'print-style';
+                printStyle.innerHTML = `
+                    @media print {
+                        @page {
+                            margin: 0.5in !important;
+                            size: A4 !important;
+                        }
+                        body * {
+                            visibility: hidden;
+                        }
+                        .print-header, .print-header *,
+                        #content, #content *,
+                        .print-footer, .print-footer * {
+                            visibility: visible;
+                        }
+                        .print-header {
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                        }
+                        #content {
+                            margin-top: 80px;
+                        }
+                    }
+                `;
+                document.head.appendChild(printStyle);
+                
+                // Print and cleanup
+                window.print();
+                
+                setTimeout(() => {
+                    document.title = originalTitle;
+                    const styleElement = document.getElementById('print-style');
+                    if (styleElement) {
+                        styleElement.remove();
+                    }
+                }, 1000);
+            }
         </script>
     </th:block>
 </body>

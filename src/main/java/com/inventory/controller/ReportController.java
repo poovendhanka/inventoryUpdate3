@@ -1,5 +1,6 @@
 package com.inventory.controller;
 
+import com.inventory.service.DealerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +13,8 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/reports")
 @RequiredArgsConstructor
 public class ReportController extends BaseController {
+
+    private final DealerService dealerService;
 
     @GetMapping
     public String showReportsPage(
@@ -29,6 +32,10 @@ public class ReportController extends BaseController {
         }
 
         model.addAttribute("activeReportTab", activeTab);
+        
+        // Add dealers for sales report filtering
+        model.addAttribute("dealers", dealerService.getAllDealers());
+        
         return getViewPath("reports/index");
     }
 }

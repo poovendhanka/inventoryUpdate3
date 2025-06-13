@@ -48,10 +48,10 @@ public class AccountController extends BaseController {
     @PostMapping("/process")
     public String processRawMaterial(@RequestParam Long rawMaterialId,
                                    @RequestParam Double costPerCft,
-                                   @RequestParam String supervisor,
+                                   @RequestParam String supervisorName,
                                    Model model) {
         try {
-            rawMaterialService.processRawMaterial(rawMaterialId, costPerCft, supervisor);
+            rawMaterialService.processRawMaterial(rawMaterialId, costPerCft, supervisorName);
             model.addAttribute("success", "Raw material processed successfully!");
         } catch (Exception e) {
             model.addAttribute("error", "Error processing raw material: " + e.getMessage());

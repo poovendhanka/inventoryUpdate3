@@ -33,22 +33,39 @@
                             <div class="card mb-4">
                                 <div class="card-header"><h5 class="card-title mb-0">Add Supplier</h5></div>
                                 <div class="card-body">
-                                    <form th:action="@{/admin/parties}" method="post" th:object="${party}">
+                                    <form th:action="@{/admin/parties}" method="post" th:object="${party}" class="needs-validation" novalidate>
                                         <div class="mb-3">
                                             <label for="partyName" class="form-label">Name <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" id="partyName" th:field="*{name}" required>
+                                            <input type="text" class="form-control" id="partyName" th:field="*{name}" required 
+                                                   placeholder="Enter supplier name">
+                                            <div class="invalid-feedback">
+                                                Please provide a valid supplier name.
+                                            </div>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="partyPhone" class="form-label">Phone Number</label>
-                                            <input type="tel" class="form-control" id="partyPhone" th:field="*{phoneNumber}" pattern="[0-9]{10}" maxlength="10" placeholder="Enter 10-digit phone number">
+                                            <label for="partyPhone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                            <input type="tel" class="form-control" id="partyPhone" th:field="*{phoneNumber}" 
+                                                   pattern="[0-9]{10}" maxlength="10" required
+                                                   placeholder="Enter 10-digit phone number">
+                                            <div class="invalid-feedback">
+                                                Please provide a valid 10-digit phone number.
+                                            </div>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="partySin" class="form-label">SIN Number</label>
-                                            <input type="text" class="form-control" id="partySin" th:field="*{sinNumber}">
+                                            <label for="partySin" class="form-label">SIN Number <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="partySin" th:field="*{sinNumber}" required
+                                                   placeholder="Enter SIN number">
+                                            <div class="invalid-feedback">
+                                                Please provide a valid SIN number.
+                                            </div>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="partyAddress" class="form-label">Address</label>
-                                            <textarea class="form-control" id="partyAddress" th:field="*{address}" rows="2"></textarea>
+                                            <label for="partyAddress" class="form-label">Address <span class="text-danger">*</span></label>
+                                            <textarea class="form-control" id="partyAddress" th:field="*{address}" rows="2" required
+                                                      placeholder="Enter supplier address"></textarea>
+                                            <div class="invalid-feedback">
+                                                Please provide a valid address.
+                                            </div>
                                         </div>
                                         <button type="submit" class="btn btn-success">Add Supplier</button>
                                     </form>
@@ -94,22 +111,40 @@
                             <div class="card mb-4">
                                 <div class="card-header"><h5 class="card-title mb-0">Add Dealer</h5></div>
                                 <div class="card-body">
-                                    <form th:action="@{/admin/dealers}" method="post" th:object="${dealer}">
+                                    <form th:action="@{/admin/dealers}" method="post" th:object="${dealer}" class="needs-validation" novalidate>
                                         <div class="mb-3">
                                             <label for="dealerName" class="form-label">Name <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" id="dealerName" th:field="*{name}" required>
+                                            <input type="text" class="form-control" id="dealerName" th:field="*{name}" required
+                                                   placeholder="Enter dealer name">
+                                            <div class="invalid-feedback">
+                                                Please provide a valid dealer name.
+                                            </div>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="dealerPhone" class="form-label">Phone Number</label>
-                                            <input type="tel" class="form-control" id="dealerPhone" th:field="*{phoneNumber}" pattern="[0-9]{10}" maxlength="10" placeholder="Enter 10-digit phone number">
+                                            <label for="dealerPhone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                            <input type="tel" class="form-control" id="dealerPhone" th:field="*{phoneNumber}" 
+                                                   pattern="[0-9]{10}" maxlength="10" required
+                                                   placeholder="Enter 10-digit phone number">
+                                            <div class="invalid-feedback">
+                                                Please provide a valid 10-digit phone number.
+                                            </div>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="dealerAddress" class="form-label">Address</label>
-                                            <textarea class="form-control" id="dealerAddress" th:field="*{address}" rows="2"></textarea>
+                                            <label for="dealerAddress" class="form-label">Address <span class="text-danger">*</span></label>
+                                            <textarea class="form-control" id="dealerAddress" th:field="*{address}" rows="2" required
+                                                      placeholder="Enter dealer address"></textarea>
+                                            <div class="invalid-feedback">
+                                                Please provide a valid address.
+                                            </div>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="dealerGst" class="form-label">GST Number</label>
-                                            <input type="text" class="form-control" id="dealerGst" th:field="*{gstNumber}" pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}" placeholder="Enter valid GST number">
+                                            <label for="dealerGst" class="form-label">GST Number <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="dealerGst" th:field="*{gstNumber}" required
+                                                   pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}" 
+                                                   placeholder="Enter valid GST number (e.g., 22AAAAA0000A1Z5)">
+                                            <div class="invalid-feedback">
+                                                Please provide a valid GST number in the format: 22AAAAA0000A1Z5.
+                                            </div>
                                         </div>
                                         <button type="submit" class="btn btn-success">Add Dealer</button>
                                     </form>
@@ -193,10 +228,128 @@
 
     <div id="pagescript">
         <script>
-            // Add any page-specific JavaScript here
-            $(document).ready(function() {
-                // Your JavaScript code
+            document.addEventListener('DOMContentLoaded', function() {
+                // Bootstrap form validation
+                const forms = document.querySelectorAll('.needs-validation');
+                
+                Array.from(forms).forEach(function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            
+                            // Show toast notification for validation errors
+                            showToast('Please fill in all required fields correctly.', 'error');
+                            
+                            // Focus on first invalid field
+                            const firstInvalidField = form.querySelector(':invalid');
+                            if (firstInvalidField) {
+                                firstInvalidField.focus();
+                            }
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+                
+                // Real-time validation feedback
+                const inputs = document.querySelectorAll('.needs-validation input, .needs-validation textarea');
+                inputs.forEach(function(input) {
+                    input.addEventListener('blur', function() {
+                        if (input.checkValidity()) {
+                            input.classList.remove('is-invalid');
+                            input.classList.add('is-valid');
+                        } else {
+                            input.classList.remove('is-valid');
+                            input.classList.add('is-invalid');
+                        }
+                    });
+                    
+                    input.addEventListener('input', function() {
+                        if (input.classList.contains('was-validated') || input.classList.contains('is-invalid')) {
+                            if (input.checkValidity()) {
+                                input.classList.remove('is-invalid');
+                                input.classList.add('is-valid');
+                            } else {
+                                input.classList.remove('is-valid');
+                                input.classList.add('is-invalid');
+                            }
+                        }
+                    });
+                });
+                
+                // Phone number validation
+                const phoneInputs = document.querySelectorAll('input[type="tel"]');
+                phoneInputs.forEach(function(input) {
+                    input.addEventListener('input', function() {
+                        // Remove non-numeric characters
+                        this.value = this.value.replace(/[^0-9]/g, '');
+                        
+                        // Limit to 10 digits
+                        if (this.value.length > 10) {
+                            this.value = this.value.slice(0, 10);
+                        }
+                    });
+                });
+                
+                // GST number validation
+                const gstInput = document.getElementById('dealerGst');
+                if (gstInput) {
+                    gstInput.addEventListener('input', function() {
+                        // Convert to uppercase
+                        this.value = this.value.toUpperCase();
+                        
+                        // Remove invalid characters
+                        this.value = this.value.replace(/[^0-9A-Z]/g, '');
+                        
+                        // Limit to 15 characters
+                        if (this.value.length > 15) {
+                            this.value = this.value.slice(0, 15);
+                        }
+                    });
+                }
             });
+            
+            // Toast notification function
+            function showToast(message, type = 'info') {
+                // Create toast container if it doesn't exist
+                let toastContainer = document.getElementById('toast-container');
+                if (!toastContainer) {
+                    toastContainer = document.createElement('div');
+                    toastContainer.id = 'toast-container';
+                    toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+                    toastContainer.style.zIndex = '1055';
+                    document.body.appendChild(toastContainer);
+                }
+                
+                // Create toast element
+                const toastId = 'toast-' + Date.now();
+                const toastHtml = `
+                    <div id="${toastId}" class="toast align-items-center text-white bg-${type === 'error' ? 'danger' : 'success'} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'} me-2"></i>
+                                ${message}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `;
+                
+                toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+                
+                // Initialize and show toast
+                const toastElement = document.getElementById(toastId);
+                const toast = new bootstrap.Toast(toastElement, {
+                    autohide: true,
+                    delay: 5000
+                });
+                toast.show();
+                
+                // Remove toast element after it's hidden
+                toastElement.addEventListener('hidden.bs.toast', function() {
+                    toastElement.remove();
+                });
+            }
         </script>
     </div>
 </body>

@@ -35,6 +35,8 @@ public class SalesReportController extends BaseController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate,
+            @RequestParam(required = false) String productType,
+            @RequestParam(required = false) Long dealerId,
             @RequestParam(defaultValue = "false") boolean exportCsv,
             Model model,
             HttpServletResponse response) throws IOException {
@@ -53,7 +55,7 @@ public class SalesReportController extends BaseController {
                 toDate = LocalDate.now();
             }
 
-            List<Sale> sales = saleService.getSalesByDateRange(fromDate, toDate);
+            List<Sale> sales = saleService.getSalesByDateRangeWithFilters(fromDate, toDate, productType, dealerId);
             Double totalAmount = sales.stream()
                     .mapToDouble(sale -> sale.getTotalWithTax() != null ? sale.getTotalWithTax() : 0.0)
                     .sum();
@@ -101,6 +103,8 @@ public class SalesReportController extends BaseController {
 
             model.addAttribute("fromDate", fromDate);
             model.addAttribute("toDate", toDate);
+            model.addAttribute("productType", productType);
+            model.addAttribute("dealerId", dealerId);
             model.addAttribute("sales", sales);
             model.addAttribute("totalAmount", totalAmount);
             model.addAttribute("activeTab", "reports");

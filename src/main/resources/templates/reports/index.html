@@ -158,20 +158,43 @@
                     <div class="card-body">
                         <form th:action="@{/sales-report/view}" method="get">
                             <div class="row mb-3">
-                                <div class="col-md-5">
+                                <div class="col-md-3">
                                     <label class="form-label">From Date <span class="text-danger">*</span></label>
                                     <input type="date" class="form-control" id="salesStartDate" name="fromDate" required>
                                 </div>
-                                <div class="col-md-5">
+                                <div class="col-md-3">
                                     <label class="form-label">To Date <span class="text-danger">*</span></label>
                                     <input type="date" class="form-control" id="salesEndDate" name="toDate" required>
                                 </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">&nbsp;</label>
-                                    <button type="submit" class="btn btn-success d-block w-100">Generate Report</button>
+                                <div class="col-md-3">
+                                    <label class="form-label">Product Type</label>
+                                    <select class="form-select" id="salesProductType" name="productType">
+                                        <option value="">All Products</option>
+                                        <option value="HIGH_EC_PITH" th:selected="${productType == 'HIGH_EC_PITH'}">High EC Pith</option>
+                                        <option value="LOW_EC_PITH" th:selected="${productType == 'LOW_EC_PITH'}">Low EC Pith</option>
+                                        <option value="WHITE_FIBER" th:selected="${productType == 'WHITE_FIBER'}">White Fiber</option>
+                                        <option value="BROWN_FIBER" th:selected="${productType == 'BROWN_FIBER'}">Brown Fiber</option>
+                                        <option value="HIGH_EC_BLOCKS" th:selected="${productType == 'HIGH_EC_BLOCKS'}">High EC Blocks</option>
+                                        <option value="LOW_EC_BLOCKS" th:selected="${productType == 'LOW_EC_BLOCKS'}">Low EC Blocks</option>
+                                    </select>
                                 </div>
-                                <div class="col-md-12 mt-2">
-                                    <div class="form-check form-check-inline">
+                                <div class="col-md-3">
+                                    <label class="form-label">Dealer</label>
+                                    <select class="form-select" id="salesDealer" name="dealerId">
+                                        <option value="">All Dealers</option>
+                                        <option th:each="dealer : ${dealers}" 
+                                                th:value="${dealer.id}" 
+                                                th:selected="${dealerId != null and dealerId == dealer.id}"
+                                                th:text="${dealer.name}">Dealer Name</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-success me-2">
+                                        <i class="fas fa-chart-bar"></i> Generate Report
+                                    </button>
+                                    <div class="form-check form-check-inline ms-3">
                                         <input class="form-check-input" type="checkbox" id="salesDownloadCsv" name="exportCsv" value="true">
                                         <label class="form-check-label" for="salesDownloadCsv">Download as CSV</label>
                                     </div>

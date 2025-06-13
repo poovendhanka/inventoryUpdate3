@@ -6,20 +6,29 @@
 </head>
 <body>
     
+    <!-- Print Header (only visible when printing) -->
+    <div class="print-header" style="display: none;">
+        <h1>EYARKKAI FIBERS</h1>
+        <p>Sales Report</p>
+        <p th:text="${fromDate == toDate ? 'Date: ' + #temporals.format(fromDate, 'dd MMMM yyyy') : 'Period: ' + #temporals.format(fromDate, 'dd MMMM yyyy') + ' to ' + #temporals.format(toDate, 'dd MMMM yyyy')}">Date Range</p>
+        <p th:if="${productType != null and productType != 'ALL'}" th:text="'Product Type: ' + ${productType}">Product Filter</p>
+        <p th:if="${dealerName != null and dealerName != 'All Dealers'}" th:text="'Dealer: ' + ${dealerName}">Dealer Filter</p>
+    </div>
+    
     <h1 id="pageTitle">Sales Report - <span th:text="${#temporals.format(fromDate, 'dd-MM-yyyy')}">From Date</span> 
         <span th:if="${fromDate != toDate}">to <span th:text="${#temporals.format(toDate, 'dd-MM-yyyy')}">To Date</span></span>
     </h1>
     
     <div id="content">
-        <div class="row mb-3">
+        <div class="row mb-3 no-print">
             <div class="col-md-12">
                 <a th:href="@{/reports?tab=sales}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Back to Reports
                 </a>
-                <a th:href="@{/sales-report/view(fromDate=${fromDate},toDate=${toDate},exportCsv=true)}" class="btn btn-success ms-2">
+                <a th:href="@{/sales-report/view(fromDate=${fromDate},toDate=${toDate},productType=${productType},dealerId=${dealerId},exportCsv=true)}" class="btn btn-success ms-2">
                     <i class="fas fa-file-csv"></i> Export as CSV
                 </a>
-                <button class="btn btn-primary ms-2" onclick="window.print()">
+                <button class="btn btn-primary ms-2" onclick="printReport()">
                     <i class="fas fa-print"></i> Print Report
                 </button>
             </div>
@@ -105,6 +114,11 @@
         </div>
     </div>
 
+    <!-- Print Footer (only visible when printing) -->
+    <div class="print-footer" style="display: none;">
+        Generated on <span th:text="${#temporals.format(#temporals.createNow(), 'dd MMMM yyyy HH:mm')}">Current Date</span> | EYARKKAI FIBERS
+    </div>
+
     <th:block id="pagescript">
         <script>
             $(document).ready(function() {
@@ -114,7 +128,62 @@
 
                 // Enable tooltips
                 $('[data-bs-toggle="tooltip"]').tooltip();
+                
+                // Show print header and footer only when printing
+                $('<style>')
+                    .append('@media print { .print-header, .print-footer { display: block !important; } }')
+                    .append('@media print { .no-print { display: none !important; } }')
+                    .append('@media print { #pageTitle { display: none !important; } }')
+                    .appendTo('head');
             });
+            
+            // Enhanced print function to control browser behavior
+            function printReport() {
+                // Temporarily change the document title
+                const originalTitle = document.title;
+                document.title = 'EYARKKAI FIBERS - Sales Report';
+                
+                // Add print-specific styling
+                const printStyle = document.createElement('style');
+                printStyle.id = 'print-style';
+                printStyle.innerHTML = `
+                    @media print {
+                        @page {
+                            margin: 0.5in !important;
+                            size: A4 !important;
+                        }
+                        body * {
+                            visibility: hidden;
+                        }
+                        .print-header, .print-header *,
+                        #content, #content *,
+                        .print-footer, .print-footer * {
+                            visibility: visible;
+                        }
+                        .print-header {
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                        }
+                        #content {
+                            margin-top: 80px;
+                        }
+                    }
+                `;
+                document.head.appendChild(printStyle);
+                
+                // Print and cleanup
+                window.print();
+                
+                setTimeout(() => {
+                    document.title = originalTitle;
+                    const styleElement = document.getElementById('print-style');
+                    if (styleElement) {
+                        styleElement.remove();
+                    }
+                }, 1000);
+            }
         </script>
     </th:block>
 </body>
