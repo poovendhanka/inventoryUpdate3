@@ -2,19 +2,22 @@ package com.inventory.service;
 
 import com.inventory.model.Dealer;
 import com.inventory.repository.DealerRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class DealerService {
-    private final DealerRepository dealerRepository;
+    
+    @Autowired
+    private DealerRepository dealerRepository;
     
     public List<Dealer> getAllDealers() {
-        // Check if this method is adding default dealers
-        return dealerRepository.findAll();
+        return dealerRepository.findByDeletedFalse();
+    }
+    
+    public Dealer getDealerById(Long id) {
+        return dealerRepository.findByIdIncludeDeleted(id);
     }
     
     public Dealer saveDealer(Dealer dealer) {
@@ -22,11 +25,21 @@ public class DealerService {
     }
     
     public void deleteDealer(Long id) {
-        dealerRepository.deleteById(id);
+        Dealer dealer = dealerRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Dealer not found"));
+        dealer.setDeleted(true);
+        dealerRepository.save(dealer);
     }
     
-    public Dealer getDealerById(Long id) {
-        return dealerRepository.findById(id)
+    public Dealer updateDealer(Long id, Dealer dealerDetails) {
+        Dealer dealer = dealerRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Dealer not found"));
+        
+        dealer.setName(dealerDetails.getName());
+        dealer.setPhoneNumber(dealerDetails.getPhoneNumber());
+        dealer.setAddress(dealerDetails.getAddress());
+        dealer.setGstNumber(dealerDetails.getGstNumber());
+        
+        return dealerRepository.save(dealer);
     }
 } 

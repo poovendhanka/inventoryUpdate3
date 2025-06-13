@@ -15,4 +15,7 @@ public class Dealer {
     private String phoneNumber;
     private String address;
     private String gstNumber;
+    
+    @Column(nullable = false)
+    private boolean deleted = false;
 } 

@@ -15,4 +15,7 @@ public class Party {
     private String sinNumber;
     private String phoneNumber;
     private String address;
+    
+    @Column(nullable = false)
+    private boolean deleted = false;
 } 

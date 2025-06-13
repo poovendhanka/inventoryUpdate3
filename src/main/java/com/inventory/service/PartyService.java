@@ -2,19 +2,22 @@ package com.inventory.service;
 
 import com.inventory.model.Party;
 import com.inventory.repository.PartyRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class PartyService {
-    private final PartyRepository partyRepository;
+    
+    @Autowired
+    private PartyRepository partyRepository;
     
     public List<Party> getAllParties() {
-        // Check if this method is adding default parties
-        return partyRepository.findAll();
+        return partyRepository.findByDeletedFalse();
+    }
+    
+    public Party getPartyById(Long id) {
+        return partyRepository.findByIdIncludeDeleted(id);
     }
     
     public Party saveParty(Party party) {
@@ -22,11 +25,21 @@ public class PartyService {
     }
     
     public void deleteParty(Long id) {
-        partyRepository.deleteById(id);
+        Party party = partyRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Party not found"));
+        party.setDeleted(true);
+        partyRepository.save(party);
     }
     
-    public Party getPartyById(Long id) {
-        return partyRepository.findById(id)
+    public Party updateParty(Long id, Party partyDetails) {
+        Party party = partyRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Party not found"));
+        
+        party.setName(partyDetails.getName());
+        party.setSinNumber(partyDetails.getSinNumber());
+        party.setPhoneNumber(partyDetails.getPhoneNumber());
+        party.setAddress(partyDetails.getAddress());
+        
+        return partyRepository.save(party);
     }
 } 
