@@ -14,6 +14,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     List<Expense> findByExpenseType(ExpenseType expenseType);
 
+    List<Expense> findTop10ByExpenseTypeOrderByExpenseDateDesc(ExpenseType expenseType);
+
     List<Expense> findByExpenseDateBetween(LocalDateTime startDate, LocalDateTime endDate);
 
     List<Expense> findByExpenseTypeAndExpenseDateBetween(

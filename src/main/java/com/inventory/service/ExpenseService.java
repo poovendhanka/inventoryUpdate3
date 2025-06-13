@@ -40,6 +40,10 @@ public class ExpenseService {
         return expenseRepository.findByExpenseType(expenseType);
     }
 
+    public List<Expense> getRecentExpensesByType(ExpenseType expenseType) {
+        return expenseRepository.findTop10ByExpenseTypeOrderByExpenseDateDesc(expenseType);
+    }
+
     public Optional<Expense> getExpenseById(Long id) {
         return expenseRepository.findById(id);
     }

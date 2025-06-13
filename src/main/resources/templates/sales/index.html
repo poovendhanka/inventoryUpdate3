@@ -340,7 +340,11 @@
                                     <tr th:each="sale : ${recentSales}">
                                         <td th:text="${#temporals.format(sale.saleDate, 'dd-MM-yyyy HH:mm')}">Date</td>
                                         <td th:text="${sale.dealer.name}">Dealer</td>
-                                        <td th:text="${T(com.inventory.util.ProductNameUtil).getFullProductName(sale.productType, sale.pithType, sale.fiberType)}">Product</td>
+                                        <td>
+                                            <span th:if="${sale.productType.name() == 'FIBER'}" th:text="${T(com.inventory.util.ProductNameUtil).getFullProductName(sale.productType, sale.fiberType)}"></span>
+                                            <span th:if="${sale.productType.name() == 'PITH'}" th:text="${T(com.inventory.util.ProductNameUtil).getFullProductName(sale.productType, sale.pithType)}"></span>
+                                            <span th:if="${sale.productType.name() == 'BLOCK'}" th:text="${T(com.inventory.util.ProductNameUtil).getFullProductName(sale.productType, sale.pithType)}"></span>
+                                        </td>
                                         <td>
                                             <span th:if="${sale.productType.name() == 'PITH'}" th:text="${sale.quantity + ' kg'}"></span>
                                             <span th:if="${sale.productType.name() == 'FIBER'}" th:text="${sale.quantity + ' bales'}"></span>

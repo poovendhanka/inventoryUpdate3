@@ -43,7 +43,7 @@ public class ExpenseController extends BaseController {
         model.addAttribute("expense", expense);
 
         model.addAttribute("expenseType", ExpenseType.ELECTRICITY_BILLS);
-        model.addAttribute("recentExpenses", expenseService.getExpensesByType(ExpenseType.ELECTRICITY_BILLS));
+        model.addAttribute("recentExpenses", expenseService.getRecentExpensesByType(ExpenseType.ELECTRICITY_BILLS));
         return getViewPath("expenses/electricity");
     }
 
@@ -64,7 +64,7 @@ public class ExpenseController extends BaseController {
         model.addAttribute("expense", expense);
 
         model.addAttribute("expenseType", ExpenseType.MAINTENANCE);
-        model.addAttribute("recentExpenses", expenseService.getExpensesByType(ExpenseType.MAINTENANCE));
+        model.addAttribute("recentExpenses", expenseService.getRecentExpensesByType(ExpenseType.MAINTENANCE));
         return getViewPath("expenses/maintenance");
     }
 
@@ -79,7 +79,7 @@ public class ExpenseController extends BaseController {
         model.addAttribute("expense", expense);
 
         model.addAttribute("expenseType", ExpenseType.TRANSPORTATION);
-        model.addAttribute("recentExpenses", expenseService.getExpensesByType(ExpenseType.TRANSPORTATION));
+        model.addAttribute("recentExpenses", expenseService.getRecentExpensesByType(ExpenseType.TRANSPORTATION));
         return getViewPath("expenses/transportation");
     }
 
@@ -94,7 +94,7 @@ public class ExpenseController extends BaseController {
         model.addAttribute("expense", expense);
 
         model.addAttribute("expenseType", ExpenseType.SPARES_PARTS);
-        model.addAttribute("recentExpenses", expenseService.getExpensesByType(ExpenseType.SPARES_PARTS));
+        model.addAttribute("recentExpenses", expenseService.getRecentExpensesByType(ExpenseType.SPARES_PARTS));
         return getViewPath("expenses/spares");
     }
 
@@ -109,7 +109,7 @@ public class ExpenseController extends BaseController {
         model.addAttribute("expense", expense);
 
         model.addAttribute("expenseType", ExpenseType.MISCELLANEOUS);
-        model.addAttribute("recentExpenses", expenseService.getExpensesByType(ExpenseType.MISCELLANEOUS));
+        model.addAttribute("recentExpenses", expenseService.getRecentExpensesByType(ExpenseType.MISCELLANEOUS));
         return getViewPath("expenses/miscellaneous");
     }
 
