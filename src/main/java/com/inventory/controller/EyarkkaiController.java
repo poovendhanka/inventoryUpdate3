@@ -22,17 +22,27 @@ public class EyarkkaiController {
     
     @GetMapping
     public String eyarkkaiFamily(@RequestParam(defaultValue = "about") String tab, 
-                                @RequestParam(required = false) String gender, 
+                                @RequestParam(required = false) String gender,
+                                @RequestParam(required = false) String employeeType,
                                 Model model) {
         model.addAttribute("activeTab", "eyarkkai-family");
         model.addAttribute("currentTab", tab);
         
-        // If employees tab is requested, load employees
+        // If employees tab is requested
         if ("employees".equals(tab)) {
             String selectedGender = (gender != null) ? gender : "male";
-            List<Employee> employees = employeeService.getEmployeesByGender(selectedGender.toUpperCase());
             model.addAttribute("selectedGender", selectedGender);
-            model.addAttribute("employees", employees);
+            model.addAttribute("employeeType", employeeType);
+            
+            if ("old".equals(employeeType)) {
+                // Load old employees
+                List<Employee> oldEmployees = employeeService.getDeletedEmployeesByGender(selectedGender.toUpperCase());
+                model.addAttribute("oldEmployees", oldEmployees);
+            } else {
+                // Load active employees (default)
+                List<Employee> employees = employeeService.getActiveEmployeesByGender(selectedGender.toUpperCase());
+                model.addAttribute("employees", employees);
+            }
         }
         
         return "eyarkkai-family/index";
@@ -40,7 +50,7 @@ public class EyarkkaiController {
     
     @GetMapping("/employees")
     public String employees(@RequestParam(defaultValue = "male") String gender, Model model) {
-        List<Employee> employees = employeeService.getEmployeesByGender(gender.toUpperCase());
+        List<Employee> employees = employeeService.getActiveEmployeesByGender(gender.toUpperCase());
         model.addAttribute("activeTab", "eyarkkai-family");
         model.addAttribute("currentTab", "employees");
         model.addAttribute("selectedGender", gender);
@@ -74,8 +84,8 @@ public class EyarkkaiController {
             return "eyarkkai-family/employee-form";
         }
         
-        if (employeeService.existsByAadharNumber(employee.getAadharNumber())) {
-            System.out.println("DEBUG: Aadhar number already exists");
+        if (employeeService.existsByAadharNumberAmongActive(employee.getAadharNumber())) {
+            System.out.println("DEBUG: Aadhar number already exists among active employees");
             bindingResult.rejectValue("aadharNumber", "error.employee", "Aadhar number already exists");
             model.addAttribute("activeTab", "eyarkkai-family");
             return "eyarkkai-family/employee-form";
@@ -97,18 +107,31 @@ public class EyarkkaiController {
     
     @GetMapping("/employees/{id}")
     public String viewEmployee(@PathVariable Long id, Model model) {
-        Optional<Employee> employee = employeeService.getEmployeeById(id);
+        Optional<Employee> employee = employeeService.getActiveEmployeeById(id);
         if (employee.isPresent()) {
             model.addAttribute("activeTab", "eyarkkai-family");
             model.addAttribute("employee", employee.get());
+            model.addAttribute("isOldEmployee", false);
             return "eyarkkai-family/employee-details";
         }
         return "redirect:/eyarkkai-family?tab=employees";
     }
     
+    @GetMapping("/old-employees/{id}")
+    public String viewOldEmployee(@PathVariable Long id, Model model) {
+        Optional<Employee> employee = employeeService.getAnyEmployeeById(id);
+        if (employee.isPresent() && Boolean.TRUE.equals(employee.get().getDeleted())) {
+            model.addAttribute("activeTab", "eyarkkai-family");
+            model.addAttribute("employee", employee.get());
+            model.addAttribute("isOldEmployee", true);
+            return "eyarkkai-family/employee-details";
+        }
+        return "redirect:/eyarkkai-family?tab=employees&employeeType=old";
+    }
+    
     @GetMapping("/employees/{id}/edit")
     public String editEmployeeForm(@PathVariable Long id, Model model) {
-        Optional<Employee> employee = employeeService.getEmployeeById(id);
+        Optional<Employee> employee = employeeService.getActiveEmployeeById(id);
         if (employee.isPresent()) {
             model.addAttribute("activeTab", "eyarkkai-family");
             model.addAttribute("employee", employee.get());
@@ -129,7 +152,7 @@ public class EyarkkaiController {
             return "eyarkkai-family/employee-form";
         }
         
-        if (!employeeService.isAadharNumberUnique(employee.getAadharNumber(), id)) {
+        if (!employeeService.isAadharNumberUniqueAmongActive(employee.getAadharNumber(), id)) {
             bindingResult.rejectValue("aadharNumber", "error.employee", "Aadhar number already exists");
             model.addAttribute("activeTab", "eyarkkai-family");
             return "eyarkkai-family/employee-form";
@@ -143,14 +166,28 @@ public class EyarkkaiController {
     
     @PostMapping("/employees/{id}/delete")
     public String deleteEmployee(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        Optional<Employee> employee = employeeService.getEmployeeById(id);
+        Optional<Employee> employee = employeeService.getActiveEmployeeById(id);
         if (employee.isPresent()) {
             String gender = employee.get().getGender().toLowerCase();
-            employeeService.deleteEmployee(id);
-            redirectAttributes.addFlashAttribute("successMessage", "Employee deleted successfully!");
+            employeeService.softDeleteEmployee(id, "Admin"); // You can pass actual user info here
+            redirectAttributes.addFlashAttribute("successMessage", 
+                "Employee moved to old employees successfully!");
             return "redirect:/eyarkkai-family?tab=employees&gender=" + gender;
         }
         return "redirect:/eyarkkai-family?tab=employees";
+    }
+    
+    @PostMapping("/old-employees/{id}/restore")
+    public String restoreEmployee(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        Optional<Employee> employee = employeeService.getAnyEmployeeById(id);
+        if (employee.isPresent() && Boolean.TRUE.equals(employee.get().getDeleted())) {
+            String gender = employee.get().getGender().toLowerCase();
+            employeeService.restoreEmployee(id);
+            redirectAttributes.addFlashAttribute("successMessage", 
+                "Employee restored successfully!");
+            return "redirect:/eyarkkai-family?tab=employees&gender=" + gender;
+        }
+        return "redirect:/eyarkkai-family?tab=employees&employeeType=old";
     }
     
     @GetMapping("/connect")

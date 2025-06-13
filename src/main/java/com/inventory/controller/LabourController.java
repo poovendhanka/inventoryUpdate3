@@ -59,7 +59,7 @@ public class LabourController extends BaseController {
 
             // Get the employee by ID from the form
             Long employeeId = labourEntry.getEmployee().getId();
-            Optional<Employee> employeeOpt = employeeService.getEmployeeById(employeeId);
+            Optional<Employee> employeeOpt = employeeService.getActiveEmployeeById(employeeId);
             
             if (employeeOpt.isEmpty()) {
                 redirectAttributes.addFlashAttribute("error", "Selected employee not found");
@@ -128,7 +128,7 @@ public class LabourController extends BaseController {
     @ResponseBody
     public ResponseEntity<List<Employee>> getEmployeesByGender(@PathVariable String gender) {
         try {
-            List<Employee> employees = employeeService.getEmployeesByGender(gender.toUpperCase());
+            List<Employee> employees = employeeService.getActiveEmployeesByGender(gender.toUpperCase());
             return ResponseEntity.ok(employees);
         } catch (Exception e) {
             log.error("Error fetching employees by gender: {}", gender, e);
@@ -142,7 +142,7 @@ public class LabourController extends BaseController {
     public ResponseEntity<Boolean> checkExistingEntry(@RequestParam Long employeeId, 
                                                       @RequestParam String date) {
         try {
-            Optional<Employee> employeeOpt = employeeService.getEmployeeById(employeeId);
+            Optional<Employee> employeeOpt = employeeService.getActiveEmployeeById(employeeId);
             if (employeeOpt.isEmpty()) {
                 return ResponseEntity.badRequest().build();
             }

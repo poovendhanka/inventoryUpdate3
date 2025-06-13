@@ -18,8 +18,11 @@
                 <li class="breadcrumb-item">
                     <a th:href="@{/eyarkkai-family}">Eyarkkai Family</a>
                 </li>
-                <li class="breadcrumb-item">
+                <li class="breadcrumb-item" th:if="${isOldEmployee == null or !isOldEmployee}">
                     <a th:href="@{/eyarkkai-family?tab=employees}">Employees</a>
+                </li>
+                <li class="breadcrumb-item" th:if="${isOldEmployee != null and isOldEmployee}">
+                    <a th:href="@{/eyarkkai-family(tab='employees', employeeType='old')}">Old Employees</a>
                 </li>
                 <li class="breadcrumb-item active">
                     <span th:text="${employee.name}">Employee Name</span>
@@ -33,8 +36,10 @@
                 <div class="card">
                     <div class="card-header">
                         <h4>
-                            <i class="fas fa-user"></i>
+                            <i class="fas fa-user" th:if="${isOldEmployee == null or !isOldEmployee}"></i>
+                            <i class="fas fa-user-times" th:if="${isOldEmployee != null and isOldEmployee}"></i>
                             <span th:text="${employee.name}">Employee Name</span>
+                            <span class="badge bg-warning ms-2" th:if="${isOldEmployee != null and isOldEmployee}">Old Employee</span>
                         </h4>
                     </div>
                     <div class="card-body">
@@ -81,6 +86,14 @@
                                         <td><strong><i class="fas fa-map-marker-alt"></i> Address:</strong></td>
                                         <td th:text="${employee.address}">Address</td>
                                     </tr>
+                                    <tr th:if="${isOldEmployee != null and isOldEmployee and employee.deletedAt != null}">
+                                        <td><strong><i class="fas fa-calendar-times"></i> Deleted On:</strong></td>
+                                        <td th:text="${#temporals.format(employee.deletedAt, 'dd MMMM yyyy HH:mm')}">Deleted Date</td>
+                                    </tr>
+                                    <tr th:if="${isOldEmployee != null and isOldEmployee and employee.deletedBy != null}">
+                                        <td><strong><i class="fas fa-user-minus"></i> Deleted By:</strong></td>
+                                        <td th:text="${employee.deletedBy}">Deleted By</td>
+                                    </tr>
                                 </table>
                             </div>
                         </div>
@@ -102,7 +115,8 @@
                                 <small class="text-muted">Years Old</small>
                             </div>
                             <div class="mb-3">
-                                <h3 class="text-info">Active</h3>
+                                <h3 class="text-info" th:if="${isOldEmployee == null or !isOldEmployee}">Active</h3>
+                                <h3 class="text-warning" th:if="${isOldEmployee != null and isOldEmployee}">Inactive</h3>
                                 <small class="text-muted">Employee Status</small>
                             </div>
                             <div>
@@ -120,43 +134,81 @@
                     </div>
                     <div class="card-body">
                         <div class="d-grid gap-2">
-                            <a th:href="@{/eyarkkai-family/employees/{id}/edit(id=${employee.id})}"
-                               class="btn btn-warning">
-                                <i class="fas fa-edit"></i> Edit Details
-                            </a>
-                            <button type="button"
-                                    class="btn btn-danger"
-                                    th:attr="data-employee-id=${employee.id},data-employee-name=${employee.name}"
-                                    onclick="confirmDelete(this)">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
-                            <a th:href="@{/eyarkkai-family?tab=employees}" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left"></i> Back to List
-                            </a>
+                            <!-- Actions for Active Employees -->
+                            <div th:if="${isOldEmployee == null or !isOldEmployee}">
+                                <a th:href="@{/eyarkkai-family/employees/{id}/edit(id=${employee.id})}"
+                                   class="btn btn-warning">
+                                    <i class="fas fa-edit"></i> Edit Details
+                                </a>
+                                <button type="button"
+                                        class="btn btn-danger"
+                                        th:attr="data-employee-id=${employee.id},data-employee-name=${employee.name}"
+                                        onclick="confirmDelete(this)">
+                                    <i class="fas fa-user-times"></i> Move to Old Employees
+                                </button>
+                                <a th:href="@{/eyarkkai-family?tab=employees}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left"></i> Back to Employees
+                                </a>
+                            </div>
+                            
+                            <!-- Actions for Old Employees -->
+                            <div th:if="${isOldEmployee != null and isOldEmployee}">
+                                <button type="button"
+                                        class="btn btn-success"
+                                        th:attr="data-employee-id=${employee.id},data-employee-name=${employee.name}"
+                                        onclick="confirmRestore(this)">
+                                    <i class="fas fa-undo"></i> Restore Employee
+                                </button>
+                                <a th:href="@{/eyarkkai-family(tab='employees', employeeType='old')}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left"></i> Back to Old Employees
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirm Delete</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        
+        <!-- Delete Confirmation Modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirm Move to Old Employees</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to move employee <strong id="employeeName"></strong> to old employees?</p>
+                        <p class="text-warning">The employee will be moved to the "Old Employees" section and can be restored later.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <form id="deleteForm" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-danger">Move to Old Employees</button>
+                        </form>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to delete employee <strong id="employeeName"></strong>?</p>
-                    <p class="text-danger">This action cannot be undone.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <form id="deleteForm" method="post" style="display: inline;">
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
+            </div>
+        </div>
+        
+        <!-- Restore Confirmation Modal -->
+        <div class="modal fade" id="restoreModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirm Restore</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to restore employee <strong id="restoreEmployeeName"></strong>?</p>
+                        <p class="text-success">The employee will be moved back to the active employees list.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <form id="restoreForm" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-success">Restore Employee</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -165,13 +217,125 @@
     <!-- Page specific scripts -->
     <th:block id="pagescript">
         <script>
+            // Wait for DOM to be fully loaded
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('Employee details DOM loaded, Bootstrap version:', bootstrap.Modal ? 'Available' : 'Not Available');
+                
+                // Check if modal elements exist on page load
+                var deleteModal = document.getElementById('deleteModal');
+                var restoreModal = document.getElementById('restoreModal');
+                var employeeName = document.getElementById('employeeName');
+                var deleteForm = document.getElementById('deleteForm');
+                
+                console.log('Modal elements on page load:');
+                console.log('deleteModal:', deleteModal);
+                console.log('restoreModal:', restoreModal);
+                console.log('employeeName:', employeeName);
+                console.log('deleteForm:', deleteForm);
+            });
+            
             function confirmDelete(button) {
-                var employeeId = button.getAttribute('data-employee-id');
-                var employeeName = button.getAttribute('data-employee-name');
-                document.getElementById('employeeName').textContent = employeeName;
-                document.getElementById('deleteForm').action = '/eyarkkai-family/employees/' + employeeId + '/delete';
-                var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-                modal.show();
+                try {
+                    console.log('confirmDelete called from employee details');
+                    var employeeId = button.getAttribute('data-employee-id');
+                    var employeeName = button.getAttribute('data-employee-name');
+                    console.log('Employee ID:', employeeId, 'Name:', employeeName);
+                    
+                    if (!employeeId || !employeeName) {
+                        console.error('Missing employee data');
+                        alert('Error: Missing employee information');
+                        return;
+                    }
+                    
+                    var nameElement = document.getElementById('employeeName');
+                    var formElement = document.getElementById('deleteForm');
+                    var modalElement = document.getElementById('deleteModal');
+                    
+                    console.log('Modal elements check:');
+                    console.log('nameElement:', nameElement);
+                    console.log('formElement:', formElement);
+                    console.log('modalElement:', modalElement);
+                    
+                    if (!nameElement) {
+                        console.error('employeeName element not found');
+                        alert('Error: employeeName element not found');
+                        return;
+                    }
+                    if (!formElement) {
+                        console.error('deleteForm element not found');
+                        alert('Error: deleteForm element not found');
+                        return;
+                    }
+                    if (!modalElement) {
+                        console.error('deleteModal element not found');
+                        alert('Error: deleteModal element not found');
+                        return;
+                    }
+                    
+                    nameElement.textContent = employeeName;
+                    formElement.action = '/eyarkkai-family/employees/' + employeeId + '/delete';
+                    
+                    console.log('Form action set to:', formElement.action);
+                    
+                    var modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                    console.log('Modal should be shown');
+                } catch (error) {
+                    console.error('Error in confirmDelete:', error);
+                    alert('Error: ' + error.message);
+                }
+            }
+            
+            function confirmRestore(button) {
+                try {
+                    console.log('confirmRestore called from employee details');
+                    var employeeId = button.getAttribute('data-employee-id');
+                    var employeeName = button.getAttribute('data-employee-name');
+                    console.log('Employee ID:', employeeId, 'Name:', employeeName);
+                    
+                    if (!employeeId || !employeeName) {
+                        console.error('Missing employee data');
+                        alert('Error: Missing employee information');
+                        return;
+                    }
+                    
+                    var nameElement = document.getElementById('restoreEmployeeName');
+                    var formElement = document.getElementById('restoreForm');
+                    var modalElement = document.getElementById('restoreModal');
+                    
+                    console.log('Modal elements check:');
+                    console.log('restoreEmployeeName:', nameElement);
+                    console.log('restoreForm:', formElement);
+                    console.log('restoreModal:', modalElement);
+                    
+                    if (!nameElement) {
+                        console.error('restoreEmployeeName element not found');
+                        alert('Error: restoreEmployeeName element not found');
+                        return;
+                    }
+                    if (!formElement) {
+                        console.error('restoreForm element not found');
+                        alert('Error: restoreForm element not found');
+                        return;
+                    }
+                    if (!modalElement) {
+                        console.error('restoreModal element not found');
+                        alert('Error: restoreModal element not found');
+                        return;
+                    }
+                    
+                    nameElement.textContent = employeeName;
+                    formElement.action = '/eyarkkai-family/old-employees/' + employeeId + '/restore';
+                    
+                    console.log('Form action set to:', formElement.action);
+                    
+                    var modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                    console.log('Modal should be shown');
+                } catch (error) {
+                    console.error('Error in confirmRestore:', error);
+                    alert('Error: ' + error.message);
+                }
             }
         </script>
         

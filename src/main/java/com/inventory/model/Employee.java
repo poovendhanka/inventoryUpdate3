@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "employees")
@@ -40,6 +41,16 @@ public class Employee {
     @Column(nullable = false)
     private String gender; // "MALE" or "FEMALE"
     
+    // Soft delete fields
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean deleted = false;
+    
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+    
+    @Column(name = "deleted_by")
+    private String deletedBy;
+    
     // Constructors
     public Employee() {}
     
@@ -50,6 +61,7 @@ public class Employee {
         this.address = address;
         this.contact = contact;
         this.gender = gender;
+        this.deleted = false;
     }
     
     // Getters and Setters
@@ -107,5 +119,46 @@ public class Employee {
     
     public void setGender(String gender) {
         this.gender = gender;
+    }
+    
+    public Boolean getDeleted() {
+        return deleted;
+    }
+    
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
+    
+    public LocalDateTime getDeletedAt() {
+        return deletedAt;
+    }
+    
+    public void setDeletedAt(LocalDateTime deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+    
+    public String getDeletedBy() {
+        return deletedBy;
+    }
+    
+    public void setDeletedBy(String deletedBy) {
+        this.deletedBy = deletedBy;
+    }
+    
+    // Helper methods for soft delete
+    public void softDelete(String deletedBy) {
+        this.deleted = true;
+        this.deletedAt = LocalDateTime.now();
+        this.deletedBy = deletedBy;
+    }
+    
+    public void restore() {
+        this.deleted = false;
+        this.deletedAt = null;
+        this.deletedBy = null;
+    }
+    
+    public boolean isActive() {
+        return !deleted;
     }
 } 
