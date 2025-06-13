@@ -3,15 +3,20 @@ package com.inventory.controller;
 import com.inventory.model.*;
 import com.inventory.service.AccountService;
 import com.inventory.service.RawMaterialService;
+import com.inventory.service.BillPdfService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Controller
 @RequestMapping("/accounts")
@@ -20,30 +25,28 @@ import java.time.LocalDateTime;
 public class AccountController extends BaseController {
     private final AccountService accountService;
     private final RawMaterialService rawMaterialService;
+    private final BillPdfService billPdfService;
     
     @GetMapping
     public String showAccountsPage(Model model, HttpServletRequest request) {
         model.addAttribute("activeTab", "accounts");
         model.addAttribute("unprocessedEntries", rawMaterialService.getUnprocessedEntries());
+        model.addAttribute("recentProcessedEntries", rawMaterialService.getRecentProcessedEntries());
         return getViewPath("accounts/index");
     }
     
     @PostMapping("/process")
     public String processRawMaterial(@RequestParam Long rawMaterialId,
                                    @RequestParam Double costPerCft,
-                                   @RequestParam String supervisorName) {
-        log.info("Processing raw material ID: {} with cost per CFT: {} and supervisor: {}", 
-                rawMaterialId, costPerCft, supervisorName);
-                
+                                   @RequestParam String supervisor,
+                                   Model model) {
         try {
-            ProcessedRawMaterial processed = rawMaterialService.processRawMaterial(rawMaterialId, costPerCft, supervisorName);
-            log.info("Successfully processed raw material. ProcessedRawMaterial ID: {}", processed.getId());
-            return "redirect:/accounts";
+            rawMaterialService.processRawMaterial(rawMaterialId, costPerCft, supervisor);
+            model.addAttribute("success", "Raw material processed successfully!");
         } catch (Exception e) {
-            log.error("Error processing raw material: {}", e.getMessage(), e);
-            // You might want to add error handling here
-            return "redirect:/accounts?error=" + e.getMessage();
+            model.addAttribute("error", "Error processing raw material: " + e.getMessage());
         }
+        return "redirect:/accounts";
     }
     
     @PostMapping("/expenses")
@@ -68,5 +71,32 @@ public class AccountController extends BaseController {
         model.addAttribute("profitLoss", 
             accountService.calculateProfitLoss(startDate, endDate));
         return "accounts/report";
+    }
+
+    @GetMapping("/bill/{processedId}")
+    public ResponseEntity<byte[]> generateBill(@PathVariable Long processedId) {
+        try {
+            ProcessedRawMaterial processed = rawMaterialService.getProcessedById(processedId);
+            if (processed == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            byte[] pdfBytes = billPdfService.generateRawMaterialBill(processed);
+            
+            String filename = "raw_material_bill_" + processed.getRawMaterial().getReceiptNumber() + ".pdf";
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", filename);
+            headers.setContentLength(pdfBytes.length);
+            
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(pdfBytes);
+                    
+        } catch (Exception e) {
+            log.error("Error generating bill for processed ID {}: {}", processedId, e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 } 

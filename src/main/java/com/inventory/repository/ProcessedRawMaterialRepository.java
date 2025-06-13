@@ -17,6 +17,12 @@ public interface ProcessedRawMaterialRepository extends JpaRepository<ProcessedR
            "ORDER BY p.processedDate DESC")
     List<ProcessedRawMaterial> findByProcessedDateBetween(LocalDateTime startDate, LocalDateTime endDate);
     
+    @Query("SELECT p FROM ProcessedRawMaterial p " +
+           "JOIN FETCH p.rawMaterial rm " +
+           "JOIN FETCH rm.party " +
+           "ORDER BY p.processedDate DESC")
+    List<ProcessedRawMaterial> findTop10ByOrderByProcessedDateDesc();
+    
     @Query("SELECT COUNT(p) FROM ProcessedRawMaterial p")
     long count();
 } 

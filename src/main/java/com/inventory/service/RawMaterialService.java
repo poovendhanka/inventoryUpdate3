@@ -64,6 +64,14 @@ public class RawMaterialService {
         return rawMaterialRepository.findByAccountsProcessedFalse();
     }
 
+    public List<ProcessedRawMaterial> getRecentProcessedEntries() {
+        return processedRepository.findTop10ByOrderByProcessedDateDesc();
+    }
+
+    public ProcessedRawMaterial getProcessedById(Long id) {
+        return processedRepository.findById(id).orElse(null);
+    }
+
     public java.util.Optional<RawMaterial> findById(Long id) {
         return rawMaterialRepository.findById(id);
     }

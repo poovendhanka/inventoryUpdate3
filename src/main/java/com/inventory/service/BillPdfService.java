@@ -3,6 +3,7 @@ package com.inventory.service;
 import com.inventory.config.CompanyInfoProperties;
 import com.inventory.model.Sale;
 import com.inventory.model.Dealer;
+import com.inventory.model.ProcessedRawMaterial;
 import com.inventory.util.ProductNameUtil;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.*;
@@ -18,6 +19,141 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class BillPdfService {
     private final CompanyInfoProperties companyInfoProperties;
+
+    public byte[] generateRawMaterialBill(ProcessedRawMaterial processed) throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Document document = new Document(PageSize.A4, 36, 36, 36, 36);
+        PdfWriter writer = PdfWriter.getInstance(document, out);
+        document.open();
+
+        // Header with green background
+        PdfPTable headerTable = new PdfPTable(2);
+        headerTable.setWidthPercentage(100);
+        headerTable.setWidths(new float[]{3, 2});
+        PdfPCell leftHeader = new PdfPCell();
+        leftHeader.setBackgroundColor(new Color(39, 174, 96));
+        leftHeader.setBorder(Rectangle.BOX);
+        leftHeader.setBorderColor(Color.BLACK);
+        leftHeader.setPadding(8);
+        Paragraph companyName = new Paragraph(companyInfoProperties.getName(), new Font(Font.HELVETICA, 14, Font.BOLD, Color.WHITE));
+        leftHeader.addElement(companyName);
+        leftHeader.addElement(new Paragraph(companyInfoProperties.getAddress(), new Font(Font.HELVETICA, 9, Font.NORMAL, Color.WHITE)));
+        leftHeader.addElement(new Paragraph("GSTIN: " + companyInfoProperties.getGst() + "    Mobile: " + companyInfoProperties.getMobile(), new Font(Font.HELVETICA, 9, Font.NORMAL, Color.WHITE)));
+        leftHeader.addElement(new Paragraph("Email: " + companyInfoProperties.getEmail(), new Font(Font.HELVETICA, 9, Font.NORMAL, Color.WHITE)));
+        headerTable.addCell(leftHeader);
+
+        PdfPCell rightHeader = new PdfPCell();
+        rightHeader.setBorder(Rectangle.BOX);
+        rightHeader.setBorderColor(Color.BLACK);
+        rightHeader.setPadding(8);
+        rightHeader.setBackgroundColor(Color.WHITE);
+        rightHeader.addElement(new Paragraph("Raw Material Bill", new Font(Font.HELVETICA, 12, Font.BOLD)));
+        rightHeader.addElement(new Paragraph("Receipt No.: " + processed.getRawMaterial().getReceiptNumber(), new Font(Font.HELVETICA, 10, Font.BOLD)));
+        rightHeader.addElement(new Paragraph("Date & Time: " + DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").format(processed.getProcessedDate()), new Font(Font.HELVETICA, 10)));
+        headerTable.addCell(rightHeader);
+        document.add(headerTable);
+        document.add(Chunk.NEWLINE);
+
+        // Supplier Details
+        PdfPTable partyTable = new PdfPTable(2);
+        partyTable.setWidthPercentage(100);
+        partyTable.setWidths(new float[]{1, 1});
+        PdfPCell supplierDetails = new PdfPCell();
+        supplierDetails.setBorder(Rectangle.BOX);
+        supplierDetails.setPadding(6);
+        supplierDetails.addElement(new Paragraph("Supplier Details", new Font(Font.HELVETICA, 10, Font.BOLD)));
+        supplierDetails.addElement(new Paragraph(processed.getRawMaterial().getParty().getName(), new Font(Font.HELVETICA, 9)));
+        supplierDetails.addElement(new Paragraph(processed.getRawMaterial().getParty().getAddress(), new Font(Font.HELVETICA, 9)));
+        supplierDetails.addElement(new Paragraph("Phone: " + processed.getRawMaterial().getParty().getPhoneNumber(), new Font(Font.HELVETICA, 9)));
+        partyTable.addCell(supplierDetails);
+        
+        PdfPCell vehicleDetails = new PdfPCell();
+        vehicleDetails.setBorder(Rectangle.BOX);
+        vehicleDetails.setPadding(6);
+        vehicleDetails.addElement(new Paragraph("Vehicle Details", new Font(Font.HELVETICA, 10, Font.BOLD)));
+        vehicleDetails.addElement(new Paragraph("Vehicle No.: " + processed.getRawMaterial().getVehicleNumber(), new Font(Font.HELVETICA, 9)));
+        vehicleDetails.addElement(new Paragraph("Arrival: " + DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").format(processed.getRawMaterial().getLorryInTime()), new Font(Font.HELVETICA, 9)));
+        vehicleDetails.addElement(new Paragraph("Supervisor: " + processed.getRawMaterial().getSupervisorName(), new Font(Font.HELVETICA, 9)));
+        partyTable.addCell(vehicleDetails);
+        document.add(partyTable);
+        document.add(Chunk.NEWLINE);
+
+        // Items Table
+        PdfPTable itemsTable = new PdfPTable(7);
+        itemsTable.setWidthPercentage(100);
+        itemsTable.setWidths(new float[]{0.7f, 3.5f, 1.2f, 1f, 1.2f, 1.2f, 1.5f});
+        Font thFont = new Font(Font.HELVETICA, 10, Font.BOLD);
+        addTableHeader(itemsTable, thFont, "S.NO.", "ITEMS", "HSN", "QTY.", "RATE", "TAX", "AMOUNT");
+        Font tdFont = new Font(Font.HELVETICA, 10);
+        DecimalFormat df = new DecimalFormat("#,##0.00");
+        
+        double totalCost = processed.getTotalCost() != null ? processed.getTotalCost() : 0.0;
+        String huskType = processed.getRawMaterial().getHuskType() != null ? processed.getRawMaterial().getHuskType().getDisplayName() : "Raw Material";
+        String quantityWithUnit = df.format(processed.getRawMaterial().getCft()) + " CFT";
+        
+        addTableRow(itemsTable, tdFont, "1", huskType + " Husk", "N/A", quantityWithUnit, df.format(processed.getCostPerCft()), "0.00 (0%)", df.format(totalCost));
+        document.add(itemsTable);
+
+        // Totals row
+        PdfPTable totalTable = new PdfPTable(2);
+        totalTable.setWidthPercentage(40);
+        totalTable.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        totalTable.addCell(getCell("TOTAL", thFont, Element.ALIGN_LEFT, Rectangle.BOX, Color.LIGHT_GRAY));
+        totalTable.addCell(getCell(df.format(totalCost), thFont, Element.ALIGN_RIGHT, Rectangle.BOX, Color.LIGHT_GRAY));
+        document.add(Chunk.NEWLINE);
+        document.add(totalTable);
+        document.add(Chunk.NEWLINE);
+
+        // HSN/SAC Table (No tax for raw materials)
+        PdfPTable hsnTable = new PdfPTable(6);
+        hsnTable.setWidthPercentage(100);
+        addTableHeader(hsnTable, thFont, "HSN/SAC", "Taxable Value", "CGST", "SGST", "Total Tax Amount", "");
+        hsnTable.addCell(getCell("N/A", tdFont));
+        hsnTable.addCell(getCell(df.format(totalCost), tdFont));
+        hsnTable.addCell(getCell("0%\n0.00", tdFont));
+        hsnTable.addCell(getCell("0%\n0.00", tdFont));
+        hsnTable.addCell(getCell("0.00", tdFont));
+        hsnTable.addCell(getCell("", tdFont));
+        document.add(hsnTable);
+        document.add(Chunk.NEWLINE);
+
+        // Total Amount in Words
+        String amountInWords = "Total Amount (in words): " + convertNumberToWords((long) Math.round(totalCost)) + " Rupees";
+        document.add(new Paragraph(amountInWords, new Font(Font.HELVETICA, 10, Font.BOLD)));
+        document.add(Chunk.NEWLINE);
+
+        // Footer: Bank Details, Terms, Signature
+        PdfPTable footerTable = new PdfPTable(3);
+        footerTable.setWidthPercentage(100);
+        footerTable.setWidths(new float[]{2, 3, 2});
+        // Bank Details (empty)
+        PdfPCell bankCell = new PdfPCell();
+        bankCell.setBorder(Rectangle.BOX);
+        bankCell.setPadding(6);
+        bankCell.addElement(new Paragraph("Bank Details", thFont));
+        bankCell.addElement(new Paragraph(" "));
+        footerTable.addCell(bankCell);
+        // Terms and Conditions
+        PdfPCell termsCell = new PdfPCell();
+        termsCell.setBorder(Rectangle.BOX);
+        termsCell.setPadding(6);
+        termsCell.addElement(new Paragraph("Terms and Conditions", thFont));
+        termsCell.addElement(new Paragraph("1. Raw material purchase as per agreed terms\n2. All disputes are subject to Coimbatore jurisdiction only\n3. Payment as per agreed terms\n4. Quality as per industry standards", new Font(Font.HELVETICA, 8)));
+        footerTable.addCell(termsCell);
+        // Signature
+        PdfPCell signCell = new PdfPCell();
+        signCell.setBorder(Rectangle.BOX);
+        signCell.setPadding(6);
+        signCell.addElement(new Paragraph(" "));
+        signCell.addElement(new Paragraph("Processed By: " + processed.getAccountsSupervisor(), new Font(Font.HELVETICA, 9)));
+        signCell.addElement(new Paragraph(companyInfoProperties.getName(), new Font(Font.HELVETICA, 9, Font.BOLD)));
+        footerTable.addCell(signCell);
+        document.add(footerTable);
+
+        document.close();
+        writer.close();
+        return out.toByteArray();
+    }
 
     public byte[] generateBillPdf(Sale sale, Dealer dealer, String billNumber) throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
