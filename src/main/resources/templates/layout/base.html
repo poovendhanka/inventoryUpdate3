@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +12,54 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     
     <style>
+        /* Logout button overlay */
+        .logout-overlay {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1001;
+            background: rgba(220, 53, 69, 0.9);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 20px;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .logout-overlay:hover {
+            background: rgba(220, 53, 69, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+        }
+        
+        .logout-overlay i {
+            margin-right: 5px;
+        }
+        
+        /* User info overlay */
+        .user-info-overlay {
+            position: fixed;
+            top: 10px;
+            right: 120px;
+            z-index: 1001;
+            background: rgba(40, 167, 69, 0.9);
+            padding: 8px 12px;
+            border-radius: 20px;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .user-info-overlay i {
+            margin-right: 5px;
+        }
+
         /* Mobile menu button */
         .mobile-menu-btn {
             display: none;
@@ -73,6 +121,21 @@
 
             .table-responsive {
                 overflow-x: auto;
+            }
+            
+            /* Mobile adjustments for overlay buttons */
+            .user-info-overlay {
+                right: 10px;
+                top: 60px;
+                font-size: 0.75rem;
+                padding: 6px 10px;
+            }
+            
+            .logout-overlay {
+                right: 10px;
+                top: 95px;
+                font-size: 0.75rem;
+                padding: 6px 10px;
             }
         }
 
@@ -623,11 +686,14 @@
     <nav class="sidebar" id="sidebar" style="top:55px;">
         <div class="position-sticky">
             <ul class="nav flex-column" style="gap: 0.2rem;">
-                <li class="nav-item">
+                <!-- Admin only tabs -->
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link" th:classappend="${activeTab == 'eyarkkai-family'} ? 'active' : ''" 
                        th:href="@{/eyarkkai-family}">
                         <i class="fas fa-users"></i>Eyarkkai Family</a>
                 </li>
+                
+                <!-- Available to both ADMIN and USER -->
                 <li class="nav-item">
                     <a class="nav-link" th:classappend="${activeTab == 'raw-materials'} ? 'active' : ''" 
                        th:href="@{/raw-materials}">
@@ -657,12 +723,16 @@
                         <i class="fas fa-boxes"></i> Production Inventory
                     </a>
                 </li>
-                <li class="nav-item">
+                
+                <!-- Admin only tabs -->
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link" th:classappend="${activeTab == 'reports' || activeTab == 'production-report' || activeTab == 'cocopith-report' || activeTab == 'block-report'} ? 'active' : ''" 
                        th:href="@{/reports}">
                         <i class="fas fa-chart-line"></i> Reports
                     </a>
                 </li>
+                
+                <!-- Available to both ADMIN and USER -->
                 <li class="nav-item">
                     <a class="nav-link" th:classappend="${activeTab == 'sales'} ? 'active' : ''" 
                        th:href="@{/sales}">
@@ -675,18 +745,20 @@
                         <i class="fas fa-money-bill-wave"></i> Expenses
                     </a>
                 </li>
-                <li class="nav-item">
+                
+                <!-- Admin only tabs -->
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link" th:classappend="${activeTab == 'admin'} ? 'active' : ''" 
                        th:href="@{/admin}">
                         <i class="fas fa-user-shield"></i> Admin
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link" th:classappend="${activeTab == 'pl-report'} ? 'active' : ''" th:href="@{/pl-report}">
                         <i class="fas fa-file-invoice-dollar"></i> P&amp;L Report
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link" th:classappend="${activeTab == 'backup' ? 'active' : ''}" href="/backup">
                         <i class="fas fa-database"></i>
                         <span>Backup</span>
@@ -695,6 +767,19 @@
             </ul>
         </div>
     </nav>
+    
+    <!-- User info and logout overlays -->
+    <div class="user-info-overlay" sec:authorize="isAuthenticated()">
+        <i class="fas fa-user"></i>
+        <span sec:authentication="name"></span>
+        <span class="badge bg-light text-dark ms-1" sec:authentication="principal.role.displayName"></span>
+    </div>
+    
+    <form th:action="@{/logout}" method="post" style="display: inline;">
+        <button type="submit" class="logout-overlay" title="Logout">
+            <i class="fas fa-sign-out-alt"></i>Logout
+        </button>
+    </form>
     
     <!-- Main content -->
     <main style="margin-top:55px;">

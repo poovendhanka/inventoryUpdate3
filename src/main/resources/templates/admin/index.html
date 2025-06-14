@@ -36,6 +36,9 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="edit-expenses-tab" data-bs-toggle="tab" data-bs-target="#edit-expenses" type="button" role="tab" aria-controls="edit-expenses" aria-selected="false">Edit Expenses</button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="user-management-tab" data-bs-toggle="tab" data-bs-target="#user-management" type="button" role="tab" aria-controls="user-management" aria-selected="false">User Management</button>
+                </li>
             </ul>
             <div class="tab-content" id="adminTabsContent">
                 <!-- Supplier Tab -->
@@ -376,6 +379,128 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- User Management Tab -->
+                <div class="tab-pane fade" id="user-management" role="tabpanel" aria-labelledby="user-management-tab">
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">User Management</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-md-12">
+                                            <button type="button" class="btn btn-primary" onclick="loadUserEntries()">Load Users</button>
+                                            <button type="button" class="btn btn-success ms-2" onclick="showAddUserModal()">Add New User</button>
+                                        </div>
+                                    </div>
+                                    <div id="userEntriesContainer">
+                                        <!-- User entries will be loaded here -->
+                                        <p class="text-muted">Click "Load Users" to view all users.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUserModalLabel">Add New User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addUserForm">
+                        <div class="mb-3">
+                            <label for="newUsername" class="form-label">Username <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="newUsername" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">Password <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="newPassword" name="password" required minlength="6">
+                        </div>
+                        <div class="mb-3">
+                            <label for="newRole" class="form-label">Role <span class="text-danger">*</span></label>
+                            <select class="form-select" id="newRole" name="role" required>
+                                <option value="">Select Role</option>
+                                <option value="ADMIN">Admin</option>
+                                <option value="USER">User</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="createUser()">Create User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editUserForm">
+                        <input type="hidden" id="editUserId" name="id">
+                        <div class="mb-3">
+                            <label for="editUsername" class="form-label">Username <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="editUsername" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editRole" class="form-label">Role <span class="text-danger">*</span></label>
+                            <select class="form-select" id="editRole" name="role" required>
+                                <option value="ADMIN">Admin</option>
+                                <option value="USER">User</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="updateUser()">Update User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="changePasswordForm">
+                        <input type="hidden" id="changePasswordUserId" name="id">
+                        <div class="mb-3">
+                            <label for="changePasswordUsername" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="changePasswordUsername" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPasswordInput" class="form-label">New Password <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="newPasswordInput" name="newPassword" required minlength="6">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="changePassword()">Change Password</button>
+                </div>
             </div>
         </div>
     </div>
@@ -711,6 +836,190 @@
                 toastElement.addEventListener('hidden.bs.toast', function() {
                     toastElement.remove();
                 });
+            }
+
+            // User Management Functions
+            function loadUserEntries() {
+                const container = document.getElementById('userEntriesContainer');
+                container.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+                
+                fetch('/admin/edit/users')
+                    .then(response => response.text())
+                    .then(html => {
+                        container.innerHTML = html;
+                    })
+                    .catch(error => {
+                        container.innerHTML = '<div class="alert alert-danger">Error loading users: ' + error.message + '</div>';
+                    });
+            }
+
+            function showAddUserModal() {
+                // Reset form
+                document.getElementById('addUserForm').reset();
+                // Show modal
+                const modal = new bootstrap.Modal(document.getElementById('addUserModal'));
+                modal.show();
+            }
+
+            function createUser() {
+                const form = document.getElementById('addUserForm');
+                const formData = new FormData(form);
+                
+                // Basic validation
+                if (!formData.get('username') || !formData.get('password') || !formData.get('role')) {
+                    showToast('Please fill in all required fields', 'error');
+                    return;
+                }
+                
+                if (formData.get('password').length < 6) {
+                    showToast('Password must be at least 6 characters long', 'error');
+                    return;
+                }
+                
+                fetch('/admin/edit/users', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        return response.text().then(errorMessage => {
+                            throw new Error(errorMessage || 'Error creating user');
+                        });
+                    }
+                })
+                .then(message => {
+                    showToast(message, 'success');
+                    // Close modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addUserModal'));
+                    modal.hide();
+                    // Reload users
+                    loadUserEntries();
+                })
+                .catch(error => {
+                    showToast(error.message, 'error');
+                });
+            }
+
+            function showEditUserModal(id, username, role) {
+                document.getElementById('editUserId').value = id;
+                document.getElementById('editUsername').value = username;
+                document.getElementById('editRole').value = role;
+                
+                const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+                modal.show();
+            }
+
+            function updateUser() {
+                const form = document.getElementById('editUserForm');
+                const formData = new FormData(form);
+                const id = formData.get('id');
+                
+                // Basic validation
+                if (!formData.get('username') || !formData.get('role')) {
+                    showToast('Please fill in all required fields', 'error');
+                    return;
+                }
+                
+                fetch(`/admin/edit/users/${id}`, {
+                    method: 'PUT',
+                    body: formData
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        return response.text().then(errorMessage => {
+                            throw new Error(errorMessage || 'Error updating user');
+                        });
+                    }
+                })
+                .then(message => {
+                    showToast(message, 'success');
+                    // Close modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+                    modal.hide();
+                    // Reload users
+                    loadUserEntries();
+                })
+                .catch(error => {
+                    showToast(error.message, 'error');
+                });
+            }
+
+            function showChangePasswordModal(id, username) {
+                document.getElementById('changePasswordUserId').value = id;
+                document.getElementById('changePasswordUsername').value = username;
+                document.getElementById('newPasswordInput').value = '';
+                
+                const modal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
+                modal.show();
+            }
+
+            function changePassword() {
+                const form = document.getElementById('changePasswordForm');
+                const formData = new FormData(form);
+                const id = formData.get('id');
+                
+                // Basic validation
+                if (!formData.get('newPassword')) {
+                    showToast('Please enter a new password', 'error');
+                    return;
+                }
+                
+                if (formData.get('newPassword').length < 6) {
+                    showToast('Password must be at least 6 characters long', 'error');
+                    return;
+                }
+                
+                fetch(`/admin/edit/users/${id}/change-password`, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        return response.text().then(errorMessage => {
+                            throw new Error(errorMessage || 'Error changing password');
+                        });
+                    }
+                })
+                .then(message => {
+                    showToast(message, 'success');
+                    // Close modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('changePasswordModal'));
+                    modal.hide();
+                })
+                .catch(error => {
+                    showToast(error.message, 'error');
+                });
+            }
+
+            function deleteUser(id, username) {
+                if (confirm(`Are you sure you want to delete user "${username}"? This action cannot be undone.`)) {
+                    fetch(`/admin/edit/users/${id}`, {
+                        method: 'DELETE'
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            return response.text();
+                        } else {
+                            return response.text().then(errorMessage => {
+                                throw new Error(errorMessage || 'Error deleting user');
+                            });
+                        }
+                    })
+                    .then(message => {
+                        showToast(message, 'success');
+                        // Reload users
+                        loadUserEntries();
+                    })
+                    .catch(error => {
+                        showToast(error.message, 'error');
+                    });
+                }
             }
         </script>
     </div>

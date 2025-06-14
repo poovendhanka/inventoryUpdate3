@@ -27,6 +27,7 @@ public class AdminEditController extends BaseController {
     private final SaleService saleService;
     private final ExpenseService expenseService;
     private final LabourEntryService labourEntryService;
+    private final UserService userService;
 
     // Purchase Entries
     @GetMapping("/purchase")
@@ -221,6 +222,69 @@ public class AdminEditController extends BaseController {
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // User Management
+    @GetMapping("/users")
+    public String getUserEntries(Model model) {
+        List<User> users = userService.getAllActiveUsers();
+        model.addAttribute("users", users);
+        return "admin/fragments/user-entries";
+    }
+
+    @PostMapping("/users")
+    public ResponseEntity<String> createUser(@RequestParam String username,
+                                           @RequestParam String password,
+                                           @RequestParam String role) {
+        try {
+            User.Role userRole = User.Role.valueOf(role.toUpperCase());
+            userService.createUser(username, password, userRole);
+            return ResponseEntity.ok("User created successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("An unexpected error occurred while creating the user");
+        }
+    }
+
+    @PutMapping("/users/{id}")
+    public ResponseEntity<String> updateUser(@PathVariable Long id,
+                                           @RequestParam String username,
+                                           @RequestParam String role) {
+        try {
+            User.Role userRole = User.Role.valueOf(role.toUpperCase());
+            userService.updateUser(id, username, userRole);
+            return ResponseEntity.ok("User updated successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("An unexpected error occurred while updating the user");
+        }
+    }
+
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+        try {
+            userService.deleteUser(id);
+            return ResponseEntity.ok("User deleted successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("An unexpected error occurred while deleting the user");
+        }
+    }
+
+    @PostMapping("/users/{id}/change-password")
+    public ResponseEntity<String> changePassword(@PathVariable Long id,
+                                                @RequestParam String newPassword) {
+        try {
+            userService.changePassword(id, newPassword);
+            return ResponseEntity.ok("Password changed successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("An unexpected error occurred while changing the password");
         }
     }
 } 
