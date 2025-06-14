@@ -167,7 +167,6 @@
                                     <th>Hours</th>
                                     <th>Cost/Hr</th>
                                     <th>Total Cost</th>
-                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -185,18 +184,6 @@
                                     <td th:text="'₹' + ${entry.costPerHour}"></td>
                                     <td>
                                         <strong class="text-success" th:text="'₹' + ${entry.totalCost}"></strong>
-                                    </td>
-                                    <td>
-                                        <a th:href="@{/expenses/labour/entries/edit/{id}(id=${entry.id})}" 
-                                           class="btn btn-sm btn-warning me-1">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </a>
-                                        <button type="button" 
-                                                class="btn btn-sm btn-danger"
-                                                th:attr="data-entry-id=${entry.id},data-employee-name=${entry.employee.name},data-work-date=${#temporals.format(entry.workDate, 'dd-MM-yyyy')}"
-                                                onclick="confirmDelete(this)">
-                                            <i class="fas fa-trash"></i> Delete
-                                        </button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -221,25 +208,7 @@
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirm Delete</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to delete the labour entry for <strong id="employeeName"></strong> on <strong id="workDate"></strong>?</p>
-                    <p class="text-danger">This action cannot be undone.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <a id="deleteLink" class="btn btn-danger">Delete</a>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Page-specific scripts -->
     <th:block id="pagescript">
@@ -319,18 +288,7 @@
                 calculateTotalCost();
             });
             
-            function confirmDelete(button) {
-                const entryId = button.getAttribute('data-entry-id');
-                const employeeName = button.getAttribute('data-employee-name');
-                const workDate = button.getAttribute('data-work-date');
-                
-                document.getElementById('employeeName').textContent = employeeName;
-                document.getElementById('workDate').textContent = workDate;
-                document.getElementById('deleteLink').href = '/expenses/labour/entries/delete/' + entryId;
-                
-                var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-                modal.show();
-            }
+
         </script>
     </th:block>
 </body>
