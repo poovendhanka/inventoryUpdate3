@@ -60,6 +60,29 @@ public class RawMaterialService {
         return rawMaterialRepository.findTop10ByOrderByLorryInTimeDesc();
     }
 
+    public List<RawMaterial> getRecentRawMaterials(int limit) {
+        return rawMaterialRepository.findTopByOrderByLorryInTimeDesc(org.springframework.data.domain.PageRequest.of(0, limit)).getContent();
+    }
+
+    public List<RawMaterial> getRawMaterialsByDate(LocalDate date) {
+        LocalDateTime startDate = date.atStartOfDay();
+        LocalDateTime endDate = date.plusDays(1).atStartOfDay();
+        return rawMaterialRepository.findByLorryInTimeBetweenOrderByLorryInTimeDesc(startDate, endDate);
+    }
+
+    @Transactional
+    public void deleteRawMaterial(Long id) {
+        RawMaterial rawMaterial = rawMaterialRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Raw Material not found"));
+        
+        // Check if it's been processed
+        if (Boolean.TRUE.equals(rawMaterial.getAccountsProcessed())) {
+            throw new RuntimeException("Cannot delete processed raw material");
+        }
+        
+        rawMaterialRepository.delete(rawMaterial);
+    }
+
     public List<RawMaterial> getUnprocessedEntries() {
         return rawMaterialRepository.findByAccountsProcessedFalse();
     }

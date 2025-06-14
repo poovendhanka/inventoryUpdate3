@@ -80,6 +80,17 @@ public class ExpenseService {
         return total != null ? total : 0.0;
     }
 
+    public List<Expense> getRecentExpenses(int limit) {
+        return expenseRepository.findTopByOrderByExpenseDateDesc(
+            org.springframework.data.domain.PageRequest.of(0, limit)).getContent();
+    }
+
+    public List<Expense> getExpensesByDate(LocalDate date) {
+        LocalDateTime startDate = date.atStartOfDay();
+        LocalDateTime endDate = date.plusDays(1).atStartOfDay();
+        return expenseRepository.findByExpenseDateBetweenOrderByExpenseDateDesc(startDate, endDate);
+    }
+
     @Transactional
     public void deleteExpense(Long id) {
         expenseRepository.deleteById(id);

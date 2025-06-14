@@ -1,0 +1,143 @@
+<!-- Regular Production Entries -->
+<div th:if="${productionEntries != null and !productionEntries.empty}">
+    <h6 class="text-primary mb-3"><i class="fas fa-cogs"></i> Regular Production</h6>
+    <div class="table-responsive mb-4">
+        <table class="table table-striped table-hover table-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Date</th>
+                    <th>Batch #</th>
+                    <th>Completion Time</th>
+                    <th>Supervisor</th>
+                    <th>Shift</th>
+                    <th>Husk Type</th>
+                    <th>Pith (kg)</th>
+                    <th>Fiber Bales</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="entry : ${productionEntries}">
+                    <td th:text="${#temporals.format(entry.productionDate, 'dd-MM-yyyy')}"></td>
+                    <td th:text="${entry.batchNumber}"></td>
+                    <td th:text="${#temporals.format(entry.batchCompletionTime, 'HH:mm')}"></td>
+                    <td th:text="${entry.supervisorName}"></td>
+                    <td>
+                        <span class="badge" th:classappend="${entry.shift.name() == 'FIRST' ? 'bg-info' : 'bg-warning'}" 
+                              th:text="${entry.shift.displayName}"></span>
+                    </td>
+                    <td>
+                        <span class="badge" th:classappend="${entry.huskType.name() == 'GREEN' ? 'bg-success' : 'bg-secondary'}" 
+                              th:text="${entry.huskType.displayName}"></span>
+                    </td>
+                    <td th:text="${entry.pithQuantity}"></td>
+                    <td th:text="${entry.fiberBales}"></td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                th:onclick="'deleteEntry(\'production\', \'production\', ' + ${entry.id} + ')'">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Cocopith Production Entries -->
+<div th:if="${cocopithEntries != null and !cocopithEntries.empty}">
+    <h6 class="text-success mb-3"><i class="fas fa-seedling"></i> Cocopith Production</h6>
+    <div class="table-responsive mb-4">
+        <table class="table table-striped table-hover table-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Date</th>
+                    <th>Pith Used (kg)</th>
+                    <th>Low EC Produced (kg)</th>
+                    <th>Supervisor</th>
+                    <th>Production Time</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="entry : ${cocopithEntries}">
+                    <td th:text="${#temporals.format(entry.productionDate, 'dd-MM-yyyy HH:mm')}"></td>
+                    <td th:text="${entry.pithQuantityUsed}"></td>
+                    <td th:text="${entry.lowEcQuantityProduced}"></td>
+                    <td th:text="${entry.supervisorName}"></td>
+                    <td th:text="${entry.productionTime != null ? entry.productionTime.toHours() + 'h ' + (entry.productionTime.toMinutes() % 60) + 'm' : 'N/A'}"></td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                th:onclick="'deleteEntry(\'production\', \'cocopith\', ' + ${entry.id} + ')'">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Block Production Entries -->
+<div th:if="${blockEntries != null and !blockEntries.empty}">
+    <h6 class="text-warning mb-3"><i class="fas fa-cube"></i> Block Production</h6>
+    <div class="table-responsive mb-4">
+        <table class="table table-striped table-hover table-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Date</th>
+                    <th>Pith Type</th>
+                    <th>Blocks Produced</th>
+                    <th>Pith Used (kg)</th>
+                    <th>Supervisor</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="entry : ${blockEntries}">
+                    <td th:text="${#temporals.format(entry.productionTime, 'dd-MM-yyyy HH:mm')}"></td>
+                    <td>
+                        <span class="badge" th:classappend="${entry.pithType.name() == 'NORMAL' ? 'bg-primary' : 'bg-info'}" 
+                              th:text="${entry.pithType.displayName}"></span>
+                    </td>
+                    <td th:text="${entry.blocksProduced}"></td>
+                    <td th:text="${entry.pithQuantityUsed}"></td>
+                    <td th:text="${entry.supervisorName}"></td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                th:onclick="'deleteEntry(\'production\', \'block\', ' + ${entry.id} + ')'">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- No entries message -->
+<div th:if="${(productionEntries == null or productionEntries.empty) and (cocopithEntries == null or cocopithEntries.empty) and (blockEntries == null or blockEntries.empty)}" 
+     class="alert alert-info">
+    <i class="fas fa-info-circle"></i>
+    No production entries found
+    <span th:if="${selectedDate != null}"> for <span th:text="${#temporals.format(selectedDate, 'dd-MM-yyyy')}"></span></span>
+    <span th:if="${selectedType != null and !selectedType.empty}"> of type <strong th:text="${selectedType}"></strong></span>.
+</div>
+
+<!-- Summary -->
+<div th:if="${(productionEntries != null and !productionEntries.empty) or (cocopithEntries != null and !cocopithEntries.empty) or (blockEntries != null and !blockEntries.empty)}" 
+     class="mt-3">
+    <small class="text-muted">
+        <i class="fas fa-info-circle"></i>
+        Showing 
+        <span th:if="${productionEntries != null}" th:text="${productionEntries.size()} + ' regular'"></span>
+        <span th:if="${cocopithEntries != null and productionEntries != null}">, </span>
+        <span th:if="${cocopithEntries != null}" th:text="${cocopithEntries.size()} + ' cocopith'"></span>
+        <span th:if="${blockEntries != null and (cocopithEntries != null or productionEntries != null)}">, </span>
+        <span th:if="${blockEntries != null}" th:text="${blockEntries.size()} + ' block'"></span>
+        entries
+        <span th:if="${selectedDate != null}"> for <span th:text="${#temporals.format(selectedDate, 'dd-MM-yyyy')}"></span></span>
+    </small>
+</div>
+
+<!-- No JavaScript needed - deleteEntry function is defined in the main admin page --> 

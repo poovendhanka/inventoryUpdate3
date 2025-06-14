@@ -122,9 +122,7 @@ public class SaleController extends BaseController {
                 return "redirect:/sales";
             }
 
-            // Set the sale date
-            sale.setSaleDate(LocalDateTime.now());
-
+            // Sale date and system time will be handled automatically by @PrePersist method
             // Total amount and tax calculations will be handled by @PrePersist method
 
             // Create invoice number with better uniqueness

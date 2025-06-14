@@ -2,6 +2,8 @@ package com.inventory.repository;
 
 import com.inventory.model.Expense;
 import com.inventory.model.ExpenseType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -15,6 +17,10 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     List<Expense> findByExpenseType(ExpenseType expenseType);
 
     List<Expense> findTop10ByExpenseTypeOrderByExpenseDateDesc(ExpenseType expenseType);
+    
+    Page<Expense> findTopByOrderByExpenseDateDesc(Pageable pageable);
+    
+    List<Expense> findByExpenseDateBetweenOrderByExpenseDateDesc(LocalDateTime startDate, LocalDateTime endDate);
 
     List<Expense> findByExpenseDateBetween(LocalDateTime startDate, LocalDateTime endDate);
 

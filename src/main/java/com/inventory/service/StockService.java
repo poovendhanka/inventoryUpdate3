@@ -157,4 +157,27 @@ public class StockService {
         }
         huskStockService.addStock(huskType, -quantity);
     }
+
+    // Add methods for reversing stock changes (used when deleting entries)
+    @Transactional
+    public void addPithStock(Double quantity) {
+        pithStockService.addStock(quantity);
+    }
+
+    @Transactional
+    public void addLowEcPithStock(Double quantity) {
+        pithStockService.addLowEcStock(quantity);
+    }
+
+    @Transactional
+    public void addFiberStock(Double quantity, FiberType fiberType) {
+        fibreStockService.addStock(quantity, fiberType);
+    }
+
+    @Transactional
+    public void addBlockStock(Integer blockCount) {
+        // When adding blocks back, we need to add back the pith that was used
+        Double pithQuantityToAdd = blockCount * 5.0;
+        pithStockService.addStock(pithQuantityToAdd);
+    }
 }

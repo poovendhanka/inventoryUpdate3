@@ -27,10 +27,29 @@ public class BackupService {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ZipOutputStream zos = new ZipOutputStream(baos);
 
-            // List of entities to backup
+            // Complete list of all tables in the system
             String[] tables = {
-                    "dealers", "fiber_stock", "parties", "pith_stock",
-                    "production", "raw_materials", "sales", "accounts"
+                    "accounts",
+                    "bill_number",
+                    "block_production",
+                    "brown_fiber_stock",
+                    "cocopith_production",
+                    "dealers",
+                    "employees",
+                    "expenses",
+                    "fiber_stock",
+                    "husk_stock",
+                    "labour_entries",
+                    "low_ec_pith_stock",
+                    "parties",
+                    "pith_stock",
+                    "processed_raw_materials",
+                    "product_cost",
+                    "production",
+                    "raw_materials",
+                    "raw_material_cost",
+                    "sales",
+                    "white_fiber_stock"
             };
 
             for (String tableName : tables) {

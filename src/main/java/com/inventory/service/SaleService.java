@@ -136,4 +136,34 @@ public class SaleService {
     public Sale getSaleById(Long id) {
         return saleRepository.findById(id).orElse(null);
     }
+
+    @Transactional
+    public void deleteSale(Long id) {
+        Sale sale = saleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Sale not found"));
+        
+        // Reverse stock changes
+        reverseStockChanges(sale);
+        
+        saleRepository.delete(sale);
+    }
+
+    private void reverseStockChanges(Sale sale) {
+        // Add back the stock that was reduced during sale
+        switch (sale.getProductType()) {
+            case FIBER:
+                stockService.addFiberStock(sale.getQuantity(), sale.getFiberType());
+                break;
+            case PITH:
+                if (sale.getPithType() == PithType.NORMAL) {
+                    stockService.addPithStock(sale.getQuantity());
+                } else {
+                    stockService.addLowEcPithStock(sale.getQuantity());
+                }
+                break;
+            case BLOCK:
+                stockService.addBlockStock(sale.getBlockCount());
+                break;
+        }
+    }
 }

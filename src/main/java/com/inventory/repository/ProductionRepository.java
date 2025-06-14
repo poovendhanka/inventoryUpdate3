@@ -2,6 +2,8 @@ package com.inventory.repository;
 
 import com.inventory.model.Production;
 import com.inventory.model.ShiftType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -38,6 +40,7 @@ public interface ProductionRepository extends JpaRepository<Production, Long> {
         List<Production> findByProductionDateOrderByBatchCompletionTimeDesc(LocalDate date);
 
         List<Production> findTop10ByOrderByBatchCompletionTimeDesc();
+        Page<Production> findTopByOrderByBatchCompletionTimeDesc(Pageable pageable);
 
         @Query("SELECT p FROM Production p WHERE p.batchCompletionTime >= :startTime " +
                         "AND p.batchCompletionTime < :endTime")

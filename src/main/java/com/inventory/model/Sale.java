@@ -46,6 +46,9 @@ public class Sale {
     @Column(name = "sale_date")
     private LocalDateTime saleDate;
 
+    @Column(name = "system_time")
+    private LocalDateTime systemTime;
+
     @Column(name = "invoice_number")
     private String invoiceNumber;
 
@@ -63,6 +66,16 @@ public class Sale {
     @PrePersist
     @PreUpdate
     public void calculateTotal() {
+        // Set system time when record is created/updated
+        if (systemTime == null) {
+            this.systemTime = LocalDateTime.now();
+        }
+        
+        // Set sale date to current time if not provided
+        if (saleDate == null) {
+            this.saleDate = LocalDateTime.now();
+        }
+        
         if (quantity != null && pricePerUnit != null) {
             this.totalAmount = quantity * pricePerUnit;
             

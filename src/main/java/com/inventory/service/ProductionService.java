@@ -70,6 +70,45 @@ public class ProductionService {
         return productionRepository.findTop10ByOrderByBatchCompletionTimeDesc();
     }
 
+    public List<Production> getRecentProduction(int limit) {
+        return productionRepository.findTopByOrderByBatchCompletionTimeDesc(
+            org.springframework.data.domain.PageRequest.of(0, limit)).getContent();
+    }
+
+    public List<Production> getProductionByDate(LocalDate date) {
+        return productionRepository.findByProductionDateOrderByBatchCompletionTimeDesc(date);
+    }
+
+    @Transactional
+    public void deleteProduction(Long id) {
+        Production production = productionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Production not found"));
+        
+        // Reverse stock changes
+        reverseStockChanges(production);
+        
+        productionRepository.delete(production);
+    }
+
+    private void reverseStockChanges(Production production) {
+        // Reverse pith stock addition (reduce it)
+        if (production.getPithQuantity() != null && production.getPithQuantity() > 0) {
+            pithStockService.addStock(-production.getPithQuantity());
+        }
+
+        // Reverse fiber stock addition (reduce it)
+        if (production.getFiberBales() != null && production.getFiberBales() > 0) {
+            fibreStockService.addStock(-production.getFiberBales().doubleValue(), production.getFiberType());
+        }
+
+        // Reverse husk stock reduction (add it back)
+        if (production.getPithQuantity() != null && production.getHuskType() != null) {
+            double pithQty = production.getPithQuantity();
+            double huskToAdd = pithQty * 2.0; // 2 CFT per 1kg pith
+            stockService.addHuskStock(production.getHuskType(), huskToAdd);
+        }
+    }
+
     public List<Production> getProductionsByDateAndShift(LocalDate date, ShiftType shift) {
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
