@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -507,10 +507,90 @@
             letter-spacing: 2px;
             font-family: 'Segoe UI', 'Arial', sans-serif;
             border-bottom: 3px solid #229954;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
         }
         .main-header span {
             letter-spacing: 3px;
             text-shadow: 0 2px 8px rgba(34, 153, 84, 0.10);
+        }
+        
+        /* Logout Container */
+        .logout-container {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            font-size: 0.75rem;
+            line-height: 1.2;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            color: #fff;
+        }
+        
+        .user-role {
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+        }
+        
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .logout-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Mobile responsive for logout */
+        @media (max-width: 768px) {
+            .main-header {
+                font-size: 1.5rem;
+            }
+            
+            .logout-container {
+                right: 10px;
+                gap: 8px;
+            }
+            
+            .user-info {
+                display: none; /* Hide user info on mobile to save space */
+            }
+            
+            .logout-btn {
+                padding: 6px 10px;
+                font-size: 0.9rem;
+            }
         }
 
         /* --- TABS STYLES --- */
@@ -612,6 +692,18 @@
     <!-- Persistent Eyarkkai fibres Header -->
     <header class="main-header">
         <span>EYARKKAI FIBERS</span>
+        <!-- Logout Button -->
+        <div class="logout-container">
+            <div class="user-info" sec:authorize="isAuthenticated()">
+                <span class="user-name" sec:authentication="principal.fullName">User</span>
+                <span class="user-role" sec:authentication="principal.authorities">Role</span>
+            </div>
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <button type="submit" class="logout-btn" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </form>
+        </div>
     </header>
 
     <!-- Mobile Menu Button -->
@@ -623,11 +715,14 @@
     <nav class="sidebar" id="sidebar" style="top:55px;">
         <div class="position-sticky">
             <ul class="nav flex-column" style="gap: 0.2rem;">
-                <li class="nav-item">
+                <!-- Admin Only Menu Items -->
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link" th:classappend="${activeTab == 'eyarkkai-family'} ? 'active' : ''" 
                        th:href="@{/eyarkkai-family}">
                         <i class="fas fa-users"></i>Eyarkkai Family</a>
                 </li>
+                
+                <!-- Common Menu Items (Both USER and ADMIN can access) -->
                 <li class="nav-item">
                     <a class="nav-link" th:classappend="${activeTab == 'raw-materials'} ? 'active' : ''" 
                        th:href="@{/raw-materials}">
@@ -657,12 +752,16 @@
                         <i class="fas fa-boxes"></i> Production Inventory
                     </a>
                 </li>
-                <li class="nav-item">
+                
+                <!-- Admin Only Menu Items -->
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link" th:classappend="${activeTab == 'reports' || activeTab == 'production-report' || activeTab == 'cocopith-report' || activeTab == 'block-report'} ? 'active' : ''" 
                        th:href="@{/reports}">
                         <i class="fas fa-chart-line"></i> Reports
                     </a>
                 </li>
+                
+                <!-- Common Menu Items -->
                 <li class="nav-item">
                     <a class="nav-link" th:classappend="${activeTab == 'sales'} ? 'active' : ''" 
                        th:href="@{/sales}">
@@ -675,18 +774,20 @@
                         <i class="fas fa-money-bill-wave"></i> Expenses
                     </a>
                 </li>
-                <li class="nav-item">
+                
+                <!-- Admin Only Menu Items -->
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link" th:classappend="${activeTab == 'admin'} ? 'active' : ''" 
                        th:href="@{/admin}">
                         <i class="fas fa-user-shield"></i> Admin
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link" th:classappend="${activeTab == 'pl-report'} ? 'active' : ''" th:href="@{/pl-report}">
                         <i class="fas fa-file-invoice-dollar"></i> P&amp;L Report
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link" th:classappend="${activeTab == 'backup' ? 'active' : ''}" href="/backup">
                         <i class="fas fa-database"></i>
                         <span>Backup</span>

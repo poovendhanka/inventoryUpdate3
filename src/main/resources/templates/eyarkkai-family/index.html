@@ -10,6 +10,10 @@
     
     <!-- Main Content -->
     <div id="content">
+        <!-- CSRF Token for AJAX requests -->
+        <meta name="_csrf" th:content="${_csrf.token}"/>
+        <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+        
         <!-- Success Message -->
         <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
             <span th:text="${successMessage}"></span>
@@ -344,6 +348,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <form id="deleteForm" method="post" style="display: inline;">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                             <button type="submit" class="btn btn-danger">Delete Employee</button>
                         </form>
                     </div>
@@ -366,6 +371,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <form id="restoreForm" method="post" style="display: inline;">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                             <button type="submit" class="btn btn-success">Restore Employee</button>
                         </form>
                     </div>
