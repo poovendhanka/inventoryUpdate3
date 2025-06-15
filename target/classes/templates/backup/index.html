@@ -12,16 +12,41 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Generate Backup</h5>
+                        <h5 class="card-title mb-0">Generate Complete System Backup</h5>
                     </div>
                     <div class="card-body">
-                        <p class="mb-4">
-                            Click the button below to generate and download a backup of all database tables in CSV format.
-                            The backup will include all current data from the system.
+                        <p class="mb-3">
+                            Click the button below to generate and download a complete backup of all database tables in CSV format.
+                            The backup includes data from all system modules:
                         </p>
-                        <a href="/backup/generate" class="btn btn-primary">
-                            <i class="fas fa-download me-2"></i>Generate Backup
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success me-2"></i>Raw Materials & Production</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Cocopith & Block Production</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Stock Management (All Types)</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Sales & Dealers</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Accounts & Processed Materials</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success me-2"></i>Employee Management</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Labour Entries & Expenses</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Product & Raw Material Costs</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Parties & Bill Numbers</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>All Configuration Data</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <a href="/backup/generate" class="btn btn-success btn-lg">
+                            <i class="fas fa-download me-2"></i>Generate Complete Backup
                         </a>
+                        <p class="text-muted mt-3 mb-0">
+                            <small><i class="fas fa-info-circle me-1"></i>
+                            The backup will be downloaded as a ZIP file containing CSV files for all 21 database tables.
+                            </small>
+                        </p>
                     </div>
                 </div>
             </div>

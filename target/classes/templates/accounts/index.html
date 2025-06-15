@@ -5,9 +5,14 @@
     <title>Accounts</title>
 </head>
 <body>
-    <h1 id="pageTitle">Accounts</h1>
+     <!-- Page Title -->
+    
+     <h1 id="pageTitle">Accounts</h1>
     
     <div id="content">
+        <!-- Success and Error Messages -->
+        <div th:replace="~{fragments/messages :: messages}"></div>
+        
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
@@ -25,7 +30,8 @@
                                         <th>Party</th>
                                         <th>Husk Type</th>
                                         <th>CFT</th>
-                                        <th>Cost</th>
+                                        <th>Cost per CFT</th>
+                                        <th>Total Cost</th>
                                         <th>Supervisor</th>
                                         <th>Action</th>
                                     </tr>
@@ -45,16 +51,21 @@
                                                   class="process-form">
                                                 <input type="hidden" name="rawMaterialId" th:value="${entry.id}">
                                                 <input type="number" 
-                                                       name="cost" 
-                                                       class="form-control form-control-sm" 
+                                                       name="costPerCft" 
+                                                       class="form-control form-control-sm cost-per-cft" 
                                                        required 
-                                                       step="0.01">
+                                                       step="0.01"
+                                                       placeholder="Cost per CFT"
+                                                       th:data-cft="${entry.cft}">
                                                 <input type="text" 
                                                        name="supervisorName" 
                                                        class="form-control form-control-sm mt-1" 
                                                        placeholder="Supervisor Name" 
                                                        required>
                                             </form>
+                                        </td>
+                                        <td>
+                                            <span th:id="'total-cost-' + ${entry.id}" class="total-cost-display text-success font-weight-bold">-</span>
                                         </td>
                                         <td th:text="${entry.supervisorName}"></td>
                                         <td>
@@ -81,16 +92,118 @@
                     <div class="card-body">
                         <form th:action="@{/accounts-report/raw-materials}" method="get" class="row g-3 mb-4">
                             <div class="col-auto">
+                                <label class="form-label">Select Date <span class="text-danger">*</span></label>
                                 <input type="date" class="form-control" name="date" required>
                             </div>
                             <div class="col-auto">
-                                <button type="submit" class="btn btn-primary">View Report</button>
+                                <label class="form-label">&nbsp;</label>
+                                <button type="submit" class="btn btn-success d-block">View Report</button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Processed Raw Materials by Date</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Date Selection Form -->
+                        <form th:action="@{/accounts}" method="get" class="row g-3 mb-4">
+                            <div class="col-auto">
+                                <label for="processedDate" class="form-label">Select Date <span class="text-danger">*</span></label>
+                                <input type="date" 
+                                       id="processedDate"
+                                       class="form-control" 
+                                       name="processedDate" 
+                                       th:value="${selectedProcessedDate != null ? selectedProcessedDate : ''}"
+                                       required>
+                            </div>
+                            <div class="col-auto">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="submit" class="btn btn-primary d-block">View Processed Materials</button>
+                            </div>
+                            <div class="col-auto" th:if="${selectedProcessedDate != null}">
+                                <label class="form-label">&nbsp;</label>
+                                <a th:href="@{/accounts}" class="btn btn-secondary d-block">Show Recent</a>
+                            </div>
+                        </form>
+                        
+                        <!-- Results Section -->
+                        <div th:if="${selectedProcessedDate != null}">
+                            <h6 class="text-primary mb-3">
+                                <i class="fas fa-calendar-day"></i> 
+                                Processed Raw Materials for <span th:text="${#temporals.format(selectedProcessedDate, 'dd MMMM yyyy')}">Selected Date</span>
+                            </h6>
+                        </div>
+                        <div th:if="${selectedProcessedDate == null}">
+                            <h6 class="text-info mb-3">
+                                <i class="fas fa-clock"></i> Recent Processed Raw Materials
+                            </h6>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Receipt #</th>
+                                        <th>Date Processed</th>
+                                        <th>Vehicle #</th>
+                                        <th>Party</th>
+                                        <th>Husk Type</th>
+                                        <th>CFT</th>
+                                        <th>Cost per CFT</th>
+                                        <th>Total Cost</th>
+                                        <th>Processed By</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${(selectedProcessedDate != null ? processedEntriesForDate : recentProcessedEntries).empty}">
+                                        <td colspan="10" class="text-center">
+                                            <span th:if="${selectedProcessedDate != null}">No processed entries found for selected date</span>
+                                            <span th:if="${selectedProcessedDate == null}">No recent processed entries found</span>
+                                        </td>
+                                    </tr>
+                                    <tr th:each="entry : ${selectedProcessedDate != null ? processedEntriesForDate : recentProcessedEntries}">
+                                        <td th:text="${entry.rawMaterial.receiptNumber}"></td>
+                                        <td th:text="${#temporals.format(entry.processedDate, 'dd-MM-yyyy HH:mm')}"></td>
+                                        <td th:text="${entry.rawMaterial.vehicleNumber}"></td>
+                                        <td th:text="${entry.rawMaterial.party.name}"></td>
+                                        <td th:text="${entry.rawMaterial.huskType?.displayName}"></td>
+                                        <td th:text="${entry.rawMaterial.cft}"></td>
+                                        <td th:text="${'₹' + #numbers.formatDecimal(entry.costPerCft != null ? entry.costPerCft : 0.0, 1, 2)}">₹0.00</td>
+                                        <td th:text="${'₹' + #numbers.formatDecimal(entry.totalCost != null ? entry.totalCost : 0.0, 1, 2)}">₹0.00</td>
+                                        <td th:text="${entry.accountsSupervisor}"></td>
+                                        <td>
+                                            <a th:href="@{/accounts/bill/{id}(id=${entry.id})}" 
+                                               class="btn btn-sm btn-success" 
+                                               title="Download Bill">
+                                                <i class="fas fa-download"></i> Bill
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <!-- Add totals footer when viewing specific date -->
+                                <tfoot th:if="${selectedProcessedDate != null and !(selectedProcessedDate != null ? processedEntriesForDate : recentProcessedEntries).empty}">
+                                    <tr class="table-info">
+                                        <td colspan="5"><strong>Total</strong></td>
+                                        <td><strong th:text="${#aggregates.sum((selectedProcessedDate != null ? processedEntriesForDate : recentProcessedEntries).![rawMaterial.cft])}">0</strong></td>
+                                        <td><strong>-</strong></td>
+                                        <td><strong th:text="${'₹' + #numbers.formatDecimal(#aggregates.sum((selectedProcessedDate != null ? processedEntriesForDate : recentProcessedEntries).![totalCost != null ? totalCost : 0.0]), 1, 2)}">₹0.00</strong></td>
+                                        <td colspan="2"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
     
     <th:block id="pagescript">
@@ -102,9 +215,34 @@
                         e.preventDefault();
                     }
                 });
+                
                 // Set default date to today
                 var today = new Date().toISOString().split('T')[0];
                 $('input[type="date"]').val(today);
+                
+                // Set default date for processed date picker if no date is selected
+                if ($('#processedDate').val() === '') {
+                    $('#processedDate').val(today);
+                }
+                
+                // Calculate total cost dynamically
+                $('.cost-per-cft').on('input', function() {
+                    var costPerCft = parseFloat($(this).val()) || 0;
+                    var cft = parseFloat($(this).data('cft')) || 0;
+                    var totalCost = costPerCft * cft;
+                    
+                    var formId = $(this).closest('form').attr('id');
+                    var entryId = formId.split('-')[1];
+                    var totalCostSpan = $('#total-cost-' + entryId);
+                    
+                    if (costPerCft > 0 && cft > 0) {
+                        totalCostSpan.text('₹' + totalCost.toFixed(2));
+                        totalCostSpan.removeClass('text-muted').addClass('text-success');
+                    } else {
+                        totalCostSpan.text('-');
+                        totalCostSpan.removeClass('text-success').addClass('text-muted');
+                    }
+                });
             });
         </script>
     </th:block>

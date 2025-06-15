@@ -82,31 +82,39 @@
             bottom: 0;
             left: 0;
             z-index: 100;
-            padding: 48px 0 0;
-            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
-            background-color: #f8f9fa;
+            padding: 40px 0 0;
+            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .07);
+            background: linear-gradient(180deg, #e8f8f5 0%, #d4efdf 100%);
             width: 15%;
+            overflow-y: auto;
         }
         
         .sidebar .nav-link {
-            font-weight: 500;
-            color: #333;
-            padding: 1rem 1rem;
+            font-weight: 600;
+            color: #229954;
+            padding: 0.75rem 1rem;
             border-left: 3px solid transparent;
+            border-radius: 0 2rem 2rem 0;
+            background: transparent;
+            transition: background 0.2s, color 0.2s;
+            font-size: 0.9rem;
         }
         
         .sidebar .nav-link:hover {
-            background-color: #e9ecef;
+            background: #d1f2eb;
+            color: #145a32;
         }
         
         .sidebar .nav-link.active {
-            color: #2470dc;
-            background-color: #e9ecef;
-            border-left: 3px solid #2470dc;
+            color: #fff;
+            background: linear-gradient(90deg, #27ae60 0%, #229954 100%);
+            border-left: 3px solid #229954;
+            box-shadow: 0 2px 8px rgba(34, 153, 84, 0.10);
         }
         
         .sidebar .nav-link i {
-            margin-right: 10px;
+            margin-right: 8px;
+            font-size: 0.85rem;
         }
         
         main {
@@ -122,7 +130,7 @@
             margin-left: 15%;
             z-index: 99;
             height: 48px;
-            background-color: #fff;
+            background: linear-gradient(90deg, #27ae60 0%, #229954 100%);
             box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
         }
         
@@ -210,54 +218,420 @@
         
         /* Print styles */
         @media print {
-            .sidebar, .navbar, .mobile-menu-btn {
+            /* Hide navigation and buttons */
+            .sidebar, .navbar, .mobile-menu-btn, .btn, .card-header .btn {
                 display: none !important;
+            }
+            
+            /* Reset layout for print */
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+                font-family: 'Arial', sans-serif !important;
+                font-size: 12px !important;
+                line-height: 1.4 !important;
+                color: #000 !important;
+                background: white !important;
             }
             
             main {
                 margin-left: 0 !important;
                 width: 100% !important;
-                padding: 0 !important;
-            }
-            
-            #pageTitle {
-                font-size: 1.5rem;
-                text-align: center;
-                margin-bottom: 1rem;
-                padding-bottom: 0.5rem;
-                border-bottom: 1px solid #ddd;
+                padding: 15px !important;
+                max-width: none !important;
             }
             
             .content-wrapper {
-                margin-top: 0;
+                margin-top: 0 !important;
             }
             
+            /* Hide all page titles and browser elements during print */
+            #pageTitle, .main-page-title, h1.main-page-title, 
+            .navbar-brand, .page-title, .breadcrumb {
+                display: none !important;
+            }
+            
+            /* Force hide browser generated content */
+            html, body {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            /* Override any browser default headers */
+            head, title, meta {
+                display: none !important;
+            }
+            
+            /* Card styling */
             .card {
-                border: none !important;
+                border: 1px solid #ddd !important;
                 box-shadow: none !important;
+                margin-bottom: 15px !important;
+                page-break-inside: avoid !important;
             }
             
             .card-header {
-                background-color: transparent !important;
+                background-color: #f8f9fa !important;
+                border-bottom: 1px solid #ddd !important;
+                padding: 8px 12px !important;
+                font-weight: bold !important;
+                font-size: 14px !important;
+                color: #000 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .card-body {
+                padding: 12px !important;
+            }
+            
+            .card-title {
+                font-size: 14px !important;
+                font-weight: bold !important;
+                margin-bottom: 8px !important;
+                color: #000 !important;
+            }
+            
+            /* Table styling */
+            .table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                margin-bottom: 15px !important;
+                font-size: 11px !important;
+            }
+            
+            .table th, .table td {
+                border: 1px solid #ddd !important;
+                padding: 6px 8px !important;
+                text-align: left !important;
+                vertical-align: top !important;
+                color: #000 !important;
+            }
+            
+            .table th {
+                background-color: #f8f9fa !important;
+                font-weight: bold !important;
+                font-size: 11px !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .table-dark th {
+                background-color: #343a40 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .table-light th, .table-secondary th {
+                background-color: #e9ecef !important;
+                color: #000 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .table-striped tbody tr:nth-of-type(odd) {
+                background-color: #f9f9f9 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            /* Summary cards */
+            .row {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                margin: 0 -5px !important;
+            }
+            
+            .col-md-3, .col-md-4, .col-md-6, .col-md-12 {
+                padding: 0 5px !important;
+                margin-bottom: 10px !important;
+            }
+            
+            .col-md-3 { width: 25% !important; }
+            .col-md-4 { width: 33.333% !important; }
+            .col-md-6 { width: 50% !important; }
+            .col-md-12 { width: 100% !important; }
+            
+            .bg-light {
+                background-color: #f8f9fa !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .bg-primary {
+                background-color: #0d6efd !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .bg-success {
+                background-color: #198754 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .bg-info {
+                background-color: #0dcaf0 !important;
+                color: #000 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .text-primary { color: #0d6efd !important; }
+            .text-success { color: #198754 !important; }
+            .text-info { color: #0dcaf0 !important; }
+            .text-center { text-align: center !important; }
+            .text-end { text-align: right !important; }
+            
+            /* Badge styling */
+            .badge {
+                display: inline-block !important;
+                padding: 2px 6px !important;
+                font-size: 10px !important;
+                font-weight: bold !important;
+                border-radius: 3px !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .badge.bg-primary { background-color: #0d6efd !important; }
+            .badge.bg-success { background-color: #198754 !important; }
+            .badge.bg-warning { background-color: #ffc107 !important; color: #000 !important; }
+            
+            /* Responsive table */
+            .table-responsive {
+                overflow: visible !important;
+            }
+            
+            /* Page breaks */
+            .card {
+                page-break-inside: avoid !important;
+            }
+            
+            .table {
+                page-break-inside: auto !important;
+            }
+            
+            .table tr {
+                page-break-inside: avoid !important;
+                page-break-after: auto !important;
+            }
+            
+            .table thead {
+                display: table-header-group !important;
+            }
+            
+            .table tfoot {
+                display: table-footer-group !important;
+            }
+            
+            /* Hide empty elements */
+            .mb-3:empty, .row:empty {
+                display: none !important;
+            }
+            
+            /* Company header for reports */
+            .print-header {
+                text-align: center !important;
+                margin: 0 0 20px 0 !important;
+                padding: 10px 0 10px 0 !important;
+                border-bottom: 2px solid #000 !important;
+                page-break-after: avoid !important;
+            }
+            
+            .print-header h1 {
+                font-size: 20px !important;
+                font-weight: bold !important;
+                margin: 0 0 5px 0 !important;
+                color: #000 !important;
+                letter-spacing: 1px !important;
+            }
+            
+            .print-header p {
+                font-size: 12px !important;
+                margin: 2px 0 !important;
+                color: #666 !important;
+            }
+            
+            /* Page setup to remove browser headers/footers */
+            @page {
+                margin: 0.75in 0.5in 0.5in 0.5in !important;
+                size: A4 !important;
+            }
+            
+            /* Remove browser default headers and footers */
+            @media print {
+                @page {
+                    margin: 0.75in 0.5in 0.5in 0.5in !important;
+                }
+            }
+            
+            /* Hide any potential duplicate titles */
+            body > h1, main > h1, .content-wrapper > h1 {
+                display: none !important;
+            }
+            
+            /* Footer */
+            .print-footer {
+                position: fixed !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                text-align: center !important;
+                font-size: 10px !important;
+                color: #666 !important;
+                border-top: 1px solid #ddd !important;
+                padding: 5px !important;
+                background: white !important;
+            }
+        }
+
+        /* --- HEADER STYLES --- */
+        .main-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 101;
+            background: linear-gradient(90deg, #27ae60 0%, #229954 100%);
+            color: #fff;
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: 800;
+            padding: 0.75rem 0 0.75rem 0;
+            box-shadow: 0 2px 8px rgba(44, 204, 64, 0.10);
+            letter-spacing: 2px;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            border-bottom: 3px solid #229954;
+        }
+        .main-header span {
+            letter-spacing: 3px;
+            text-shadow: 0 2px 8px rgba(34, 153, 84, 0.10);
+        }
+
+        /* --- TABS STYLES --- */
+        .nav-tabs {
+            border-bottom: 2px solid #229954 !important;
+            margin-bottom: 1.5rem;
+        }
+        .nav-tabs .nav-link {
+            color: #229954;
+            font-weight: 600;
+            font-size: 1.08rem;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 0;
+            background: none;
+            transition: background 0.2s, color 0.2s;
+        }
+        .nav-tabs .nav-link.active, .nav-tabs .nav-link:focus, .nav-tabs .nav-link:hover {
+            color: #fff !important;
+            background: linear-gradient(90deg, #27ae60 0%, #229954 100%);
+            border: none;
+            box-shadow: 0 2px 8px rgba(34, 153, 84, 0.10);
+        }
+        .nav-tabs .nav-link i {
+            margin-right: 8px;
+        }
+        .nav-tabs .nav-item {
+            margin-bottom: -2px;
+        }
+        /* --- END TABS STYLES --- */
+
+        /* Main page title style for all tabs */
+        .main-page-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 1.2rem;
+            margin-top: 0.5rem;
+            letter-spacing: 1px;
+            text-align: left;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+        }
+
+        /* Green alert for stock boxes */
+        .alert-green {
+            background: linear-gradient(135deg, #eafaf1 0%, #d4efdf 100%);
+            border: 1.5px solid #27ae60;
+            color: #145a32;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(39, 174, 96, 0.07);
+        }
+
+        /* Enhanced success message styling */
+        .alert-success {
+            background: linear-gradient(135deg, #eafaf1 0%, #d4efdf 100%);
+            border: 1.5px solid #27ae60;
+            color: #145a32;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.15);
+            border-radius: 8px;
+            animation: slideInTop 0.5s ease-out;
+        }
+
+        .alert-success .fas {
+            color: #27ae60;
+            margin-right: 8px;
+        }
+
+        /* Enhanced error message styling */
+        .alert-danger {
+            background: linear-gradient(135deg, #fdf2f2 0%, #fecaca 100%);
+            border: 1.5px solid #dc2626;
+            color: #7f1d1d;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+            border-radius: 8px;
+            animation: slideInTop 0.5s ease-out;
+        }
+
+        .alert-danger .fas {
+            color: #dc2626;
+            margin-right: 8px;
+        }
+
+        /* Animation for messages */
+        @keyframes slideInTop {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Persistent Eyarkkai fibres Header -->
+    <header class="main-header">
+        <span>EYARKKAI FIBERS</span>
+    </header>
+
     <!-- Mobile Menu Button -->
-    <button class="mobile-menu-btn" id="mobileSidebarToggle">
+    <button class="mobile-menu-btn" id="mobileSidebarToggle" style="top:55px;">
         <i class="fas fa-bars"></i>
     </button>
 
     <!-- Sidebar -->
-    <nav class="sidebar" id="sidebar">
+    <nav class="sidebar" id="sidebar" style="top:55px;">
         <div class="position-sticky">
-            <ul class="nav flex-column">
+            <ul class="nav flex-column" style="gap: 0.2rem;">
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeTab == 'eyarkkai-family'} ? 'active' : ''" 
+                       th:href="@{/eyarkkai-family}">
+                        <i class="fas fa-users"></i>Eyarkkai Family</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" th:classappend="${activeTab == 'raw-materials'} ? 'active' : ''" 
                        th:href="@{/raw-materials}">
-                        <i class="fas fa-box"></i> Raw Materials
-                    </a>
+                        <i class="fas fa-box"></i>Purchase</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" th:classappend="${activeTab == 'accounts'} ? 'active' : ''" 
@@ -268,13 +642,19 @@
                 <li class="nav-item">
                     <a class="nav-link" th:classappend="${activeTab == 'production'} ? 'active' : ''" 
                        th:href="@{/production}">
-                        <i class="fas fa-industry"></i> Production
+                        <i class="fas fa-industry"></i> Production Management
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" th:classappend="${activeTab == 'cocopith-production'} ? 'active' : ''" 
                        th:href="@{/cocopith-production}">
-                        <i class="fas fa-leaf"></i> Cocopith Production
+                        <i class="fas fa-leaf"></i> Cocopith & Block Production
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeTab == 'production-inventory'} ? 'active' : ''" 
+                       th:href="@{/production-inventory}">
+                        <i class="fas fa-boxes"></i> Production Inventory
                     </a>
                 </li>
                 <li class="nav-item">
@@ -290,9 +670,20 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeTab == 'expenses'} ? 'active' : ''" 
+                       th:href="@{/expenses}">
+                        <i class="fas fa-money-bill-wave"></i> Expenses
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" th:classappend="${activeTab == 'admin'} ? 'active' : ''" 
                        th:href="@{/admin}">
                         <i class="fas fa-user-shield"></i> Admin
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeTab == 'pl-report'} ? 'active' : ''" th:href="@{/pl-report}">
+                        <i class="fas fa-file-invoice-dollar"></i> P&amp;L Report
                     </a>
                 </li>
                 <li class="nav-item">
@@ -306,15 +697,20 @@
     </nav>
     
     <!-- Main content -->
-    <main>
+    <main style="margin-top:55px;">
         <!-- Top navbar -->
         <nav class="navbar">
             <div class="container-fluid">
                 <div class="navbar-title-container">
-                    <span class="navbar-brand mb-0 h1" th:replace="~{:: #pageTitle}">Title</span>
+                    <!-- Removed page title from here -->
                 </div>
             </div>
         </nav>
+        
+        <!-- Page Title below navbar -->
+        <div id="pageTitleContainer" style="margin-top:1.5rem;">
+            <th:block th:replace="~{:: #pageTitle}"></th:block>
+        </div>
         
         <!-- Page content -->
         <div class="content-wrapper">
@@ -361,5 +757,159 @@
             <!-- Page specific scripts will be inserted here -->
         </th:block>
     </div>
+
+    <!-- Global Form Validation Script -->
+    <script>
+        // Global form validation function
+        function validateForm(form) {
+            let isValid = true;
+            const requiredFields = form.querySelectorAll('[required]');
+            
+            requiredFields.forEach(field => {
+                const value = field.value.trim();
+                
+                // Remove existing validation classes
+                field.classList.remove('is-invalid', 'is-valid');
+                
+                // Check if field is empty
+                if (!value) {
+                    field.classList.add('is-invalid');
+                    isValid = false;
+                    
+                    // Show custom error message if not already present
+                    let feedback = field.parentNode.querySelector('.invalid-feedback');
+                    if (!feedback) {
+                        feedback = document.createElement('div');
+                        feedback.className = 'invalid-feedback';
+                        field.parentNode.appendChild(feedback);
+                    }
+                    feedback.textContent = 'This field is required.';
+                } else {
+                    // Additional validation for specific field types
+                    if (field.type === 'email' && !isValidEmail(value)) {
+                        field.classList.add('is-invalid');
+                        isValid = false;
+                        
+                        let feedback = field.parentNode.querySelector('.invalid-feedback');
+                        if (!feedback) {
+                            feedback = document.createElement('div');
+                            feedback.className = 'invalid-feedback';
+                            field.parentNode.appendChild(feedback);
+                        }
+                        feedback.textContent = 'Please enter a valid email address.';
+                    } else if (field.type === 'number' && (isNaN(value) || parseFloat(value) < 0)) {
+                        field.classList.add('is-invalid');
+                        isValid = false;
+                        
+                        let feedback = field.parentNode.querySelector('.invalid-feedback');
+                        if (!feedback) {
+                            feedback = document.createElement('div');
+                            feedback.className = 'invalid-feedback';
+                            field.parentNode.appendChild(feedback);
+                        }
+                        feedback.textContent = 'Please enter a valid positive number.';
+                    } else if (field.tagName === 'SELECT' && !value) {
+                        field.classList.add('is-invalid');
+                        isValid = false;
+                        
+                        let feedback = field.parentNode.querySelector('.invalid-feedback');
+                        if (!feedback) {
+                            feedback = document.createElement('div');
+                            feedback.className = 'invalid-feedback';
+                            field.parentNode.appendChild(feedback);
+                        }
+                        feedback.textContent = 'Please select an option.';
+                    } else {
+                        field.classList.add('is-valid');
+                    }
+                }
+            });
+            
+            return isValid;
+        }
+        
+        // Email validation helper
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        // Apply validation to all forms on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const forms = document.querySelectorAll('form');
+            
+            forms.forEach(form => {
+                // Skip forms that already have custom validation
+                if (form.classList.contains('no-global-validation')) {
+                    return;
+                }
+                
+                form.addEventListener('submit', function(e) {
+                    if (!validateForm(form)) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        // Show alert to user
+                        const firstInvalidField = form.querySelector('.is-invalid');
+                        if (firstInvalidField) {
+                            firstInvalidField.focus();
+                            
+                            // Show toast notification
+                            showValidationToast('Please fill in all required fields correctly.');
+                        }
+                    }
+                });
+                
+                // Real-time validation on input change
+                const requiredFields = form.querySelectorAll('[required]');
+                requiredFields.forEach(field => {
+                    field.addEventListener('blur', function() {
+                        validateForm(form);
+                    });
+                });
+            });
+        });
+        
+        // Show validation toast notification
+        function showValidationToast(message) {
+            // Create toast element if it doesn't exist
+            let toastContainer = document.getElementById('validation-toast-container');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'validation-toast-container';
+                toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+                toastContainer.style.zIndex = '9999';
+                document.body.appendChild(toastContainer);
+            }
+            
+            // Create toast
+            const toastId = 'validation-toast-' + Date.now();
+            const toastHtml = `
+                <div id="${toastId}" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="fas fa-exclamation-triangle me-2"></i>${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `;
+            
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+            
+            // Show toast
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement, {
+                autohide: true,
+                delay: 5000
+            });
+            toast.show();
+            
+            // Remove toast element after it's hidden
+            toastElement.addEventListener('hidden.bs.toast', function() {
+                toastElement.remove();
+            });
+        }
+    </script>
 </body>
 </html> 

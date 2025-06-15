@@ -5,9 +5,14 @@
     <title>Sales</title>
 </head>
 <body>
-    <h1 id="pageTitle">Sales Management</h1>
     
+     <!-- Page Title -->
+    
+     <h1 id="pageTitle">Sales Management</h1>
     <div id="content">
+        <!-- Success and Error Messages -->
+        <div th:replace="~{fragments/messages :: messages}"></div>
+        
         <div class="row">
             <!-- Current Stock Card -->
             <div class="col-md-12 mb-4">
@@ -17,17 +22,17 @@
                     </div>
                     <div class="card-body">
                         <div class="row g-3">
-                            <!-- Normal EC Pith Stock -->
+                            <!-- High EC Pith Stock -->
                             <div class="col-md-2">
-                                <div class="alert alert-info mb-0">
-                                    <h6 class="alert-heading small mb-1">Normal EC Pith</h6>
+                                <div class="alert alert-green mb-0">
+                                    <h6 class="alert-heading small mb-1">High EC Pith</h6>
                                     <p class="h6 mb-0" th:text="${currentPithStock + ' kg'}">0 kg</p>
                                 </div>
                             </div>
                             
                             <!-- Low EC Pith Stock -->
                             <div class="col-md-2">
-                                <div class="alert alert-info mb-0">
+                                <div class="alert alert-green mb-0">
                                     <h6 class="alert-heading small mb-1">Low EC Pith</h6>
                                     <p class="h6 mb-0" th:text="${currentLowEcPithStock + ' kg'}">0 kg</p>
                                 </div>
@@ -35,7 +40,7 @@
                             
                             <!-- White Fiber Stock -->
                             <div class="col-md-2">
-                                <div class="alert alert-info mb-0">
+                                <div class="alert alert-green mb-0">
                                     <h6 class="alert-heading small mb-1">White Fiber</h6>
                                     <p class="h6 mb-0" th:text="${whiteFiberStock + ' bales'}">0 bales</p>
                                 </div>
@@ -43,7 +48,7 @@
                             
                             <!-- Brown Fiber Stock -->
                             <div class="col-md-2">
-                                <div class="alert alert-info mb-0">
+                                <div class="alert alert-green mb-0">
                                     <h6 class="alert-heading small mb-1">Brown Fiber</h6>
                                     <p class="h6 mb-0" th:text="${brownFiberStock + ' bales'}">0 bales</p>
                                 </div>
@@ -51,13 +56,13 @@
 
                             <!-- Block Stock -->
                             <div class="col-md-2">
-                                <div class="alert alert-info mb-0">
-                                    <h6 class="alert-heading small mb-1">Normal EC Blocks</h6>
+                                <div class="alert alert-green mb-0">
+                                    <h6 class="alert-heading small mb-1">High EC Blocks</h6>
                                     <p class="h6 mb-0" th:text="${normalBlockStock + ' blocks'}">0 blocks</p>
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <div class="alert alert-info mb-0">
+                                <div class="alert alert-green mb-0">
                                     <h6 class="alert-heading small mb-1">Low EC Blocks</h6>
                                     <p class="h6 mb-0" th:text="${lowEcBlockStock + ' blocks'}">0 blocks</p>
                                 </div>
@@ -103,13 +108,13 @@
                         <div class="tab-content" id="saleTypeTabsContent">
                             <!-- Pith Sale Tab -->
                             <div class="tab-pane fade show active" id="pith-sale" role="tabpanel" aria-labelledby="pith-tab">
-                                <form th:action="@{/sales}" method="post" id="pithSaleForm" class="saleForm">
+                                <form th:action="@{/sales}" method="post" id="pithSaleForm" class="saleForm no-global-validation">
                                     <input type="hidden" name="productType" value="PITH">
                                     
                                     <div class="row">
                                         <!-- Dealer Selection -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="pithDealer" class="form-label">Dealer</label>
+                                            <label for="pithDealer" class="form-label">Dealer <span class="text-danger">*</span></label>
                                             <select class="form-select dealer-select" id="pithDealer" name="dealer.id" required>
                                                 <option value="">Select Dealer</option>
                                                 <option th:each="dealer : ${dealers}" 
@@ -120,7 +125,7 @@
 
                                         <!-- Pith Type Selection -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="pithType" class="form-label">Pith Type</label>
+                                            <label for="pithType" class="form-label">Pith Type <span class="text-danger">*</span></label>
                                             <select class="form-select" id="pithType" name="pithType" required>
                                                 <option value="">Select Pith Type</option>
                                                 <option th:each="type : ${T(com.inventory.model.PithType).values()}"
@@ -132,17 +137,18 @@
 
                                         <!-- Quantity Input -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="pithQuantity" class="form-label">Quantity (kg)</label>
+                                            <label for="pithQuantity" class="form-label">Quantity (kg) <span class="text-danger">*</span></label>
                                             <input type="number" class="form-control" id="pithQuantity" name="quantity" 
-                                                   step="0.01" required min="0" placeholder="Enter quantity in kg">
+                                                   step="0.01" required min="0.01" placeholder="Enter quantity in kg">
                                             <small class="text-muted" id="pithQuantityHelp"></small>
                                         </div>
 
-                                        <!-- Price per Unit -->
+                                        <!-- Price per Unit for Pith -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="pithPricePerUnit" class="form-label">Price per kg</label>
+                                            <label for="pithPricePerUnit" class="form-label">Price per kg <span class="text-danger">*</span></label>
                                             <input type="number" class="form-control" id="pithPricePerUnit" 
-                                                   name="pricePerUnit" step="0.01" required min="0">
+                                                   name="pricePerUnitDisplay" step="0.01" required min="0.01" readonly>
+                                            <input type="hidden" id="pithPricePerUnitHidden" name="pricePerUnit">
                                         </div>
                                     </div>
 
@@ -152,20 +158,20 @@
                                     </div>
 
                                     <div class="text-end">
-                                        <button type="submit" class="btn btn-primary">Create Pith Sale</button>
+                                        <button type="submit" class="btn btn-success">Create Pith Sale</button>
                                     </div>
                                 </form>
                             </div>
                             
                             <!-- Fiber Sale Tab -->
                             <div class="tab-pane fade" id="fiber-sale" role="tabpanel" aria-labelledby="fiber-tab">
-                                <form th:action="@{/sales}" method="post" id="fiberSaleForm" class="saleForm">
+                                <form th:action="@{/sales}" method="post" id="fiberSaleForm" class="saleForm no-global-validation">
                                     <input type="hidden" name="productType" value="FIBER">
                                     
                                     <div class="row">
                                         <!-- Dealer Selection -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="fiberDealer" class="form-label">Dealer</label>
+                                            <label for="fiberDealer" class="form-label">Dealer <span class="text-danger">*</span></label>
                                             <select class="form-select dealer-select" id="fiberDealer" name="dealer.id" required>
                                                 <option value="">Select Dealer</option>
                                                 <option th:each="dealer : ${dealers}" 
@@ -176,7 +182,7 @@
 
                                         <!-- Fiber Type Selection -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="fiberType" class="form-label">Fiber Type</label>
+                                            <label for="fiberType" class="form-label">Fiber Type <span class="text-danger">*</span></label>
                                             <select class="form-select" id="fiberType" name="fiberType" required>
                                                 <option value="">Select Fiber Type</option>
                                                 <option th:each="type : ${T(com.inventory.model.FiberType).values()}"
@@ -188,17 +194,18 @@
 
                                         <!-- Quantity Input -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="fiberQuantity" class="form-label">Quantity (bales)</label>
+                                            <label for="fiberQuantity" class="form-label">Quantity (bales) <span class="text-danger">*</span></label>
                                             <input type="number" class="form-control" id="fiberQuantity" name="quantity" 
-                                                   step="1" required min="0" placeholder="Enter number of bales">
+                                                   step="1" required min="1" placeholder="Enter number of bales">
                                             <small class="text-muted" id="fiberQuantityHelp"></small>
                                         </div>
 
-                                        <!-- Price per Unit -->
+                                        <!-- Price per Unit for Fiber -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="fiberPricePerUnit" class="form-label">Price per bale</label>
+                                            <label for="fiberPricePerUnit" class="form-label">Price per bale <span class="text-danger">*</span></label>
                                             <input type="number" class="form-control" id="fiberPricePerUnit" 
-                                                   name="pricePerUnit" step="0.01" required min="0">
+                                                   name="pricePerUnitDisplay" step="0.01" required min="0.01" readonly>
+                                            <input type="hidden" id="fiberPricePerUnitHidden" name="pricePerUnit">
                                         </div>
                                     </div>
 
@@ -208,20 +215,20 @@
                                     </div>
 
                                     <div class="text-end">
-                                        <button type="submit" class="btn btn-primary">Create Fiber Sale</button>
+                                        <button type="submit" class="btn btn-success">Create Fiber Sale</button>
                                     </div>
                                 </form>
                             </div>
                             
                             <!-- Block Sale Tab -->
                             <div class="tab-pane fade" id="block-sale" role="tabpanel" aria-labelledby="block-tab">
-                                <form th:action="@{/sales}" method="post" id="blockSaleForm" class="saleForm">
+                                <form th:action="@{/sales}" method="post" id="blockSaleForm" class="saleForm no-global-validation">
                                     <input type="hidden" name="productType" value="BLOCK">
                                     
                                     <div class="row">
                                         <!-- Dealer Selection -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="blockDealer" class="form-label">Dealer</label>
+                                            <label for="blockDealer" class="form-label">Dealer <span class="text-danger">*</span></label>
                                             <select class="form-select dealer-select" id="blockDealer" name="dealer.id" required>
                                                 <option value="">Select Dealer</option>
                                                 <option th:each="dealer : ${dealers}" 
@@ -232,9 +239,10 @@
 
                                         <!-- Block Type Selection -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="blockType" class="form-label">Block Type</label>
+                                            <label for="blockType" class="form-label">Block Type <span class="text-danger">*</span></label>
                                             <select class="form-select" id="blockType" name="pithType" required>
-                                                <option value="NORMAL">Normal EC Block</option>
+                                                <option value="">Select Block Type</option>
+                                                <option value="NORMAL">High EC Block</option>
                                                 <option value="LOW">Low EC Block</option>
                                             </select>
                                             <small class="text-muted" id="blockStockHelp"></small>
@@ -242,17 +250,18 @@
 
                                         <!-- Quantity Input -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="blockQuantity" class="form-label">Quantity (blocks)</label>
+                                            <label for="blockQuantity" class="form-label">Quantity (blocks) <span class="text-danger">*</span></label>
                                             <input type="number" class="form-control" id="blockQuantity" name="quantity" 
-                                                   step="1" required min="0" placeholder="Enter number of blocks">
+                                                   step="1" required min="1" placeholder="Enter number of blocks">
                                             <small class="text-muted" id="blockQuantityHelp"></small>
                                         </div>
 
-                                        <!-- Price per Unit -->
+                                        <!-- Price per Unit for Block -->
                                         <div class="col-md-6 mb-3">
-                                            <label for="blockPricePerUnit" class="form-label">Price per block</label>
+                                            <label for="blockPricePerUnit" class="form-label">Price per block <span class="text-danger">*</span></label>
                                             <input type="number" class="form-control" id="blockPricePerUnit" 
-                                                   name="pricePerUnit" step="0.01" required min="0">
+                                                   name="pricePerUnitDisplay" step="0.01" required min="0.01" readonly>
+                                            <input type="hidden" id="blockPricePerUnitHidden" name="pricePerUnit">
                                         </div>
                                     </div>
 
@@ -262,7 +271,7 @@
                                     </div>
 
                                     <div class="text-end">
-                                        <button type="submit" class="btn btn-primary">Create Block Sale</button>
+                                        <button type="submit" class="btn btn-success">Create Block Sale</button>
                                     </div>
                                 </form>
                             </div>
@@ -271,49 +280,47 @@
                 </div>
             </div>
 
-            <!-- Sales Report Card -->
-            <div class="col-md-12 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Sales Report</h5>
-                    </div>
-                    <div class="card-body">
-                        <form th:action="@{/sales/report}" method="get">
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label class="form-label">From Date</label>
-                                    <input type="date" class="form-control" name="fromDate" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">To Date</label>
-                                    <input type="date" class="form-control" name="toDate" required>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <div class="form-check mb-3">
-                                        <input class="form-check-input" type="checkbox" name="exportCsv" id="exportCsv" value="true">
-                                        <label class="form-check-label" for="exportCsv">
-                                            Download as CSV
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <button type="submit" class="btn btn-primary d-block w-100">View Report</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
             <!-- Recent Sales Table -->
             <div class="col-md-12 mt-4">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Recent Sales</h5>
+                        <h5 class="card-title mb-0">Sales by Date</h5>
                     </div>
                     <div class="card-body">
+                        <!-- Date Selection Form -->
+                        <form th:action="@{/sales}" method="get" class="row g-3 mb-4">
+                            <div class="col-auto">
+                                <label for="saleDate" class="form-label">Select Date:</label>
+                                <input type="date" 
+                                       id="saleDate"
+                                       class="form-control" 
+                                       name="saleDate" 
+                                       th:value="${selectedSaleDate != null ? selectedSaleDate : ''}"
+                                       required>
+                            </div>
+                            <div class="col-auto">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="submit" class="btn btn-primary d-block">View Sales</button>
+                            </div>
+                            <div class="col-auto" th:if="${selectedSaleDate != null}">
+                                <label class="form-label">&nbsp;</label>
+                                <a th:href="@{/sales}" class="btn btn-secondary d-block">Show Recent</a>
+                            </div>
+                        </form>
+                        
+                        <!-- Results Section -->
+                        <div th:if="${selectedSaleDate != null}">
+                            <h6 class="text-primary mb-3">
+                                <i class="fas fa-calendar-day"></i> 
+                                Sales for <span th:text="${#temporals.format(selectedSaleDate, 'dd MMMM yyyy')}">Selected Date</span>
+                            </h6>
+                        </div>
+                        <div th:if="${selectedSaleDate == null}">
+                            <h6 class="text-info mb-3">
+                                <i class="fas fa-clock"></i> Recent Sales
+                            </h6>
+                        </div>
+                        
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
@@ -322,18 +329,53 @@
                                         <th>Dealer</th>
                                         <th>Product</th>
                                         <th>Quantity</th>
-                                        <th>Price</th>
+                                        <th>Price per Unit</th>
+                                        <th>Tax Amount</th>
+                                        <th>Total with Tax</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:each="sale : ${recentSales}">
+                                    <tr th:if="${(selectedSaleDate != null ? salesForDate : recentSales).empty}">
+                                        <td colspan="8" class="text-center">
+                                            <span th:if="${selectedSaleDate != null}">No sales found for selected date</span>
+                                            <span th:if="${selectedSaleDate == null}">No recent sales found</span>
+                                        </td>
+                                    </tr>
+                                    <tr th:each="sale : ${selectedSaleDate != null ? salesForDate : recentSales}">
                                         <td th:text="${#temporals.format(sale.saleDate, 'dd-MM-yyyy HH:mm')}">Date</td>
                                         <td th:text="${sale.dealer.name}">Dealer</td>
-                                        <td th:text="${sale.productType}">Product</td>
-                                        <td th:text="${sale.quantity}">Quantity</td>
-                                        <td th:text="${sale.pricePerUnit}">Price</td>
+                                        <td>
+                                            <span th:if="${sale.productType.name() == 'FIBER'}" th:text="${T(com.inventory.util.ProductNameUtil).getFullProductName(sale.productType, sale.fiberType)}"></span>
+                                            <span th:if="${sale.productType.name() == 'PITH'}" th:text="${T(com.inventory.util.ProductNameUtil).getFullProductName(sale.productType, sale.pithType)}"></span>
+                                            <span th:if="${sale.productType.name() == 'BLOCK'}" th:text="${T(com.inventory.util.ProductNameUtil).getFullProductName(sale.productType, sale.pithType)}"></span>
+                                        </td>
+                                        <td>
+                                            <span th:if="${sale.productType.name() == 'PITH'}" th:text="${sale.quantity + ' kg'}"></span>
+                                            <span th:if="${sale.productType.name() == 'FIBER'}" th:text="${sale.quantity + ' bales'}"></span>
+                                            <span th:if="${sale.productType.name() == 'BLOCK'}" th:text="${sale.quantity + ' blocks'}"></span>
+                                        </td>
+                                        <td th:text="'₹' + ${#numbers.formatDecimal(sale.pricePerUnit, 1, 2)}">Price</td>
+                                        <td th:text="'₹' + ${#numbers.formatDecimal(sale.taxAmount != null ? sale.taxAmount : 0.0, 1, 2)}">Tax</td>
+                                        <td th:text="'₹' + ${#numbers.formatDecimal(sale.totalWithTax != null ? sale.totalWithTax : 0.0, 1, 2)}">Total</td>
+                                        <td>
+                                            <a th:href="@{'/sales/' + ${sale.id} + '/bill'}" 
+                                               class="btn btn-sm btn-success" 
+                                               title="Download Bill"
+                                               target="_blank">
+                                                <i class="fas fa-download"></i> Bill
+                                            </a>
+                                        </td>
                                     </tr>
                                 </tbody>
+                                <!-- Add totals footer when viewing specific date -->
+                                <tfoot th:if="${selectedSaleDate != null and !(selectedSaleDate != null ? salesForDate : recentSales).empty}">
+                                    <tr class="table-info">
+                                        <td colspan="6"><strong>Total</strong></td>
+                                        <td><strong th:text="${'₹' + #numbers.formatDecimal(#aggregates.sum((selectedSaleDate != null ? salesForDate : recentSales).![totalWithTax != null ? totalWithTax : 0.0]), 1, 2)}">₹0.00</strong></td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
@@ -344,14 +386,10 @@
     
     <th:block id="pagescript">
         <script th:inline="javascript">
-            // Initialize date field for sales report to current date
+            // Initialize date fields for sales management
             document.addEventListener('DOMContentLoaded', function() {
-                // Get first day of current month
+                // Get today's date for sale date picker
                 const today = new Date();
-                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-                const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-                
-                // Format dates as YYYY-MM-DD
                 const formatDate = (date) => {
                     const year = date.getFullYear();
                     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -359,12 +397,14 @@
                     return `${year}-${month}-${day}`;
                 };
                 
-                // Set default values for date fields
-                document.querySelector('input[name="fromDate"]').value = formatDate(firstDay);
-                document.querySelector('input[name="toDate"]').value = formatDate(lastDay);
+                // Set default date for sale date picker if no date is selected
+                const saleDateInput = document.getElementById('saleDate');
+                if (saleDateInput && saleDateInput.value === '') {
+                    saleDateInput.value = formatDate(today);
+                }
                 
                 // Get initial stock values - Fix the extraction method
-                const stockElements = document.querySelectorAll('.alert-info .h6');
+                const stockElements = document.querySelectorAll('.alert-green .h6');
                 const currentPithStock = parseFloat(stockElements[0].innerText.replace(/[^\d.]/g, '')) || 0;
                 const currentLowEcPithStock = parseFloat(stockElements[1].innerText.replace(/[^\d.]/g, '')) || 0;
                 const whiteFiberStock = parseFloat(stockElements[2].innerText.replace(/[^\d.]/g, '')) || 0;
@@ -565,6 +605,45 @@
                 if (lastTab && $('#' + lastTab).length) {
                     $('#' + lastTab).tab('show');
                 }
+
+                // Product cost values from backend
+                var productCost = {
+                    pithNormal: parseFloat("[[${productCost.pithNormalCost} ?: 0]]"),
+                    pithLow: parseFloat("[[${productCost.pithLowCost} ?: 0]]"),
+                    fiberWhite: parseFloat("[[${productCost.fiberWhiteCost} ?: 0]]"),
+                    fiberBrown: parseFloat("[[${productCost.fiberBrownCost} ?: 0]]"),
+                    blockNormal: parseFloat("[[${productCost.blockNormalCost} ?: 0]]"),
+                    blockLow: parseFloat("[[${productCost.blockLowCost} ?: 0]]")
+                };
+
+                function updatePithPrice() {
+                    var type = document.getElementById('pithType').value;
+                    var price = type === 'LOW' ? productCost.pithLow : productCost.pithNormal;
+                    document.getElementById('pithPricePerUnit').value = price;
+                    document.getElementById('pithPricePerUnitHidden').value = price;
+                }
+                function updateFiberPrice() {
+                    var type = document.getElementById('fiberType').value;
+                    var price = type === 'BROWN' ? productCost.fiberBrown : productCost.fiberWhite;
+                    document.getElementById('fiberPricePerUnit').value = price;
+                    document.getElementById('fiberPricePerUnitHidden').value = price;
+                }
+                function updateBlockPrice() {
+                    var type = document.getElementById('blockType').value;
+                    var price = type === 'LOW' ? productCost.blockLow : productCost.blockNormal;
+                    document.getElementById('blockPricePerUnit').value = price;
+                    document.getElementById('blockPricePerUnitHidden').value = price;
+                }
+
+                // Initialize prices and set up event listeners
+                updatePithPrice();
+                updateFiberPrice();
+                updateBlockPrice();
+                
+                // Add event listeners for price updates
+                document.getElementById('pithType').addEventListener('change', updatePithPrice);
+                document.getElementById('fiberType').addEventListener('change', updateFiberPrice);
+                document.getElementById('blockType').addEventListener('change', updateBlockPrice);
             });
         </script>
     </th:block>

@@ -7,54 +7,12 @@
 <body>
     <!-- Page Title -->
     <h1 id="pageTitle">Production Management</h1>
-    
     <!-- Main Content -->
     <div id="content">
+        <!-- Success and Error Messages -->
+        <div th:replace="~{fragments/messages :: messages}"></div>
+        
         <div class="row">
-            <!-- Current Stock Card -->
-            <div class="col-md-12 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Current Stock</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <!-- Normal EC Pith -->
-                            <div class="col-md-3">
-                                <div class="alert alert-info mb-0">
-                                    <h6 class="alert-heading small mb-1">Normal EC Pith</h6>
-                                    <p class="h6 mb-0" th:text="${currentPithStock + ' kg'}">0 kg</p>
-                                </div>
-                            </div>
-                            
-                            <!-- Low EC Pith -->
-                            <div class="col-md-3">
-                                <div class="alert alert-info mb-0">
-                                    <h6 class="alert-heading small mb-1">Low EC Pith</h6>
-                                    <p class="h6 mb-0" th:text="${currentLowEcPithStock + ' kg'}">0 kg</p>
-                                </div>
-                            </div>
-                            
-                            <!-- White Fiber -->
-                            <div class="col-md-3">
-                                <div class="alert alert-info mb-0">
-                                    <h6 class="alert-heading small mb-1">White Fiber</h6>
-                                    <p class="h6 mb-0" th:text="${whiteFiberStock + ' bales'}">0 bales</p>
-                                </div>
-                            </div>
-                            
-                            <!-- Brown Fiber -->
-                            <div class="col-md-3">
-                                <div class="alert alert-info mb-0">
-                                    <h6 class="alert-heading small mb-1">Brown Fiber</h6>
-                                    <p class="h6 mb-0" th:text="${brownFiberStock + ' bales'}">0 bales</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- New Production Entry Card -->
             <div class="col-md-12 mb-4">
                 <div class="card">
@@ -69,7 +27,7 @@
                             
                             <div class="row">
                                 <div class="col-md-4 mb-3">
-                                    <label for="huskType" class="form-label">Husk Type</label>
+                                    <label for="huskType" class="form-label">Husk Type <span class="text-danger">*</span></label>
                                     <select class="form-select" id="huskType" name="huskType" required>
                                         <option value="">Select Husk Type</option>
                                         <option value="GREEN">Green Husk</option>
@@ -78,7 +36,7 @@
                                 </div>
 
                                 <div class="col-md-4 mb-3">
-                                    <label for="shift" class="form-label">Shift</label>
+                                    <label for="shift" class="form-label">Shift <span class="text-danger">*</span></label>
                                     <select class="form-select" id="shift" name="shift" required>
                                         <option value="">Select Shift</option>
                                         <option value="FIRST">First Shift</option>
@@ -87,20 +45,20 @@
                                 </div>
 
                                 <div class="col-md-4 mb-3">
-                                    <label for="supervisorName" class="form-label">Supervisor Name</label>
-                                    <input type="text" class="form-control" id="supervisorName" name="supervisorName" required>
+                                    <label for="supervisorName" class="form-label">Supervisor Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="supervisorName" name="supervisorName" required placeholder="Enter supervisor name">
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-4 mb-3">
-                                    <label for="batchCompletionTime" class="form-label">Batch Completion Time</label>
+                                    <label for="batchCompletionTime" class="form-label">Batch Completion Time <span class="text-danger">*</span></label>
                                     <input type="datetime-local" class="form-control" id="batchCompletionTime" name="batchCompletionTime" required>
                                 </div>
                             </div>
 
                             <div class="text-end">
-                                <button type="submit" class="btn btn-primary">Save Production</button>
+                                <button type="submit" class="btn btn-success">Save Production</button>
                             </div>
                         </form>
                     </div>
