@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Access Denied</title>
+</head>
+<body>
+    <h1 id="pageTitle"><i class="fas fa-ban me-2 text-danger"></i>Access Denied</h1>
+
+    <div id="content">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-exclamation-triangle me-2"></i>You Don't Have Access
+                        </h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="mb-4">
+                            <i class="fas fa-lock fa-5x text-danger mb-3"></i>
+                            <h4 class="text-danger">Access Restricted</h4>
+                            <p class="text-muted">
+                                You don't have permission to access this section. 
+                                This area is restricted to administrators only.
+                            </p>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Note:</strong> If you believe you should have access to this section, 
+                            please contact your system administrator.
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                            <a href="/dashboard" class="btn btn-primary">
+                                <i class="fas fa-home me-2"></i>Go to Dashboard
+                            </a>
+                            <button onclick="history.back()" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Go Back
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block id="pagescript">
+        <!-- No additional scripts needed -->
+    </th:block>
+</body>
+</html> 

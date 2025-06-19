@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<head>
+    <title>Labour Expenses</title>
+</head>
+<body>
+    <div id="pageTitle">
+        <h1>Labour Expenses</h1>
+    </div>
+    
+    <div id="content">
+        <!-- Expense Management Tabs -->
+        <div th:replace="~{expenses/layout :: expenseTabs}"></div>
+        
+        <!-- Labour Expense Form with Extra Fields -->
+        <div th:with="extraFields=~{::extraFields}, columnSize=3">
+            <div th:replace="~{expenses/layout :: expenseForm(${expenseType}, 'Add Labour Expense', ~{::extraFields}, ${columnSize})}">
+                <!-- Extra Fields -->
+                <div th:fragment="extraFields">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="menCount" class="form-label">Men Count</label>
+                            <input type="number" class="form-control" id="menCount" th:field="*{menCount}" min="0" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="womenCount" class="form-label">Women Count</label>
+                            <input type="number" class="form-control" id="womenCount" th:field="*{womenCount}" min="0" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="shift" class="form-label">Shift</label>
+                            <select class="form-select" id="shift" th:field="*{shift}" required>
+                                <option value="">Select Shift</option>
+                                <option value="First Shift">First Shift (8:00 AM - 8:00 PM)</option>
+                                <option value="Second Shift">Second Shift (8:00 PM - 8:00 AM)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Labour Expenses Table with Extra Columns -->
+        <div th:with="columns=~{::tableColumns}">
+            <div th:replace="~{expenses/layout :: recentExpenses(~{::tableColumns})}">
+                <th:block th:fragment="tableColumns">
+                    <th>Men</th>
+                    <th>Women</th>
+                    <th>Shift</th>
+                </th:block>
+            </div>
+        </div>
+        
+        <!-- Additional info or guidance can be added here -->
+        <div class="alert alert-info mt-4">
+            <i class="fas fa-info-circle"></i> Track daily labour costs including the number of workers and their shifts.
+        </div>
+    </div>
+    
+    <!-- Page-specific scripts -->
+    <div id="pagescript">
+        <script>
+            // Any page-specific JavaScript can go here
+            $(document).ready(function() {
+                console.log("Labour expenses page loaded");
+            });
+        </script>
+    </div>
+</body>
+</html> 

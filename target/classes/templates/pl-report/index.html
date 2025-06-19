@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<head>
+    <title>P&L Report</title>
+</head>
+<body>
+    <h1 id="pageTitle">Profit &amp; Loss Report</h1>
+    <div id="content">
+        <!-- Success and Error Messages -->
+        <div th:replace="~{fragments/messages :: messages}"></div>
+        
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Select Date Range</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/pl-report}" method="get" class="row g-3">
+                            <div class="col-auto">
+                                <label for="startDate" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="startDate" name="startDate" th:value="${startDate}" required>
+                            </div>
+                            <div class="col-auto">
+                                <label for="endDate" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="endDate" name="endDate" th:value="${endDate}" required>
+                            </div>
+                            <div class="col-auto align-self-end">
+                                <button type="submit" class="btn btn-success">Generate Report</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">P&amp;L Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Purchase Amount</th>
+                                <td>Rs. <span th:text="${#numbers.formatDecimal(purchaseAmount, 1, 2)}">0.00</span></td>
+                            </tr>
+                            <tr>
+                                <th>Expenses</th>
+                                <td>Rs. <span th:text="${#numbers.formatDecimal(expenses, 1, 2)}">0.00</span></td>
+                            </tr>
+                            <tr>
+                                <th>Total Revenue (Sales)</th>
+                                <td>Rs. <span th:text="${#numbers.formatDecimal(revenue, 1, 2)}">0.00</span></td>
+                            </tr>
+                            <tr class="table-secondary">
+                                <th>Profit / Loss</th>
+                                <td>Rs. <span th:text="${#numbers.formatDecimal(profit, 1, 2)}">0.00</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="pagescript">
+        <!-- No additional scripts needed for P&L Report -->
+    </div>
+</body>
+</html> 

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<head>
+    <title>Expense Reports</title>
+</head>
+<body>
+    <div id="pageTitle">
+        <h1 th:text="${reportTitle ?: 'Expense Reports'}">Expense Reports</h1>
+    </div>
+    
+    <div id="content">
+        <!-- Expense Management Tabs -->
+        <div th:replace="~{expenses/layout :: expenseTabs}"></div>
+        
+        <!-- Report Filter Form -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Filter Expenses</h5>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/expenses/report}" method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="fromDate" class="form-label">From Date</label>
+                        <input type="date" class="form-control" id="fromDate" name="fromDate" th:value="${fromDate}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="toDate" class="form-label">To Date</label>
+                        <input type="date" class="form-control" id="toDate" name="toDate" th:value="${toDate}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="expenseType" class="form-label">Expense Type</label>
+                        <select class="form-select" id="expenseType" name="expenseType">
+                            <option value="">All Types</option>
+                            <option th:each="type : ${T(com.inventory.model.ExpenseType).values()}"
+                                    th:value="${type}" 
+                                    th:text="${type.displayName}"
+                                    th:selected="${type == expenseType}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="fas fa-filter"></i> Apply Filter
+                        </button>
+                        <button type="submit" class="btn btn-success" name="exportCsv" value="true">
+                            <i class="fas fa-file-excel"></i> Export CSV
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Expense Summary -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Expense Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Date Range:</h5>
+                        <p th:text="${#temporals.format(fromDate, 'dd-MM-yyyy') + ' to ' + #temporals.format(toDate, 'dd-MM-yyyy')}">Date Range</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Total Expenses:</h5>
+                        <h3 class="text-danger" th:text="${#numbers.formatDecimal(totalAmount, 1, 2) + ' ₹'}">0.00 ₹</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Expense Details Table -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Expense Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Expense Type</th>
+                                <th>Description</th>
+                                <th>Amount (₹)</th>
+                                <!-- Conditionally show extra columns based on expense type -->
+                                <th th:if="${expenseType == T(com.inventory.model.ExpenseType).ELECTRICITY_BILLS}">Units</th>
+                                <th th:if="${expenseType == T(com.inventory.model.ExpenseType).LABOUR}">Men</th>
+                                <th th:if="${expenseType == T(com.inventory.model.ExpenseType).LABOUR}">Women</th>
+                                <th th:if="${expenseType == T(com.inventory.model.ExpenseType).LABOUR}">Shift</th>
+                                <th th:if="${expenseType == T(com.inventory.model.ExpenseType).MAINTENANCE}">Type</th>
+                                <th th:if="${expenseType == T(com.inventory.model.ExpenseType).TRANSPORTATION}">Fuel</th>
+                                <th th:if="${expenseType == T(com.inventory.model.ExpenseType).TRANSPORTATION}">Vehicle</th>
+                                <th th:if="${expenseType == T(com.inventory.model.ExpenseType).SPARES_PARTS}">Part</th>
+                                <th th:if="${expenseType == T(com.inventory.model.ExpenseType).SPARES_PARTS}">Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${expenses == null || expenses.isEmpty()}">
+                                <td colspan="10" class="text-center">No expenses found for the selected criteria</td>
+                            </tr>
+                            <tr th:if="${expenses != null}" th:each="expense : ${expenses}">
+                                <td th:text="${#temporals.format(expense.expenseDate, 'dd-MM-yyyy HH:mm')}">Date</td>
+                                <td th:text="${expense.expenseType != null ? expense.expenseType.displayName : ''}">Type</td>
+                                <td th:text="${expense.description}">Description</td>
+                                <td th:text="${#numbers.formatDecimal(expense.amount, 1, 2)}">Amount</td>
+                                
+                                <!-- Conditionally show extra columns based on expense type -->
+                                <td th:if="${expenseType == T(com.inventory.model.ExpenseType).ELECTRICITY_BILLS}" 
+                                    th:text="${expense.unitsConsumed}">Units</td>
+                                
+                                <td th:if="${expenseType == T(com.inventory.model.ExpenseType).LABOUR}" 
+                                    th:text="${expense.menCount}">Men</td>
+                                <td th:if="${expenseType == T(com.inventory.model.ExpenseType).LABOUR}" 
+                                    th:text="${expense.womenCount}">Women</td>
+                                <td th:if="${expenseType == T(com.inventory.model.ExpenseType).LABOUR}" 
+                                    th:text="${expense.shift}">Shift</td>
+                                
+                                <td th:if="${expenseType == T(com.inventory.model.ExpenseType).MAINTENANCE}" 
+                                    th:text="${expense.maintenanceType}">Type</td>
+                                
+                                <td th:if="${expenseType == T(com.inventory.model.ExpenseType).TRANSPORTATION}" 
+                                    th:text="${expense.fuelQuantity}">Fuel</td>
+                                <td th:if="${expenseType == T(com.inventory.model.ExpenseType).TRANSPORTATION}" 
+                                    th:text="${expense.vehicleDetails}">Vehicle</td>
+                                
+                                <td th:if="${expenseType == T(com.inventory.model.ExpenseType).SPARES_PARTS}" 
+                                    th:text="${expense.partName}">Part</td>
+                                <td th:if="${expenseType == T(com.inventory.model.ExpenseType).SPARES_PARTS}" 
+                                    th:text="${expense.replacementDetails}">Details</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Page-specific scripts -->
+    <div id="pagescript">
+        <script>
+            // Any page-specific JavaScript can go here
+            $(document).ready(function() {
+                console.log("Expense report page loaded");
+            });
+        </script>
+    </div>
+</body>
+</html> 

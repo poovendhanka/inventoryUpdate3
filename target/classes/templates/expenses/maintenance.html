@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<head>
+    <title>Maintenance Expenses</title>
+</head>
+<body>
+    <div id="pageTitle">
+        <h1>Maintenance Expenses</h1>
+    </div>
+    
+    <div id="content">
+        <!-- Expense Management Tabs -->
+        <div th:replace="~{expenses/layout :: expenseTabs}"></div>
+        
+        <!-- Maintenance Expense Form with Extra Fields -->
+        <div th:with="extraFields=~{::extraFields}, columnSize=3">
+            <div th:replace="~{expenses/layout :: expenseForm(${expenseType}, 'Add Maintenance Expense', ~{::extraFields}, ${columnSize})}">
+                <!-- Extra Fields -->
+                <div th:fragment="extraFields" class="col-md-3">
+                    <div class="mb-3">
+                        <label for="maintenanceType" class="form-label">Maintenance Type</label>
+                        <select class="form-select" id="maintenanceType" th:field="*{maintenanceType}" required>
+                            <option value="">Select Type</option>
+                            <option value="Periodic">Periodic</option>
+                            <option value="Occasional">Occasional</option>
+                            <option value="Emergency">Emergency</option>
+                            <option value="Preventive">Preventive</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Maintenance Expenses Table with Extra Columns -->
+        <div th:with="columns=~{::tableColumns}">
+            <div th:replace="~{expenses/layout :: recentExpenses(~{::tableColumns})}">
+                <th:block th:fragment="tableColumns">
+                    <th>Maintenance Type</th>
+                </th:block>
+            </div>
+        </div>
+        
+        <!-- Additional info or guidance can be added here -->
+        <div class="alert alert-info mt-4">
+            <i class="fas fa-info-circle"></i> Track periodic maintenance expenses and occasional repairs for machinery and facilities.
+        </div>
+    </div>
+    
+    <!-- Page-specific scripts -->
+    <div id="pagescript">
+        <script>
+            // Any page-specific JavaScript can go here
+            $(document).ready(function() {
+                console.log("Maintenance expenses page loaded");
+            });
+        </script>
+    </div>
+</body>
+</html> 

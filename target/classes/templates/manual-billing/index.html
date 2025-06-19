@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Billing - EYARKKAI FIBERS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .card {
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border: 1px solid rgba(0, 0, 0, 0.125);
+            margin-bottom: 1rem;
+        }
+        .btn-primary {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .btn-primary:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            color: #28a745 !important;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-receipt"></i> Manual Billing System</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/manual-billing/create">
+                    <i class="fas fa-plus"></i> Create New Bill
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Success/Error Messages -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h2><i class="fas fa-file-invoice"></i> Manual Bills</h2>
+                <p class="text-muted">Manage manual billing for resale items</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <a href="/manual-billing/create" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Create New Bill
+                </a>
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="customerSearch" class="form-label">Search by Customer</label>
+                        <input type="text" class="form-control" id="customerSearch" placeholder="Enter customer name">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="startDate" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="startDate">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="endDate" class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="endDate">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-outline-primary w-100" onclick="searchBills()">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bills Table -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-list"></i> Bill List</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Bill Number</th>
+                                <th>Bill Date</th>
+                                <th>Customer Name</th>
+                                <th>Total Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="billsTableBody">
+                            <tr th:each="bill : ${bills}">
+                                <td>
+                                    <strong th:text="${bill.billNumber}"></strong>
+                                </td>
+                                <td th:text="${#temporals.format(bill.billDate, 'dd/MM/yyyy')}"></td>
+                                <td th:text="${bill.customerName}"></td>
+                                <td>
+                                    <strong class="text-success">₹<span th:text="${#numbers.formatDecimal(bill.totalAmount, 1, 2)}"></span></strong>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a th:href="@{/manual-billing/view/{id}(id=${bill.id})}" class="btn btn-outline-primary" title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a th:href="@{/manual-billing/download/{id}(id=${bill.id})}" class="btn btn-outline-success" title="Download PDF">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-danger" 
+                                                onclick="confirmDelete(this)" 
+                                                th:data-bill-id="${bill.id}" 
+                                                th:data-bill-number="${bill.billNumber}" 
+                                                title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(bills)}">
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    <i class="fas fa-inbox fa-2x mb-2"></i><br>
+                                    No bills found. <a href="/manual-billing/create">Create your first bill</a>.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete bill <strong id="deleteBillNumber"></strong>?</p>
+                    <p class="text-danger"><small>This action cannot be undone.</small></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form id="deleteForm" method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-danger">Delete Bill</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function confirmDelete(button) {
+            const billId = button.getAttribute('data-bill-id');
+            const billNumber = button.getAttribute('data-bill-number');
+            document.getElementById('deleteBillNumber').textContent = billNumber;
+            document.getElementById('deleteForm').action = '/manual-billing/delete/' + billId;
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+
+        function searchBills() {
+            const customerName = document.getElementById('customerSearch').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            let searchUrl = '/manual-billing/search?';
+            const params = new URLSearchParams();
+            
+            if (customerName.trim()) {
+                params.append('customerName', customerName.trim());
+            }
+            if (startDate && endDate) {
+                params.append('startDate', startDate);
+                params.append('endDate', endDate);
+            }
+            
+            fetch(searchUrl + params.toString())
+                .then(response => response.json())
+                .then(bills => {
+                    updateBillsTable(bills);
+                })
+                .catch(error => {
+                    console.error('Error searching bills:', error);
+                    alert('Error searching bills. Please try again.');
+                });
+        }
+
+        function updateBillsTable(bills) {
+            const tbody = document.getElementById('billsTableBody');
+            tbody.innerHTML = '';
+            
+            if (bills.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-2x mb-2"></i><br>
+                            No bills found for the search criteria.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            bills.forEach(bill => {
+                const row = `
+                    <tr>
+                        <td><strong>${bill.billNumber}</strong></td>
+                        <td>${new Date(bill.billDate).toLocaleDateString('en-GB')}</td>
+                        <td>${bill.customerName}</td>
+                        <td><strong class="text-success">₹${parseFloat(bill.totalAmount).toFixed(2)}</strong></td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="/manual-billing/view/${bill.id}" class="btn btn-outline-primary" title="View">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="/manual-billing/download/${bill.id}" class="btn btn-outline-success" title="Download PDF">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                                <button type="button" class="btn btn-outline-danger" 
+                                        onclick="confirmDelete(this)" 
+                                        data-bill-id="${bill.id}" 
+                                        data-bill-number="${bill.billNumber}" 
+                                        title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+    </script>
+</body>
+</html> 

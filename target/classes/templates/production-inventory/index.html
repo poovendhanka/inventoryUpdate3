@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Production Inventory</title>
+    <style>
+        /* Enhance tab styling for inventory page */
+        #inventoryTabs .nav-link {
+            color: #229954;
+            font-weight: 600;
+            padding: 0.9rem 2.2rem;
+            border-radius: 0;
+            margin-right: 5px;
+            transition: all 0.2s ease;
+        }
+        
+        #inventoryTabs .nav-link.active {
+            background: linear-gradient(90deg, #27ae60 0%, #229954 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(34, 153, 84, 0.15);
+        }
+        
+        #inventoryTabs .nav-link:hover:not(.active) {
+            background-color: #d1f2eb;
+        }
+        
+        #inventoryTabs .nav-link i {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Page Title -->
+    <h1 id="pageTitle" class="main-page-title">Production Inventory Management</h1>
+    
+    <div id="content">
+        <!-- Success and Error Messages -->
+        <div th:replace="~{fragments/messages :: messages}"></div>
+        
+        <div class="row">
+            <div class="col-md-12">
+                <!-- Tabs Navigation -->
+                <ul class="nav nav-tabs" id="inventoryTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="pith-tab" data-bs-toggle="tab" data-bs-target="#pith" 
+                                type="button" role="tab" aria-controls="pith" aria-selected="true">
+                            <i class="fas fa-leaf"></i> Pith Inventory
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="fiber-tab" data-bs-toggle="tab" data-bs-target="#fiber" 
+                                type="button" role="tab" aria-controls="fiber" aria-selected="false">
+                            <i class="fas fa-wind"></i> Fiber Inventory
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="block-tab" data-bs-toggle="tab" data-bs-target="#block" 
+                                type="button" role="tab" aria-controls="block" aria-selected="false">
+                            <i class="fas fa-cube"></i> Block Inventory
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="husk-tab" data-bs-toggle="tab" data-bs-target="#husk" 
+                                type="button" role="tab" aria-controls="husk" aria-selected="false">
+                            <i class="fas fa-box"></i> Husk Inventory
+                        </button>
+                    </li>
+                </ul>
+                
+                <!-- Tab Content -->
+                <div class="tab-content" id="inventoryTabsContent">
+                    <!-- Pith Inventory Tab -->
+                    <div class="tab-pane fade show active" id="pith" role="tabpanel" aria-labelledby="pith-tab">
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Pith Inventory</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <!-- High EC Pith -->
+                                            <div class="col-md-6 col-lg-4 mb-4">
+                                                <div class="alert alert-green p-3">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h5 class="mb-0">High EC Pith</h5>
+                                                        <i class="fas fa-leaf fa-2x text-success"></i>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="d-flex justify-content-between">
+                                                        <span>Current Stock:</span>
+                                                        <span class="fw-bold" th:text="${normalEcPithStock ?: '0'} + ' kg'">0 kg</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Low EC Pith -->
+                                            <div class="col-md-6 col-lg-4 mb-4">
+                                                <div class="alert alert-green p-3">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h5 class="mb-0">Low EC Pith</h5>
+                                                        <i class="fas fa-leaf fa-2x text-success"></i>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="d-flex justify-content-between">
+                                                        <span>Current Stock:</span>
+                                                        <span class="fw-bold" th:text="${lowEcPithStock ?: '0'} + ' kg'">0 kg</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Fiber Inventory Tab -->
+                    <div class="tab-pane fade" id="fiber" role="tabpanel" aria-labelledby="fiber-tab">
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Fiber Inventory</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <!-- White Fiber -->
+                                            <div class="col-md-6 col-lg-4 mb-4">
+                                                <div class="alert alert-green p-3">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h5 class="mb-0">White Fiber</h5>
+                                                        <i class="fas fa-wind fa-2x text-success"></i>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="d-flex justify-content-between">
+                                                        <span>Current Stock:</span>
+                                                        <span class="fw-bold" th:text="${whiteFiberStock ?: '0'} + ' bales'">0 bales</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Brown Fiber -->
+                                            <div class="col-md-6 col-lg-4 mb-4">
+                                                <div class="alert alert-green p-3">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h5 class="mb-0">Brown Fiber</h5>
+                                                        <i class="fas fa-wind fa-2x text-success"></i>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="d-flex justify-content-between">
+                                                        <span>Current Stock:</span>
+                                                        <span class="fw-bold" th:text="${brownFiberStock ?: '0'} + ' bales'">0 bales</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Block Inventory Tab -->
+                    <div class="tab-pane fade" id="block" role="tabpanel" aria-labelledby="block-tab">
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Block Inventory</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <!-- High EC Blocks -->
+                                            <div class="col-md-6 col-lg-4 mb-4">
+                                                <div class="alert alert-green p-3">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h5 class="mb-0">High EC Blocks</h5>
+                                                        <i class="fas fa-cube fa-2x text-success"></i>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="d-flex justify-content-between">
+                                                        <span>Current Stock:</span>
+                                                        <span class="fw-bold" th:text="${blocks5kgStock ?: '0'} + ' pcs'">0 pcs</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Low EC Blocks -->
+                                            <div class="col-md-6 col-lg-4 mb-4">
+                                                <div class="alert alert-green p-3">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h5 class="mb-0">Low EC Blocks</h5>
+                                                        <i class="fas fa-cube fa-2x text-success"></i>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="d-flex justify-content-between">
+                                                        <span>Current Stock:</span>
+                                                        <span class="fw-bold" th:text="${blocks650gStock ?: '0'} + ' pcs'">0 pcs</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Husk Inventory Tab -->
+                    <div class="tab-pane fade" id="husk" role="tabpanel" aria-labelledby="husk-tab">
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Husk Inventory</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <!-- Green Husk -->
+                                            <div class="col-md-6 col-lg-4 mb-4">
+                                                <div class="alert alert-green p-3">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h5 class="mb-0">Green Husk</h5>
+                                                        <i class="fas fa-box fa-2x text-success"></i>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="d-flex justify-content-between">
+                                                        <span>Current Stock:</span>
+                                                        <span class="fw-bold" th:text="${#numbers.formatDecimal(greenHuskStock ?: 0, 1, 2)} + ' CFT'">0 CFT</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Brown Husk -->
+                                            <div class="col-md-6 col-lg-4 mb-4">
+                                                <div class="alert alert-green p-3">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h5 class="mb-0">Brown Husk</h5>
+                                                        <i class="fas fa-box fa-2x text-success"></i>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="d-flex justify-content-between">
+                                                        <span>Current Stock:</span>
+                                                        <span class="fw-bold" th:text="${#numbers.formatDecimal(brownHuskStock ?: 0, 1, 2)} + ' CFT'">0 CFT</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <th:block id="pagescript">
+        <script>
+            $(document).ready(function() {
+                // Ensure tabs work properly
+                $('#inventoryTabs button').on('click', function (e) {
+                    e.preventDefault();
+                    $(this).tab('show');
+                });
+                
+                // Store active tab in session storage
+                $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+                    localStorage.setItem('lastProductionInventoryTab', $(e.target).attr('id'));
+                });
+                
+                // Restore active tab from session storage
+                var lastTab = localStorage.getItem('lastProductionInventoryTab');
+                if (lastTab) {
+                    $('#' + lastTab).tab('show');
+                }
+            });
+        </script>
+    </th:block>
+</body>
+</html> 

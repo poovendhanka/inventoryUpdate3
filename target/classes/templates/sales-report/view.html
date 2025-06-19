@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Sales Report</title>
+</head>
+<body>
+    
+    <!-- Print Header (only visible when printing) -->
+    <div class="print-header" style="display: none;">
+        <h1>EYARKKAI FIBERS</h1>
+        <p>Sales Report</p>
+        <p th:text="${fromDate == toDate ? 'Date: ' + #temporals.format(fromDate, 'dd MMMM yyyy') : 'Period: ' + #temporals.format(fromDate, 'dd MMMM yyyy') + ' to ' + #temporals.format(toDate, 'dd MMMM yyyy')}">Date Range</p>
+        <p th:if="${productType != null and productType != 'ALL'}" th:text="'Product Type: ' + ${productType}">Product Filter</p>
+        <p th:if="${dealerName != null and dealerName != 'All Dealers'}" th:text="'Dealer: ' + ${dealerName}">Dealer Filter</p>
+    </div>
+    
+    <h1 id="pageTitle">Sales Report - <span th:text="${#temporals.format(fromDate, 'dd-MM-yyyy')}">From Date</span> 
+        <span th:if="${fromDate != toDate}">to <span th:text="${#temporals.format(toDate, 'dd-MM-yyyy')}">To Date</span></span>
+    </h1>
+    
+    <div id="content">
+        <div class="row mb-3 no-print">
+            <div class="col-md-12">
+                <a th:href="@{/reports?tab=sales}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Reports
+                </a>
+                <a th:href="@{/sales-report/view(fromDate=${fromDate},toDate=${toDate},productType=${productType},dealerId=${dealerId},exportCsv=true)}" class="btn btn-success ms-2">
+                    <i class="fas fa-file-csv"></i> Export as CSV
+                </a>
+                <button class="btn btn-primary ms-2" onclick="printReport()">
+                    <i class="fas fa-print"></i> Print Report
+                </button>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <div class="card bg-light">
+                    <div class="card-body text-center">
+                        <h6 class="card-title text-muted mb-1">Total Sales Value</h6>
+                        <h3 class="mb-0 text-primary" th:text="${'₹' + #numbers.formatDecimal(totalAmount, 1, 2)}">₹0.00</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-light">
+                    <div class="card-body text-center">
+                        <h6 class="card-title text-muted mb-1">Number of Transactions</h6>
+                        <h3 class="mb-0 text-primary" th:text="${#lists.size(sales)}">0</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-light">
+                    <div class="card-body text-center">
+                        <h6 class="card-title text-muted mb-1">Date Range</h6>
+                        <h3 class="mb-0 text-primary" th:text="${fromDate == toDate ? #temporals.format(fromDate, 'dd MMM yyyy') : #temporals.format(fromDate, 'dd MMM') + ' - ' + #temporals.format(toDate, 'dd MMM yyyy')}">Date Range</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sales Data Table -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Sales Transactions</h5>
+                <span class="badge bg-primary" th:text="${#lists.size(sales) + ' Records'}">0 Records</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Invoice #</th>
+                                <th>Dealer</th>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Price Per Unit</th>
+                                <th>Tax Amount</th>
+                                <th>Total Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(sales)}">
+                                <td colspan="8" class="text-center">No sales records found for this date range</td>
+                            </tr>
+                            <tr th:each="sale : ${sales}">
+                                <td th:text="${#temporals.format(sale.saleDate, 'dd-MM-yyyy HH:mm')}">Date</td>
+                                <td th:text="${sale.invoiceNumber}">Invoice</td>
+                                <td th:text="${sale.dealer.name}">Dealer</td>
+                                <td th:text="${T(com.inventory.util.ProductNameUtil).getFullProductName(sale.productType, sale.pithType, sale.fiberType)}">Product</td>
+                                <td>
+                                    <span th:if="${sale.productType.name() == 'BLOCK'}" th:text="${sale.blockCount + ' blocks'}"></span>
+                                    <span th:if="${sale.productType.name() == 'PITH'}" th:text="${sale.quantity + ' kg'}"></span>
+                                    <span th:if="${sale.productType.name() == 'FIBER'}" th:text="${sale.quantity + ' bales'}"></span>
+                                </td>
+                                <td th:text="${'₹' + #numbers.formatDecimal(sale.pricePerUnit, 1, 2)}">Price</td>
+                                <td th:text="${'₹' + #numbers.formatDecimal(sale.taxAmount != null ? sale.taxAmount : 0.0, 1, 2)}">Tax</td>
+                                <td th:text="${'₹' + #numbers.formatDecimal(sale.totalWithTax != null ? sale.totalWithTax : 0.0, 1, 2)}">Total</td>
+                            </tr>
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr>
+                                <td colspan="7" class="text-end"><strong>Total:</strong></td>
+                                <td><strong th:text="${'₹' + #numbers.formatDecimal(totalAmount, 1, 2)}">₹0.00</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Print Footer (only visible when printing) -->
+    <div class="print-footer" style="display: none;">
+        Generated on <span th:text="${#temporals.format(#temporals.createNow(), 'dd MMMM yyyy HH:mm')}">Current Date</span> | EYARKKAI FIBERS
+    </div>
+
+    <th:block id="pagescript">
+        <script>
+            $(document).ready(function() {
+                // Set active tab
+                $('.nav-link').removeClass('active');
+                $('.nav-link[href="/reports"]').addClass('active');
+
+                // Enable tooltips
+                $('[data-bs-toggle="tooltip"]').tooltip();
+                
+                // Show print header and footer only when printing
+                $('<style>')
+                    .append('@media print { .print-header, .print-footer { display: block !important; } }')
+                    .append('@media print { .no-print { display: none !important; } }')
+                    .append('@media print { #pageTitle { display: none !important; } }')
+                    .appendTo('head');
+            });
+            
+            // Enhanced print function to control browser behavior
+            function printReport() {
+                // Temporarily change the document title
+                const originalTitle = document.title;
+                document.title = 'EYARKKAI FIBERS - Sales Report';
+                
+                // Add print-specific styling
+                const printStyle = document.createElement('style');
+                printStyle.id = 'print-style';
+                printStyle.innerHTML = `
+                    @media print {
+                        @page {
+                            margin: 0.5in !important;
+                            size: A4 !important;
+                        }
+                        body * {
+                            visibility: hidden;
+                        }
+                        .print-header, .print-header *,
+                        #content, #content *,
+                        .print-footer, .print-footer * {
+                            visibility: visible;
+                        }
+                        .print-header {
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                        }
+                        #content {
+                            margin-top: 80px;
+                        }
+                    }
+                `;
+                document.head.appendChild(printStyle);
+                
+                // Print and cleanup
+                window.print();
+                
+                setTimeout(() => {
+                    document.title = originalTitle;
+                    const styleElement = document.getElementById('print-style');
+                    if (styleElement) {
+                        styleElement.remove();
+                    }
+                }, 1000);
+            }
+        </script>
+    </th:block>
+</body>
+</html> 

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Manual Bill - EYARKKAI FIBERS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .card {
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border: 1px solid rgba(0, 0, 0, 0.125);
+            margin-bottom: 1rem;
+        }
+        .btn-primary {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .btn-primary:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            color: #28a745 !important;
+        }
+        .bill-header {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 2rem;
+            border-radius: 0.375rem;
+            margin-bottom: 2rem;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .print-hide {
+            display: block;
+        }
+        @media print {
+            .print-hide {
+                display: none !important;
+            }
+            .navbar, .btn, .card-header .btn {
+                display: none !important;
+            }
+            body {
+                font-size: 12px;
+            }
+            .bill-header {
+                background: none !important;
+                color: black !important;
+                border: 2px solid #28a745;
+            }
+        }
+        .items-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .total-section {
+            background-color: #f8f9fa;
+            border-radius: 0.375rem;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light print-hide">
+        <div class="container">
+            <a class="navbar-brand" href="/manual-billing"><i class="fas fa-receipt"></i> Manual Billing System</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/manual-billing">
+                    <i class="fas fa-arrow-left"></i> Back to Bills
+                </a>
+                <a class="nav-link" th:href="@{/manual-billing/download/{id}(id=${bill.id})}">
+                    <i class="fas fa-download"></i> Download PDF
+                </a>
+                <a class="nav-link" href="#" onclick="window.print()">
+                    <i class="fas fa-print"></i> Print
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Success/Error Messages -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show print-hide" role="alert">
+            <i class="fas fa-check-circle"></i> <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Bill Header -->
+        <div class="bill-header text-center">
+            <h1><strong th:text="${companyInfo.name}"></strong></h1>
+            <pre th:text="${companyInfo.address}"></pre>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <p><strong>GST:</strong> <span th:text="${companyInfo.gst}"></span></p>
+                    <p><strong>Mobile:</strong> <span th:text="${companyInfo.mobile}"></span></p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>HSN:</strong> <span th:text="${companyInfo.hsn}"></span></p>
+                    <p><strong>Email:</strong> <span th:text="${companyInfo.email}"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bill Details -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-file-invoice"></i> Bill Details</h5>
+                        <span class="badge bg-success fs-6" th:text="${bill.billNumber}"></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-row">
+                            <span><strong>Bill Number:</strong></span>
+                            <span th:text="${bill.billNumber}"></span>
+                        </div>
+                        <div class="info-row">
+                            <span><strong>Bill Date:</strong></span>
+                            <span th:text="${#temporals.format(bill.billDate, 'dd/MM/yyyy')}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-user"></i> Customer Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-row">
+                            <span><strong>Name:</strong></span>
+                            <span th:text="${bill.customerName}"></span>
+                        </div>
+                        <div class="info-row" th:if="${bill.customerGst}">
+                            <span><strong>GST:</strong></span>
+                            <span th:text="${bill.customerGst}"></span>
+                        </div>
+                        <div class="info-row" th:if="${bill.customerMobile}">
+                            <span><strong>Mobile:</strong></span>
+                            <span th:text="${bill.customerMobile}"></span>
+                        </div>
+                        <div class="info-row" th:if="${bill.customerEmail}">
+                            <span><strong>Email:</strong></span>
+                            <span th:text="${bill.customerEmail}"></span>
+                        </div>
+                        <div th:if="${bill.customerAddress}" class="mt-2">
+                            <strong>Address:</strong><br>
+                            <span th:text="${bill.customerAddress}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items Table -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-list"></i> Bill Items</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered items-table">
+                        <thead>
+                            <tr>
+                                <th>S.No</th>
+                                <th>Description</th>
+                                <th>HSN Code</th>
+                                <th>Qty</th>
+                                <th>Unit</th>
+                                <th>Rate</th>
+                                <th>Amount</th>
+                                <th>CGST</th>
+                                <th>SGST</th>
+                                <th>IGST</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item, iterStat : ${items}">
+                                <td th:text="${iterStat.count}"></td>
+                                <td th:text="${item.itemDescription}"></td>
+                                <td th:text="${item.hsnCode ?: '-'}"></td>
+                                <td th:text="${#numbers.formatDecimal(item.quantity, 1, 2)}"></td>
+                                <td th:text="${item.unit ?: '-'}"></td>
+                                <td>₹<span th:text="${#numbers.formatDecimal(item.rate, 1, 2)}"></span></td>
+                                <td>₹<span th:text="${#numbers.formatDecimal(item.amount, 1, 2)}"></span></td>
+                                <td th:text="${item.cgstRate != null ? item.cgstRate + '%' : '-'}"></td>
+                                <td th:text="${item.sgstRate != null ? item.sgstRate + '%' : '-'}"></td>
+                                <td th:text="${item.igstRate != null ? item.igstRate + '%' : '-'}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Totals -->
+        <div class="row mb-4">
+            <div class="col-md-8"></div>
+            <div class="col-md-4">
+                <div class="total-section">
+                    <h6 class="mb-3"><i class="fas fa-calculator"></i> Bill Summary</h6>
+                    <div class="info-row">
+                        <span><strong>Subtotal:</strong></span>
+                        <span>₹<span th:text="${#numbers.formatDecimal(bill.subtotal, 1, 2)}"></span></span>
+                    </div>
+                    <div class="info-row" th:if="${bill.cgstAmount != null and bill.cgstAmount > 0}">
+                        <span>CGST:</span>
+                        <span>₹<span th:text="${#numbers.formatDecimal(bill.cgstAmount, 1, 2)}"></span></span>
+                    </div>
+                    <div class="info-row" th:if="${bill.sgstAmount != null and bill.sgstAmount > 0}">
+                        <span>SGST:</span>
+                        <span>₹<span th:text="${#numbers.formatDecimal(bill.sgstAmount, 1, 2)}"></span></span>
+                    </div>
+                    <div class="info-row" th:if="${bill.igstAmount != null and bill.igstAmount > 0}">
+                        <span>IGST:</span>
+                        <span>₹<span th:text="${#numbers.formatDecimal(bill.igstAmount, 1, 2)}"></span></span>
+                    </div>
+                    <div class="info-row" style="background-color: #28a745; color: white; padding: 0.75rem; margin: 0.5rem -1rem -1rem -1rem; border-radius: 0 0 0.375rem 0.375rem;">
+                        <span><strong>Total Amount:</strong></span>
+                        <span><strong>₹<span th:text="${#numbers.formatDecimal(bill.totalAmount, 1, 2)}"></span></strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="row mb-4 print-hide">
+            <div class="col-md-12 text-end">
+                <a href="/manual-billing" class="btn btn-secondary me-2">
+                    <i class="fas fa-arrow-left"></i> Back to Bills
+                </a>
+                <a th:href="@{/manual-billing/edit/{id}(id=${bill.id})}" class="btn btn-warning me-2">
+                    <i class="fas fa-edit"></i> Edit Bill
+                </a>
+                <button type="button" class="btn btn-primary" onclick="window.print()">
+                    <i class="fas fa-print"></i> Print Bill
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 
