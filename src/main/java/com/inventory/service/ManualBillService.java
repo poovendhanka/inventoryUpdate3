@@ -80,6 +80,14 @@ public class ManualBillService {
         return manualBillRepository.findByCustomerNameContainingIgnoreCase(customerName);
     }
     
+    public List<ManualBill> getRecentBills(int limit) {
+        return manualBillRepository.findTopBillsOrderByBillDateDesc(limit);
+    }
+    
+    public List<ManualBill> searchBillsByCustomerAndDateRange(String customerName, LocalDate startDate, LocalDate endDate) {
+        return manualBillRepository.findByCustomerNameContainingIgnoreCaseAndBillDateBetween(customerName, startDate, endDate);
+    }
+    
     public List<ManualBillItem> getBillItems(Long billId) {
         return manualBillItemRepository.findByManualBillId(billId);
     }

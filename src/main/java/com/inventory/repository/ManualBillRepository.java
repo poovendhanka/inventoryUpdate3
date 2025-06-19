@@ -23,4 +23,9 @@ public interface ManualBillRepository extends JpaRepository<ManualBill, Long> {
     
     @Query("SELECT COALESCE(MAX(CAST(SUBSTRING(m.billNumber, 3) AS int)), 0) FROM ManualBill m WHERE m.billNumber LIKE 'MB%'")
     Integer findLastBillNumber();
+    
+    @Query("SELECT m FROM ManualBill m ORDER BY m.billDate DESC, m.id DESC LIMIT :limit")
+    List<ManualBill> findTopBillsOrderByBillDateDesc(int limit);
+    
+    List<ManualBill> findByCustomerNameContainingIgnoreCaseAndBillDateBetween(String customerName, LocalDate startDate, LocalDate endDate);
 } 

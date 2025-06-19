@@ -34,7 +34,7 @@ public class ManualBillController {
     
     @GetMapping
     public String index(Model model) {
-        model.addAttribute("bills", manualBillService.getAllBills());
+        model.addAttribute("bills", manualBillService.getRecentBills(10));
         return "manual-billing/index";
     }
     
@@ -143,22 +143,30 @@ public class ManualBillController {
     
     @GetMapping("/search")
     @ResponseBody
-    public ResponseEntity<List<ManualBill>> searchBills(@RequestParam(required = false) String customerName,
-                                                       @RequestParam(required = false) String startDate,
-                                                       @RequestParam(required = false) String endDate) {
+    public ResponseEntity<List<ManualBill>> searchBills(@RequestParam String customerName,
+                                                       @RequestParam String startDate,
+                                                       @RequestParam String endDate) {
         try {
-            List<ManualBill> bills;
-            
-            if (customerName != null && !customerName.trim().isEmpty()) {
-                bills = manualBillService.searchBillsByCustomer(customerName);
-            } else if (startDate != null && endDate != null) {
-                LocalDate start = LocalDate.parse(startDate);
-                LocalDate end = LocalDate.parse(endDate);
-                bills = manualBillService.getBillsByDateRange(start, end);
-            } else {
-                bills = manualBillService.getAllBills();
+            // Validate all parameters are provided
+            if (customerName == null || customerName.trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            if (startDate == null || startDate.trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            if (endDate == null || endDate.trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
             }
             
+            LocalDate start = LocalDate.parse(startDate);
+            LocalDate end = LocalDate.parse(endDate);
+            
+            // Validate date range
+            if (end.isBefore(start)) {
+                return ResponseEntity.badRequest().build();
+            }
+            
+            List<ManualBill> bills = manualBillService.searchBillsByCustomerAndDateRange(customerName.trim(), start, end);
             return ResponseEntity.ok(bills);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();

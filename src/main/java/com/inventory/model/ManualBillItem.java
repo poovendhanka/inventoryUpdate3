@@ -1,6 +1,7 @@
 package com.inventory.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.math.BigDecimal;
 
 @Entity
@@ -12,6 +13,7 @@ public class ManualBillItem {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manual_bill_id", nullable = false)
+    @JsonBackReference
     private ManualBill manualBill;
     
     @Column(name = "item_description", nullable = false)

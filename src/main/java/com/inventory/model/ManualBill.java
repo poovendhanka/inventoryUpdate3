@@ -2,6 +2,7 @@ package com.inventory.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -68,6 +69,7 @@ public class ManualBill {
     private BigDecimal totalAmount;
     
     @OneToMany(mappedBy = "manualBill", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<ManualBillItem> items;
     
     // Constructors
