@@ -1,6 +1,7 @@
 package com.inventory.controller;
 
 import com.inventory.service.DealerService;
+import com.inventory.service.RawMaterialService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 public class ReportController extends BaseController {
 
     private final DealerService dealerService;
+    private final RawMaterialService rawMaterialService;
 
     @GetMapping
     public String showReportsPage(
@@ -27,7 +29,7 @@ public class ReportController extends BaseController {
         String activeTab = (tab != null) ? tab : "production";
 
         // Validate the tab value
-        if (!activeTab.equals("production") && !activeTab.equals("cocopith") && !activeTab.equals("block") && !activeTab.equals("sales")) {
+        if (!activeTab.equals("production") && !activeTab.equals("cocopith") && !activeTab.equals("block") && !activeTab.equals("sales") && !activeTab.equals("purchase")) {
             activeTab = "production";
         }
 

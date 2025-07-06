@@ -24,6 +24,8 @@ public class AdminEditController extends BaseController {
     private final ProductionService productionService;
     private final CocopithProductionRepository cocopithProductionRepository;
     private final BlockProductionRepository blockProductionRepository;
+    private final CocopithProductionService cocopithProductionService;
+    private final BlockProductionService blockProductionService;
     private final SaleService saleService;
     private final ExpenseService expenseService;
     private final LabourEntryService labourEntryService;
@@ -118,10 +120,10 @@ public class AdminEditController extends BaseController {
                     productionService.deleteProduction(id);
                     break;
                 case "cocopith":
-                    cocopithProductionRepository.deleteById(id);
+                    cocopithProductionService.deleteCocopithProduction(id);
                     break;
                 case "block":
-                    blockProductionRepository.deleteById(id);
+                    blockProductionService.deleteBlockProduction(id);
                     break;
                 default:
                     return ResponseEntity.badRequest().build();

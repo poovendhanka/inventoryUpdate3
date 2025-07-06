@@ -1,6 +1,7 @@
 package com.inventory.controller;
 
 import com.inventory.service.BackupService;
+import com.inventory.service.DatabaseBackupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 public class BackupController extends BaseController {
     
     private final BackupService backupService;
+    private final DatabaseBackupService databaseBackupService;
     
     @GetMapping
     public String showBackupPage(Model model) {
@@ -38,5 +40,35 @@ public class BackupController extends BaseController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
                 .body(zipFile);
+    }
+    
+    @GetMapping("/database/sql")
+    public ResponseEntity<Resource> generateSqlBackup() {
+        try {
+            Resource sqlBackup = databaseBackupService.createSqlBackup();
+            String filename = databaseBackupService.generateBackupFileName("sql");
+            
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                    .body(sqlBackup);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create SQL backup: " + e.getMessage(), e);
+        }
+    }
+    
+    @GetMapping("/database/dump")
+    public ResponseEntity<Resource> generateDumpBackup() {
+        try {
+            Resource dumpBackup = databaseBackupService.createDumpBackup();
+            String filename = databaseBackupService.generateBackupFileName("dump");
+            
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                    .body(dumpBackup);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create dump backup: " + e.getMessage(), e);
+        }
     }
 } 

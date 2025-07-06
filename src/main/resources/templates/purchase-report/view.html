@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: html}">
+<head>
+    <title>Purchase Report</title>
+</head>
+<body>
+    <div id="pageTitle">
+        <h1>Purchase Report</h1>
+        <p class="text-muted">
+            <span th:text="${#temporals.format(fromDate, 'dd MMM yyyy')}"></span> - 
+            <span th:text="${#temporals.format(toDate, 'dd MMM yyyy')}"></span>
+        </p>
+    </div>
+
+    <div id="content">
+        <!-- Success and Error Messages -->
+        <div th:replace="~{fragments/messages :: messages}"></div>
+
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title" th:text="${#lists.size(purchases)}">0</h4>
+                                <p class="card-text">Total Purchases</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-truck fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title" th:text="${#numbers.formatDecimal(totalCft, 1, 2)}">0.00</h4>
+                                <p class="card-text">Total CFT</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-cube fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title" th:text="${'₹' + #numbers.formatDecimal(totalCost, 1, 2)}">₹0.00</h4>
+                                <p class="card-text">Total Cost</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-rupee-sign fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title" th:text="${totalCft > 0 ? '₹' + #numbers.formatDecimal(totalCost/totalCft, 1, 2) : '₹0.00'}">₹0.00</h4>
+                                <p class="card-text">Avg Cost/CFT</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-calculator fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Actions -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <a th:href="@{/reports?tab=purchase}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Reports
+                </a>
+            </div>
+            <div class="col-md-6 text-end">
+                <a th:href="@{/purchase-report/view(fromDate=${fromDate}, toDate=${toDate}, downloadCsv=true)}" 
+                   class="btn btn-success">
+                    <i class="fas fa-download"></i> Download CSV
+                </a>
+            </div>
+        </div>
+
+        <!-- Purchase Data Table -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-table"></i> Purchase Details
+                </h5>
+            </div>
+            <div class="card-body">
+                <div th:if="${purchases.empty}" class="text-center py-5">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <h5>No purchases found</h5>
+                    <p class="text-muted">No purchase data available for the selected date range.</p>
+                </div>
+                
+                <div th:unless="${purchases.empty}" class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Receipt #</th>
+                                <th>Lorry In Time</th>
+                                <th>Vehicle #</th>
+                                <th>Party</th>
+                                <th>Husk Type</th>
+                                <th>CFT</th>
+                                <th>Cost/CFT</th>
+                                <th>Total Cost</th>
+                                <th>Supervisor</th>
+                                <th>Processed Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="purchase : ${purchases}">
+                                <td th:text="${purchase.rawMaterial.receiptNumber}">R001</td>
+                                <td th:text="${#temporals.format(purchase.rawMaterial.lorryInTime, 'dd-MM-yyyy HH:mm')}">01-01-2024 10:00</td>
+                                <td th:text="${purchase.rawMaterial.vehicleNumber}">TN01AB1234</td>
+                                <td th:text="${purchase.rawMaterial.party.name}">Party Name</td>
+                                <td th:text="${purchase.rawMaterial.huskType.displayName}">Husk Type</td>
+                                <td th:text="${#numbers.formatDecimal(purchase.rawMaterial.cft, 1, 2)}">100.00</td>
+                                <td th:text="${'₹' + #numbers.formatDecimal(purchase.costPerCft != null ? purchase.costPerCft : 0.0, 1, 2)}">₹10.00</td>
+                                <td th:text="${'₹' + #numbers.formatDecimal(purchase.totalCost != null ? purchase.totalCost : 0.0, 1, 2)}">₹1000.00</td>
+                                <td th:text="${purchase.accountsSupervisor}">Supervisor</td>
+                                <td th:text="${#temporals.format(purchase.processedDate, 'dd-MM-yyyy HH:mm')}">01-01-2024 15:00</td>
+                            </tr>
+                        </tbody>
+                        <tfoot class="table-secondary">
+                            <tr>
+                                <th colspan="5">Total</th>
+                                <th th:text="${#numbers.formatDecimal(totalCft, 1, 2)}">0.00</th>
+                                <th>-</th>
+                                <th th:text="${'₹' + #numbers.formatDecimal(totalCost, 1, 2)}">₹0.00</th>
+                                <th colspan="2">-</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="pagescript">
+        <script>
+            $(document).ready(function() {
+                // Initialize DataTable if data exists
+                if ($('#purchaseTable tbody tr').length > 0) {
+                    $('#purchaseTable').DataTable({
+                        responsive: true,
+                        pageLength: 25,
+                        order: [[1, 'desc']], // Sort by Lorry In Time desc
+                        columnDefs: [
+                            { targets: [5, 6, 7], className: 'text-end' } // Right align numeric columns
+                        ]
+                    });
+                }
+            });
+        </script>
+    </div>
+</body>
+</html> 

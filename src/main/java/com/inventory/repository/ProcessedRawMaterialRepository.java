@@ -20,7 +20,8 @@ public interface ProcessedRawMaterialRepository extends JpaRepository<ProcessedR
     @Query("SELECT p FROM ProcessedRawMaterial p " +
            "JOIN FETCH p.rawMaterial rm " +
            "JOIN FETCH rm.party " +
-           "ORDER BY p.processedDate DESC")
+           "ORDER BY p.processedDate DESC " +
+           "LIMIT 10")
     List<ProcessedRawMaterial> findTop10ByOrderByProcessedDateDesc();
     
     @Query("SELECT COUNT(p) FROM ProcessedRawMaterial p")

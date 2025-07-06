@@ -69,24 +69,37 @@
 
         <!-- Search and Filter -->
         <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-search"></i> Search Bills</h6>
+            </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-4">
-                        <label for="customerSearch" class="form-label">Search by Customer</label>
-                        <input type="text" class="form-control" id="customerSearch" placeholder="Enter customer name">
+                        <label for="customerSearch" class="form-label">Customer Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="customerSearch" placeholder="Enter customer name" required>
                     </div>
                     <div class="col-md-3">
-                        <label for="startDate" class="form-label">Start Date</label>
-                        <input type="date" class="form-control" id="startDate">
+                        <label for="startDate" class="form-label">Start Date <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control" id="startDate" required>
                     </div>
                     <div class="col-md-3">
-                        <label for="endDate" class="form-label">End Date</label>
-                        <input type="date" class="form-control" id="endDate">
+                        <label for="endDate" class="form-label">End Date <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control" id="endDate" required>
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
-                        <button type="button" class="btn btn-outline-primary w-100" onclick="searchBills()">
-                            <i class="fas fa-search"></i> Search
-                        </button>
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-outline-primary" onclick="searchBills()">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="clearSearch()">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-12">
+                        <small class="text-muted">All fields are required for search</small>
                     </div>
                 </div>
             </div>
@@ -95,7 +108,7 @@
         <!-- Bills Table -->
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-list"></i> Bill List</h5>
+                <h5 class="mb-0"><i class="fas fa-list"></i> Recent Bills (Last 10)</h5>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -165,6 +178,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <form id="deleteForm" method="post" style="display: inline;">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                         <button type="submit" class="btn btn-danger">Delete Bill</button>
                     </form>
                 </div>
@@ -183,20 +197,41 @@
         }
 
         function searchBills() {
-            const customerName = document.getElementById('customerSearch').value;
+            const customerName = document.getElementById('customerSearch').value.trim();
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
             
+            // Validate all fields are filled
+            if (!customerName) {
+                alert('Please enter customer name');
+                document.getElementById('customerSearch').focus();
+                return;
+            }
+            
+            if (!startDate) {
+                alert('Please select start date');
+                document.getElementById('startDate').focus();
+                return;
+            }
+            
+            if (!endDate) {
+                alert('Please select end date');
+                document.getElementById('endDate').focus();
+                return;
+            }
+            
+            // Validate end date is not before start date
+            if (new Date(endDate) < new Date(startDate)) {
+                alert('End date cannot be before start date');
+                document.getElementById('endDate').focus();
+                return;
+            }
+            
             let searchUrl = '/manual-billing/search?';
             const params = new URLSearchParams();
-            
-            if (customerName.trim()) {
-                params.append('customerName', customerName.trim());
-            }
-            if (startDate && endDate) {
-                params.append('startDate', startDate);
-                params.append('endDate', endDate);
-            }
+            params.append('customerName', customerName);
+            params.append('startDate', startDate);
+            params.append('endDate', endDate);
             
             fetch(searchUrl + params.toString())
                 .then(response => response.json())
@@ -207,6 +242,16 @@
                     console.error('Error searching bills:', error);
                     alert('Error searching bills. Please try again.');
                 });
+        }
+
+        function clearSearch() {
+            // Clear search form
+            document.getElementById('customerSearch').value = '';
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            
+            // Reload the page to show recent bills
+            window.location.reload();
         }
 
         function updateBillsTable(bills) {

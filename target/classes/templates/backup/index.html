@@ -9,15 +9,18 @@
     
     <div id="content">
         <div class="row">
-            <div class="col-md-12">
-                <div class="card">
+            <!-- CSV Backup Card -->
+            <div class="col-md-4">
+                <div class="card h-100">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Generate Complete System Backup</h5>
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-file-csv"></i> CSV Data Backup
+                        </h5>
                     </div>
                     <div class="card-body">
                         <p class="mb-3">
-                            Click the button below to generate and download a complete backup of all database tables in CSV format.
-                            The backup includes data from all system modules:
+                            Download all database tables as CSV files in a ZIP archive.
+                            Human-readable format, good for data analysis.
                         </p>
                         <div class="row mb-4">
                             <div class="col-md-6">
@@ -44,9 +47,122 @@
                         </a>
                         <p class="text-muted mt-3 mb-0">
                             <small><i class="fas fa-info-circle me-1"></i>
-                            The backup will be downloaded as a ZIP file containing CSV files for all 21 database tables.
+                            ZIP file with 21 CSV files. Human-readable, editable.
                             </small>
                         </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SQL Backup Card -->
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-file-code"></i> SQL Backup
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-3">
+                            Download complete database as SQL commands.
+                            Human-readable, cross-platform compatible.
+                        </p>
+                        
+                        <div class="d-grid gap-2">
+                            <a href="/backup/database/sql" class="btn btn-info btn-lg sql-backup-btn">
+                                <i class="fas fa-download me-2"></i>Download SQL Backup
+                            </a>
+                        </div>
+                        
+                        <p class="text-muted mt-3 mb-0">
+                            <small><i class="fas fa-info-circle me-1"></i>
+                            Plain text SQL file. Editable, version-control friendly.
+                            </small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dump Backup Card -->
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-database"></i> Binary Backup
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-3">
+                            Download compressed binary database backup.
+                            Fastest, most reliable for restoration.
+                        </p>
+                        
+                        <div class="d-grid gap-2">
+                            <a href="/backup/database/dump" class="btn btn-success btn-lg dump-backup-btn">
+                                <i class="fas fa-download me-2"></i>Download Binary Backup
+                            </a>
+                        </div>
+                        
+                        <p class="text-muted mt-3 mb-0">
+                            <small><i class="fas fa-info-circle me-1"></i>
+                            Compressed .dump file. Fastest restore, preserves all data types.
+                            </small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Comparison Table -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-table"></i> Backup Format Comparison
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Format</th>
+                                        <th>File Size</th>
+                                        <th>Human Readable</th>
+                                        <th>Editable</th>
+                                        <th>Restore Speed</th>
+                                        <th>Best For</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><i class="fas fa-file-csv text-primary"></i> CSV (ZIP)</td>
+                                        <td class="text-warning">Large</td>
+                                        <td class="text-success"><i class="fas fa-check"></i> Yes</td>
+                                        <td class="text-success"><i class="fas fa-check"></i> Yes</td>
+                                        <td class="text-warning">Slow</td>
+                                        <td>Data analysis, reporting</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-file-code text-info"></i> SQL</td>
+                                        <td class="text-warning">Medium</td>
+                                        <td class="text-success"><i class="fas fa-check"></i> Yes</td>
+                                        <td class="text-success"><i class="fas fa-check"></i> Yes</td>
+                                        <td class="text-warning">Medium</td>
+                                        <td>Cross-platform, version control</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-database text-success"></i> Binary (.dump)</td>
+                                        <td class="text-success">Small</td>
+                                        <td class="text-danger"><i class="fas fa-times"></i> No</td>
+                                        <td class="text-danger"><i class="fas fa-times"></i> No</td>
+                                        <td class="text-success">Fast</td>
+                                        <td>Production backups, migration</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -56,10 +172,34 @@
     <th:block id="pagescript">
         <script>
             $(document).ready(function() {
-                // Add loading state to button when clicked
+                // Add loading state to CSV backup button when clicked
                 $('.btn-primary').click(function() {
                     $(this).prop('disabled', true)
                         .html('<i class="fas fa-spinner fa-spin me-2"></i>Generating...');
+                });
+                
+                // Add loading state to SQL backup button when clicked
+                $('.sql-backup-btn').click(function() {
+                    $(this).addClass('disabled')
+                        .html('<i class="fas fa-spinner fa-spin me-2"></i>Generating SQL...');
+                    
+                    // Reset button after 5 seconds
+                    setTimeout(() => {
+                        $(this).removeClass('disabled')
+                            .html('<i class="fas fa-download me-2"></i>Download SQL Backup');
+                    }, 5000);
+                });
+                
+                // Add loading state to dump backup button when clicked
+                $('.dump-backup-btn').click(function() {
+                    $(this).addClass('disabled')
+                        .html('<i class="fas fa-spinner fa-spin me-2"></i>Generating Dump...');
+                    
+                    // Reset button after 5 seconds
+                    setTimeout(() => {
+                        $(this).removeClass('disabled')
+                            .html('<i class="fas fa-download me-2"></i>Download Binary Backup');
+                    }, 5000);
                 });
             });
         </script>

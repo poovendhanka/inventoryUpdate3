@@ -102,6 +102,14 @@ public class RawMaterialService {
         return entries;
     }
 
+    public List<ProcessedRawMaterial> getProcessedEntriesByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        log.info("Fetching processed entries between {} and {}", startDate, endDate);
+        List<ProcessedRawMaterial> entries = processedRepository.findByProcessedDateBetween(startDate, endDate);
+        log.info("Found {} processed entries in date range", entries.size());
+        
+        return entries;
+    }
+
     public ProcessedRawMaterial getProcessedById(Long id) {
         return processedRepository.findById(id).orElse(null);
     }

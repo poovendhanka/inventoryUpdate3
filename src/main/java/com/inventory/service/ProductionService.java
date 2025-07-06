@@ -76,7 +76,9 @@ public class ProductionService {
     }
 
     public List<Production> getProductionByDate(LocalDate date) {
-        return productionRepository.findByProductionDateOrderByBatchCompletionTimeDesc(date);
+        LocalDateTime startDate = date.atStartOfDay();
+        LocalDateTime endDate = date.plusDays(1).atStartOfDay();
+        return productionRepository.findByBatchCompletionTimeBetween(startDate, endDate);
     }
 
     @Transactional
@@ -91,6 +93,9 @@ public class ProductionService {
     }
 
     private void reverseStockChanges(Production production) {
+        // Validate stock availability before reversal
+        validateStockForDeletion(production);
+        
         // Reverse pith stock addition (reduce it)
         if (production.getPithQuantity() != null && production.getPithQuantity() > 0) {
             pithStockService.addStock(-production.getPithQuantity());
@@ -106,6 +111,27 @@ public class ProductionService {
             double pithQty = production.getPithQuantity();
             double huskToAdd = pithQty * 2.0; // 2 CFT per 1kg pith
             stockService.addHuskStock(production.getHuskType(), huskToAdd);
+        }
+    }
+    
+    private void validateStockForDeletion(Production production) {
+        // Check if we have enough pith stock to reduce
+        if (production.getPithQuantity() != null && production.getPithQuantity() > 0) {
+            Double currentPithStock = pithStockService.getCurrentStock();
+            if (currentPithStock < production.getPithQuantity()) {
+                throw new RuntimeException("Cannot delete production: Insufficient pith stock to reverse. " +
+                    "Current: " + currentPithStock + " kg, Required: " + production.getPithQuantity() + " kg");
+            }
+        }
+        
+        // Check if we have enough fiber stock to reduce
+        if (production.getFiberBales() != null && production.getFiberBales() > 0) {
+            Double currentFiberStock = fibreStockService.getCurrentStock(production.getFiberType());
+            if (currentFiberStock < production.getFiberBales().doubleValue()) {
+                throw new RuntimeException("Cannot delete production: Insufficient " + 
+                    production.getFiberType().getDisplayName() + " fiber stock to reverse. " +
+                    "Current: " + currentFiberStock + " bales, Required: " + production.getFiberBales() + " bales");
+            }
         }
     }
 

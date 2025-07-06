@@ -43,7 +43,8 @@ public interface ProductionRepository extends JpaRepository<Production, Long> {
         Page<Production> findTopByOrderByBatchCompletionTimeDesc(Pageable pageable);
 
         @Query("SELECT p FROM Production p WHERE p.batchCompletionTime >= :startTime " +
-                        "AND p.batchCompletionTime < :endTime")
+                        "AND p.batchCompletionTime < :endTime " +
+                        "ORDER BY p.batchCompletionTime DESC")
         List<Production> findByBatchCompletionTimeBetween(
                         @Param("startTime") LocalDateTime startTime,
                         @Param("endTime") LocalDateTime endTime);
