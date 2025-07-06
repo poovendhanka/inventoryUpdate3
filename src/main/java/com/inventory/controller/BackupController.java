@@ -1,7 +1,7 @@
 package com.inventory.controller;
 
 import com.inventory.service.BackupService;
-import com.inventory.service.DatabaseBackupService;
+// import com.inventory.service.DatabaseBackupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter;
 public class BackupController extends BaseController {
     
     private final BackupService backupService;
-    private final DatabaseBackupService databaseBackupService;
+    // private final DatabaseBackupService databaseBackupService;
     
     @GetMapping
     public String showBackupPage(Model model) {
@@ -43,32 +43,16 @@ public class BackupController extends BaseController {
     }
     
     @GetMapping("/database/sql")
-    public ResponseEntity<Resource> generateSqlBackup() {
-        try {
-            Resource sqlBackup = databaseBackupService.createSqlBackup();
-            String filename = databaseBackupService.generateBackupFileName("sql");
-            
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                    .body(sqlBackup);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to create SQL backup: " + e.getMessage(), e);
-        }
+    public ResponseEntity<String> generateSqlBackup() {
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_PLAIN)
+                .body("SQL backup feature temporarily disabled. Please install PostgreSQL client tools on the server.");
     }
     
     @GetMapping("/database/dump")
-    public ResponseEntity<Resource> generateDumpBackup() {
-        try {
-            Resource dumpBackup = databaseBackupService.createDumpBackup();
-            String filename = databaseBackupService.generateBackupFileName("dump");
-            
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                    .body(dumpBackup);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to create dump backup: " + e.getMessage(), e);
-        }
+    public ResponseEntity<String> generateDumpBackup() {
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_PLAIN)
+                .body("Dump backup feature temporarily disabled. Please install PostgreSQL client tools on the server.");
     }
 } 
