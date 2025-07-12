@@ -7,6 +7,7 @@ import com.inventory.model.ShiftType;
 import com.inventory.repository.BlockProductionRepository;
 import com.inventory.service.ProductionService;
 import com.inventory.service.StockService;
+import com.inventory.service.LooseFiberStockService;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -26,14 +27,17 @@ public class ProductionController {
 
     private final ProductionService productionService;
     private final StockService stockService;
+    private final LooseFiberStockService looseFiberStockService;
     private final BlockProductionRepository blockProductionRepository;
     private static final Logger log = LoggerFactory.getLogger(ProductionController.class);
 
     public ProductionController(ProductionService productionService,
             StockService stockService,
+            LooseFiberStockService looseFiberStockService,
             BlockProductionRepository blockProductionRepository) {
         this.productionService = productionService;
         this.stockService = stockService;
+        this.looseFiberStockService = looseFiberStockService;
         this.blockProductionRepository = blockProductionRepository;
     }
 
@@ -41,13 +45,17 @@ public class ProductionController {
     public String showProductionPage(Model model) {
         try {
             // Get current stock for display
-            double whiteFiberStock = stockService.getCurrentFiberStock(FiberType.WHITE);
-            double brownFiberStock = stockService.getCurrentFiberStock(FiberType.BROWN);
+            double whiteFiberBaleStock = stockService.getCurrentFiberStock(FiberType.WHITE);
+            double brownFiberBaleStock = stockService.getCurrentFiberStock(FiberType.BROWN);
+            double whiteLooseFiberStock = looseFiberStockService.getCurrentStock(FiberType.WHITE);
+            double brownLooseFiberStock = looseFiberStockService.getCurrentStock(FiberType.BROWN);
             double pithStock = stockService.getCurrentPithStock();
             double lowEcPithStock = stockService.getCurrentLowEcPithStock();
 
-            model.addAttribute("whiteFiberStock", whiteFiberStock);
-            model.addAttribute("brownFiberStock", brownFiberStock);
+            model.addAttribute("whiteFiberBaleStock", whiteFiberBaleStock);
+            model.addAttribute("brownFiberBaleStock", brownFiberBaleStock);
+            model.addAttribute("whiteLooseFiberStock", whiteLooseFiberStock);
+            model.addAttribute("brownLooseFiberStock", brownLooseFiberStock);
             model.addAttribute("currentPithStock", pithStock);
             model.addAttribute("currentLowEcPithStock", lowEcPithStock);
 
@@ -68,7 +76,6 @@ public class ProductionController {
     @PostMapping
     public String createProduction(
             @RequestParam("huskType") String huskType,
-            @RequestParam("numBales") Integer numBales,
             @RequestParam("pithQuantity") Double pithQuantity,
             @RequestParam("batchCompletionTime") LocalDateTime batchCompletionTime,
             @RequestParam("supervisorName") String supervisorName,
@@ -78,7 +85,6 @@ public class ProductionController {
         try {
             Production production = new Production();
             production.setHuskType(HuskType.valueOf(huskType));
-            production.setNumBales(numBales);
             production.setPithQuantity(pithQuantity);
             production.setBatchCompletionTime(batchCompletionTime);
             production.setSupervisorName(supervisorName);
@@ -88,7 +94,7 @@ public class ProductionController {
 
             redirectAttributes.addFlashAttribute("successMessage",
                     "Production batch #" + production.getBatchNumber() + " recorded successfully! " +
-                    production.getNumBales() + " bales of " + production.getFiberType().getDisplayName() + 
+                    production.getLooseFiberQuantity() + " kg loose " + production.getFiberType().getDisplayName() + 
                     " fiber and " + production.getPithQuantity() + " kg pith produced.");
         } catch (Exception e) {
             log.error("Error creating production: {}", e.getMessage(), e);
@@ -134,15 +140,15 @@ public class ProductionController {
 
             // Calculate totals for summary
             int totalBatches = productions.size();
-            int totalWhiteFiberBales = 0;
-            int totalBrownFiberBales = 0;
+            double totalWhiteLooseFiber = 0;
+            double totalBrownLooseFiber = 0;
             double totalPithProduced = 0;
 
             for (Production prod : productions) {
-                if ("WHITE".equals(prod.getFiberType())) {
-                    totalWhiteFiberBales += prod.getNumBales();
-                } else if ("BROWN".equals(prod.getFiberType())) {
-                    totalBrownFiberBales += prod.getNumBales();
+                if (FiberType.WHITE.equals(prod.getFiberType())) {
+                    totalWhiteLooseFiber += prod.getLooseFiberQuantity() != null ? prod.getLooseFiberQuantity() : 0;
+                } else if (FiberType.BROWN.equals(prod.getFiberType())) {
+                    totalBrownLooseFiber += prod.getLooseFiberQuantity() != null ? prod.getLooseFiberQuantity() : 0;
                 }
                 totalPithProduced += prod.getPithQuantity();
             }
@@ -151,8 +157,8 @@ public class ProductionController {
             model.addAttribute("startDate", finalStartDate);
             model.addAttribute("endDate", finalEndDate);
             model.addAttribute("totalBatches", totalBatches);
-            model.addAttribute("totalWhiteFiberBales", totalWhiteFiberBales);
-            model.addAttribute("totalBrownFiberBales", totalBrownFiberBales);
+            model.addAttribute("totalWhiteLooseFiber", totalWhiteLooseFiber);
+            model.addAttribute("totalBrownLooseFiber", totalBrownLooseFiber);
             model.addAttribute("totalPithProduced", totalPithProduced);
             model.addAttribute("activeTab", "production");
 

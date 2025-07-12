@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <title>Fiber Production Report</title>
+</head>
+<body>
+    
+    <!-- Page Title -->
+    <h1 id="pageTitle">Fiber Production Report</h1>
+    
+    <div id="content">
+        <!-- Success and Error Messages -->
+        <div th:replace="~{fragments/messages :: messages}"></div>
+        
+        <!-- Report Header -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-weight-hanging"></i> Fiber Production Report
+                            <span th:if="${fiberType != null}" class="badge bg-info ms-2" th:text="${fiberType.displayName}"></span>
+                        </h5>
+                        <small class="text-muted">
+                            From <span th:text="${#temporals.format(startDate, 'dd MMM yyyy')}"></span> 
+                            to <span th:text="${#temporals.format(endDate, 'dd MMM yyyy')}"></span>
+                        </small>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <a th:href="@{/reports?tab=fiber}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Reports
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Total Bales Produced</h6>
+                                <h3 class="mb-0" th:text="${totalBalesProduced}">0</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-boxes fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Total Loose Fiber Used</h6>
+                                <h3 class="mb-0" th:text="${#numbers.formatDecimal(totalLooseFiberConsumed, 1, 2)} + ' kg'">0 kg</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-weight-hanging fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">White Fiber Bales</h6>
+                                <h3 class="mb-0" th:text="${totalWhiteBales}">0</h3>
+                                <small th:text="${#numbers.formatDecimal(totalWhiteFiberConsumed, 1, 2)} + ' kg used'">0 kg used</small>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-cube fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Brown Fiber Bales</h6>
+                                <h3 class="mb-0" th:text="${totalBrownBales}">0</h3>
+                                <small th:text="${#numbers.formatDecimal(totalBrownFiberConsumed, 1, 2)} + ' kg used'">0 kg used</small>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-cube fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Report Table -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Detailed Fiber Production Records</h5>
+            </div>
+            <div class="card-body">
+                <div th:if="${#lists.isEmpty(fiberProductions)}" class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> No fiber production records found for the selected date range.
+                </div>
+                
+                <div th:if="${!#lists.isEmpty(fiberProductions)}" class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Fiber Type</th>
+                                <th>Loose Fiber Consumed (kg)</th>
+                                <th>Bales Produced</th>
+                                <th>Efficiency (kg/bale)</th>
+                                <th>Supervisor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="production : ${fiberProductions}">
+                                <td th:text="${#temporals.format(production.productionDate, 'dd MMM yyyy')}"></td>
+                                <td th:text="${#temporals.format(production.productionTime, 'HH:mm')}"></td>
+                                <td>
+                                    <span th:if="${production.fiberType.name() == 'WHITE'}" class="badge bg-light text-dark">
+                                        <i class="fas fa-circle text-white"></i> White Fiber
+                                    </span>
+                                    <span th:if="${production.fiberType.name() == 'BROWN'}" class="badge bg-secondary">
+                                        <i class="fas fa-circle text-brown"></i> Brown Fiber
+                                    </span>
+                                </td>
+                                <td th:text="${#numbers.formatDecimal(production.looseFiberConsumed, 1, 2)}"></td>
+                                <td th:text="${production.balesProduced}"></td>
+                                <td th:text="${#numbers.formatDecimal(production.looseFiberConsumed / production.balesProduced, 1, 2)}"></td>
+                                <td th:text="${production.supervisorName ?: 'N/A'}"></td>
+                            </tr>
+                        </tbody>
+                        <tfoot class="table-secondary">
+                            <tr>
+                                <th colspan="3">TOTALS</th>
+                                <th th:text="${#numbers.formatDecimal(totalLooseFiberConsumed, 1, 2)}"></th>
+                                <th th:text="${totalBalesProduced}"></th>
+                                <th th:text="${totalBalesProduced > 0 ? #numbers.formatDecimal(totalLooseFiberConsumed / totalBalesProduced, 1, 2) : '0.00'}"></th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Options -->
+        <div class="card mt-4">
+            <div class="card-body">
+                <h6 class="card-title">Export Options</h6>
+                <form th:action="@{/fiber-report/view}" method="get" class="d-inline">
+                    <input type="hidden" name="startDate" th:value="${startDate}">
+                    <input type="hidden" name="endDate" th:value="${endDate}">
+                    <input type="hidden" name="fiberType" th:value="${fiberType}">
+                    <input type="hidden" name="downloadCsv" value="true">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-download"></i> Download CSV
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <th:block id="pagescript">
+        <script>
+            $(document).ready(function() {
+                // Initialize any additional functionality if needed
+            });
+        </script>
+    </th:block>
+</body>
+</html> 

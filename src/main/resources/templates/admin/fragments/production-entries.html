@@ -12,7 +12,7 @@
                     <th>Shift</th>
                     <th>Husk Type</th>
                     <th>Pith (kg)</th>
-                    <th>Fiber Bales</th>
+                    <th>Loose Fiber (kg)</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -31,7 +31,7 @@
                               th:text="${entry.huskType.displayName}"></span>
                     </td>
                     <td th:text="${entry.pithQuantity}"></td>
-                    <td th:text="${entry.fiberBales}"></td>
+                    <td th:text="${entry.looseFiberQuantity != null ? #numbers.formatDecimal(entry.looseFiberQuantity, 1, 2) : '0.00'}"></td>
                     <td>
                         <button type="button" class="btn btn-sm btn-outline-danger" 
                                 th:onclick="'deleteEntry(\'production\', \'production\', ' + ${entry.id} + ')'">
@@ -115,8 +115,45 @@
     </div>
 </div>
 
+<!-- Fiber Production Entries -->
+<div th:if="${fiberEntries != null and !fiberEntries.empty}">
+    <h6 class="text-info mb-3"><i class="fas fa-industry"></i> Fiber Production</h6>
+    <div class="table-responsive mb-4">
+        <table class="table table-striped table-hover table-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Date</th>
+                    <th>Fiber Type</th>
+                    <th>Bales Produced</th>
+                    <th>Loose Fiber Used (kg)</th>
+                    <th>Supervisor</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="entry : ${fiberEntries}">
+                    <td th:text="${#temporals.format(entry.productionTime, 'dd-MM-yyyy HH:mm')}"></td>
+                    <td>
+                        <span class="badge" th:classappend="${entry.fiberType.name() == 'WHITE' ? 'bg-light text-dark' : 'bg-secondary'}" 
+                              th:text="${entry.fiberType.displayName}"></span>
+                    </td>
+                    <td th:text="${entry.balesProduced}"></td>
+                    <td th:text="${entry.looseFiberConsumed != null ? #numbers.formatDecimal(entry.looseFiberConsumed, 1, 2) : '0.00'}"></td>
+                    <td th:text="${entry.supervisorName}"></td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                th:onclick="'deleteEntry(\'production\', \'fiber\', ' + ${entry.id} + ')'">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
 <!-- No entries message -->
-<div th:if="${(productionEntries == null or productionEntries.empty) and (cocopithEntries == null or cocopithEntries.empty) and (blockEntries == null or blockEntries.empty)}" 
+<div th:if="${(productionEntries == null or productionEntries.empty) and (cocopithEntries == null or cocopithEntries.empty) and (blockEntries == null or blockEntries.empty) and (fiberEntries == null or fiberEntries.empty)}" 
      class="alert alert-info">
     <i class="fas fa-info-circle"></i>
     No production entries found
@@ -125,7 +162,7 @@
 </div>
 
 <!-- Summary -->
-<div th:if="${(productionEntries != null and !productionEntries.empty) or (cocopithEntries != null and !cocopithEntries.empty) or (blockEntries != null and !blockEntries.empty)}" 
+<div th:if="${(productionEntries != null and !productionEntries.empty) or (cocopithEntries != null and !cocopithEntries.empty) or (blockEntries != null and !blockEntries.empty) or (fiberEntries != null and !fiberEntries.empty)}" 
      class="mt-3">
     <small class="text-muted">
         <i class="fas fa-info-circle"></i>
@@ -135,6 +172,8 @@
         <span th:if="${cocopithEntries != null}" th:text="${cocopithEntries.size()} + ' cocopith'"></span>
         <span th:if="${blockEntries != null and (cocopithEntries != null or productionEntries != null)}">, </span>
         <span th:if="${blockEntries != null}" th:text="${blockEntries.size()} + ' block'"></span>
+        <span th:if="${fiberEntries != null and (blockEntries != null or cocopithEntries != null or productionEntries != null)}">, </span>
+        <span th:if="${fiberEntries != null}" th:text="${fiberEntries.size()} + ' fiber'"></span>
         entries
         <span th:if="${selectedDate != null}"> for <span th:text="${#temporals.format(selectedDate, 'dd-MM-yyyy')}"></span></span>
     </small>

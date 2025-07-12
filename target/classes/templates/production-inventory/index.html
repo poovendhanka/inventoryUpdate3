@@ -66,6 +66,12 @@
                             <i class="fas fa-box"></i> Husk Inventory
                         </button>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="loose-fiber-tab" data-bs-toggle="tab" data-bs-target="#loose-fiber" 
+                                type="button" role="tab" aria-controls="loose-fiber" aria-selected="false">
+                            <i class="fas fa-weight-hanging"></i> Loose Fiber
+                        </button>
+                    </li>
                 </ul>
                 
                 <!-- Tab Content -->
@@ -244,6 +250,93 @@
                                                         <span>Current Stock:</span>
                                                         <span class="fw-bold" th:text="${#numbers.formatDecimal(brownHuskStock ?: 0, 1, 2)} + ' CFT'">0 CFT</span>
                                                     </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Loose Fiber Inventory Tab -->
+                    <div class="tab-pane fade" id="loose-fiber" role="tabpanel" aria-labelledby="loose-fiber-tab">
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Loose Fiber Inventory</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <!-- White Loose Fiber -->
+                                            <div class="col-md-6 col-lg-4 mb-4">
+                                                <div class="alert alert-green p-3">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h5 class="mb-0">White Loose Fiber</h5>
+                                                        <i class="fas fa-weight-hanging fa-2x text-success"></i>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="d-flex justify-content-between">
+                                                        <span>Current Stock:</span>
+                                                        <span class="fw-bold" th:text="${#numbers.formatDecimal(whiteLooseFiberStock ?: 0, 1, 2)} + ' kg'">0 kg</span>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between">
+                                                        <span>Potential Bales:</span>
+                                                        <span class="fw-bold text-info" th:text="${#numbers.formatInteger((whiteLooseFiberStock ?: 0) / 35, 0)} + ' bales'">0 bales</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Brown Loose Fiber -->
+                                            <div class="col-md-6 col-lg-4 mb-4">
+                                                <div class="alert alert-green p-3">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h5 class="mb-0">Brown Loose Fiber</h5>
+                                                        <i class="fas fa-weight-hanging fa-2x text-success"></i>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="d-flex justify-content-between">
+                                                        <span>Current Stock:</span>
+                                                        <span class="fw-bold" th:text="${#numbers.formatDecimal(brownLooseFiberStock ?: 0, 1, 2)} + ' kg'">0 kg</span>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between">
+                                                        <span>Potential Bales:</span>
+                                                        <span class="fw-bold text-info" th:text="${#numbers.formatInteger((brownLooseFiberStock ?: 0) / 35, 0)} + ' bales'">0 bales</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Total Loose Fiber -->
+                                            <div class="col-md-6 col-lg-4 mb-4">
+                                                <div class="alert alert-info p-3">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <h5 class="mb-0">Total Loose Fiber</h5>
+                                                        <i class="fas fa-weight-hanging fa-2x text-info"></i>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="d-flex justify-content-between">
+                                                        <span>Total Stock:</span>
+                                                        <span class="fw-bold" th:text="${#numbers.formatDecimal((whiteLooseFiberStock ?: 0) + (brownLooseFiberStock ?: 0), 1, 2)} + ' kg'">0 kg</span>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between">
+                                                        <span>Total Potential Bales:</span>
+                                                        <span class="fw-bold text-info" th:text="${#numbers.formatInteger(((whiteLooseFiberStock ?: 0) + (brownLooseFiberStock ?: 0)) / 35, 0)} + ' bales'">0 bales</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row mt-4">
+                                            <div class="col-md-12">
+                                                <div class="alert alert-light">
+                                                    <h6 class="alert-heading">
+                                                        <i class="fas fa-info-circle"></i> Loose Fiber Information
+                                                    </h6>
+                                                    <p class="mb-0">
+                                                        <strong>Conversion Rate:</strong> 35 kg loose fiber = 1 bale<br>
+                                                        <strong>Source:</strong> Loose fiber is produced from coconut husk processing (1 CFT = 650g loose fiber + 1.35 kg pith)
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>

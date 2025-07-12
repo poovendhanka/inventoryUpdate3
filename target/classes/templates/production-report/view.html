@@ -48,8 +48,11 @@
                             <div class="col-md-6">
                                 <div class="card bg-light">
                                     <div class="card-body text-center">
-                                        <h5 class="card-title">Total Bales</h5>
-                                        <h2 class="text-primary" th:text="${totalBales}"></h2>
+                                        <h5 class="card-title">Total Loose Fiber</h5>
+                                        <h2 class="text-primary" th:text="${totalLooseFiber != null ? #numbers.formatDecimal(totalLooseFiber, 1, 2) + ' kg' : '0.00 kg'}"></h2>
+                                        <small class="text-muted">
+                                            Potential: <span th:text="${totalBales}">0</span> bales
+                                        </small>
                                     </div>
                                 </div>
                             </div>
@@ -78,7 +81,7 @@
                                                     <th>Completion Time</th>
                                                     <th>Duration</th>
                                                     <th>Supervisor</th>
-                                                    <th>Bales</th>
+                                                    <th>Loose Fiber (kg)</th>
                                                     <th>Husk Type</th>
                                                 </tr>
                                             </thead>
@@ -94,7 +97,7 @@
                                                         </span>
                                                     </td>
                                                     <td th:text="${prod.supervisorName}"></td>
-                                                    <td th:text="${prod.numBales}"></td>
+                                                    <td th:text="${prod.looseFiberQuantity != null ? #numbers.formatDecimal(prod.looseFiberQuantity, 1, 2) : '0.00'}"></td>
                                                     <td>
                                                         <span th:if="${prod.huskType != null}" 
                                                               th:class="${prod.huskType.name() == 'GREEN' ? 'badge bg-success' : 'badge bg-warning'}"
@@ -106,7 +109,7 @@
                                             <tfoot class="table-secondary" th:if="${!firstShift.empty}">
                                                 <tr>
                                                     <th colspan="3">Total</th>
-                                                    <th th:text="${firstShiftBales}"></th>
+                                                    <th th:text="${firstShiftTotalLooseFiber != null ? #numbers.formatDecimal(firstShiftTotalLooseFiber, 1, 2) : '0.00'}"></th>
                                                     <th></th>
                                                 </tr>
                                             </tfoot>
@@ -128,7 +131,7 @@
                                                     <th>Completion Time</th>
                                                     <th>Duration</th>
                                                     <th>Supervisor</th>
-                                                    <th>Bales</th>
+                                                    <th>Loose Fiber (kg)</th>
                                                     <th>Husk Type</th>
                                                 </tr>
                                             </thead>
@@ -144,7 +147,7 @@
                                                         </span>
                                                     </td>
                                                     <td th:text="${prod.supervisorName}"></td>
-                                                    <td th:text="${prod.numBales}"></td>
+                                                    <td th:text="${prod.looseFiberQuantity != null ? #numbers.formatDecimal(prod.looseFiberQuantity, 1, 2) : '0.00'}"></td>
                                                     <td>
                                                         <span th:if="${prod.huskType != null}" 
                                                               th:class="${prod.huskType.name() == 'GREEN' ? 'badge bg-success' : 'badge bg-warning'}"
@@ -156,7 +159,7 @@
                                             <tfoot class="table-secondary" th:if="${!secondShift.empty}">
                                                 <tr>
                                                     <th colspan="3">Total</th>
-                                                    <th th:text="${secondShiftBales}"></th>
+                                                    <th th:text="${secondShiftTotalLooseFiber != null ? #numbers.formatDecimal(secondShiftTotalLooseFiber, 1, 2) : '0.00'}"></th>
                                                     <th></th>
                                                 </tr>
                                             </tfoot>
@@ -181,7 +184,7 @@
                                                     <th>Shift</th>
                                                     <th>Fiber Type</th>
                                                     <th>Duration</th>
-                                                    <th>Bales</th>
+                                                    <th>Loose Fiber (kg)</th>
                                                     <th>Pith (kg)</th>
                                                 </tr>
                                             </thead>
@@ -198,7 +201,7 @@
                                                               th:text="${prod.timeTaken.toHours() + 'h ' + (prod.timeTaken.toMinutesPart()) + 'm'}">
                                                         </span>
                                                     </td>
-                                                    <td th:text="${prod.numBales}"></td>
+                                                    <td th:text="${prod.looseFiberQuantity != null ? #numbers.formatDecimal(prod.looseFiberQuantity, 1, 2) : '0.00'}"></td>
                                                     <td th:text="${prod.pithQuantity + ' kg'}"></td>
                                                 </tr>
                                             </tbody>

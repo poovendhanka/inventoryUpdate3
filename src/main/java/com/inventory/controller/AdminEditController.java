@@ -1,15 +1,31 @@
 package com.inventory.controller;
 
-import com.inventory.model.*;
-import com.inventory.service.*;
-import com.inventory.repository.*;
+import com.inventory.model.Production;
+import com.inventory.model.CocopithProduction;
+import com.inventory.model.BlockProduction;
+import com.inventory.model.FiberProduction;
+import com.inventory.model.Sale;
+import com.inventory.model.RawMaterial;
+import com.inventory.model.Expense;
+import com.inventory.model.LabourEntry;
+import com.inventory.repository.CocopithProductionRepository;
+import com.inventory.repository.BlockProductionRepository;
+import com.inventory.repository.FiberProductionRepository;
+import com.inventory.service.ProductionService;
+import com.inventory.service.CocopithProductionService;
+import com.inventory.service.BlockProductionService;
+import com.inventory.service.FiberProductionService;
+import com.inventory.service.RawMaterialService;
+import com.inventory.service.SaleService;
+import com.inventory.service.ExpenseService;
+import com.inventory.service.LabourEntryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,8 +40,10 @@ public class AdminEditController extends BaseController {
     private final ProductionService productionService;
     private final CocopithProductionRepository cocopithProductionRepository;
     private final BlockProductionRepository blockProductionRepository;
+    private final FiberProductionRepository fiberProductionRepository;
     private final CocopithProductionService cocopithProductionService;
     private final BlockProductionService blockProductionService;
+    private final FiberProductionService fiberProductionService;
     private final SaleService saleService;
     private final ExpenseService expenseService;
     private final LabourEntryService labourEntryService;
@@ -94,6 +112,14 @@ public class AdminEditController extends BaseController {
                 entries = blockProductionRepository.findTopByOrderByProductionTimeDesc(PageRequest.of(0, 20)).getContent();
             }
             model.addAttribute("blockEntries", entries);
+        } else if ("fiber".equals(type)) {
+            List<FiberProduction> entries;
+            if (date != null) {
+                entries = fiberProductionRepository.findByProductionDateBetweenOrderByProductionTimeDesc(date, date);
+            } else {
+                entries = fiberProductionRepository.findTop10ByOrderByProductionTimeDesc();
+            }
+            model.addAttribute("fiberEntries", entries);
         } else {
             // Get all types
             if (date != null) {
@@ -102,10 +128,12 @@ public class AdminEditController extends BaseController {
                 model.addAttribute("productionEntries", productionService.getProductionByDate(date));
                 model.addAttribute("cocopithEntries", cocopithProductionRepository.findByProductionDateBetweenOrderByProductionDateDesc(startDate, endDate));
                 model.addAttribute("blockEntries", blockProductionRepository.findByProductionTimeBetweenOrderByProductionTimeDesc(startDate, endDate));
+                model.addAttribute("fiberEntries", fiberProductionRepository.findByProductionDateBetweenOrderByProductionTimeDesc(date, date));
             } else {
                 model.addAttribute("productionEntries", productionService.getRecentProduction(10));
                 model.addAttribute("cocopithEntries", cocopithProductionRepository.findTopByOrderByProductionDateDesc(PageRequest.of(0, 10)).getContent());
                 model.addAttribute("blockEntries", blockProductionRepository.findTopByOrderByProductionTimeDesc(PageRequest.of(0, 10)).getContent());
+                model.addAttribute("fiberEntries", fiberProductionRepository.findTop10ByOrderByProductionTimeDesc());
             }
         }
         
@@ -124,6 +152,9 @@ public class AdminEditController extends BaseController {
                     break;
                 case "block":
                     blockProductionService.deleteBlockProduction(id);
+                    break;
+                case "fiber":
+                    fiberProductionService.deleteFiberProduction(id);
                     break;
                 default:
                     return ResponseEntity.badRequest().build();

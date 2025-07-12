@@ -57,6 +57,56 @@
                 </div>
             </div>
 
+            <!-- Fiber Production Card -->
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Fiber Production (Loose to Bales)</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/cocopith-production/fiber}" method="post" id="fiberForm" class="no-global-validation">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="fiberType" class="form-label">Fiber Type <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="fiberType" name="fiberType" required>
+                                        <option value="">Select Fiber Type</option>
+                                        <option value="WHITE">White Fiber</option>
+                                        <option value="BROWN">Brown Fiber</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="numberOfBales" class="form-label">Number of Bales <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="numberOfBales" 
+                                           name="numberOfBales" required min="1" placeholder="Enter number of bales">
+                                    <div class="invalid-feedback" id="numberOfBalesFeedback">
+                                        Insufficient loose fiber stock available for this many bales.
+                                    </div>
+                                    <small class="form-text text-muted">Each bale requires 35 kg of loose fiber</small>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="fiberSupervisorName" class="form-label">Supervisor Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="fiberSupervisorName" 
+                                           name="supervisorName" required placeholder="Enter supervisor name">
+                                </div>
+                            </div>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Current Loose Fiber Stock:</strong> 
+                                White: <span th:text="${#numbers.formatDecimal(whiteLooseFiberStock, 0, 2)}">0</span> kg 
+                                | Brown: <span th:text="${#numbers.formatDecimal(brownLooseFiberStock, 0, 2)}">0</span> kg
+                            </div>
+                            <div class="alert alert-warning d-none" id="fiberStockWarning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Warning: Insufficient loose fiber stock available. Max bales possible: <span id="maxBalesPossible">0</span>.
+                            </div>
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-success">Convert to Bales</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <!-- Block Production Card -->
             <div class="col-md-12 mb-4">
                 <div class="card">
@@ -105,6 +155,123 @@
                 </div>
             </div>
         </div>
+
+        <!-- Recent Productions Section -->
+        <div class="row">
+            <!-- Recent Cocopith Productions -->
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Recent Cocopith Productions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(recentCocopithProductions)}" class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> No recent cocopith productions found.
+                        </div>
+                        <div th:if="${!#lists.isEmpty(recentCocopithProductions)}" class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>High EC Pith Used (kg)</th>
+                                        <th>Low EC Pith Produced (kg)</th>
+                                        <th>Supervisor</th>
+                                        <th>Production Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="production : ${recentCocopithProductions}">
+                                        <td th:text="${#temporals.format(production.productionDate, 'dd-MM-yyyy HH:mm')}"></td>
+                                        <td th:text="${#numbers.formatDecimal(production.pithQuantityUsed, 1, 2)}"></td>
+                                        <td th:text="${#numbers.formatDecimal(production.lowEcQuantityProduced, 1, 2)}"></td>
+                                        <td th:text="${production.supervisorName}"></td>
+                                        <td th:text="${production.productionTime != null ? production.productionTime.toMinutes() + ' min' : 'N/A'}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Block Productions -->
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Recent Block Productions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(recentBlockProductions)}" class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> No recent block productions found.
+                        </div>
+                        <div th:if="${!#lists.isEmpty(recentBlockProductions)}" class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Pith Type</th>
+                                        <th>Blocks Produced</th>
+                                        <th>Pith Used (kg)</th>
+                                        <th>Supervisor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="production : ${recentBlockProductions}">
+                                        <td th:text="${#temporals.format(production.productionTime, 'dd-MM-yyyy HH:mm')}"></td>
+                                        <td>
+                                            <span th:if="${production.pithType?.name() == 'NORMAL'}" class="badge bg-primary">High EC</span>
+                                            <span th:if="${production.pithType?.name() == 'LOW'}" class="badge bg-success">Low EC</span>
+                                        </td>
+                                        <td th:text="${production.blocksProduced}"></td>
+                                        <td th:text="${#numbers.formatDecimal(production.pithQuantityUsed, 1, 2)}"></td>
+                                        <td th:text="${production.supervisorName}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Fiber Productions -->
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Recent Fiber Productions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(recentFiberProductions)}" class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> No recent fiber productions found.
+                        </div>
+                        <div th:if="${!#lists.isEmpty(recentFiberProductions)}" class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Fiber Type</th>
+                                        <th>Loose Fiber Used (kg)</th>
+                                        <th>Bales Produced</th>
+                                        <th>Supervisor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="production : ${recentFiberProductions}">
+                                        <td th:text="${#temporals.format(production.productionTime, 'dd-MM-yyyy HH:mm')}"></td>
+                                        <td>
+                                            <span th:if="${production.fiberType?.name() == 'WHITE'}" class="badge bg-light text-dark">White</span>
+                                            <span th:if="${production.fiberType?.name() == 'BROWN'}" class="badge bg-secondary">Brown</span>
+                                        </td>
+                                        <td th:text="${#numbers.formatDecimal(production.looseFiberConsumed, 1, 2)}"></td>
+                                        <td th:text="${production.balesProduced}"></td>
+                                        <td th:text="${production.supervisorName}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     
     <th:block id="pagescript">
@@ -122,11 +289,14 @@
                 // Get stock values from Thymeleaf model
                 const currentPithStock = parseFloat("[[${currentPithStock}]]");
                 const currentLowEcPithStock = parseFloat("[[${currentLowEcPithStock}]]");
+                const whiteLooseFiberStock = parseFloat("[[${whiteLooseFiberStock}]]");
+                const brownLooseFiberStock = parseFloat("[[${brownLooseFiberStock}]]");
                 
-                console.log("Stock values loaded:", { currentPithStock, currentLowEcPithStock });
+                console.log("Stock values loaded:", { currentPithStock, currentLowEcPithStock, whiteLooseFiberStock, brownLooseFiberStock });
                 
-                // Each block requires 5kg of pith (this is a business rule)
-                const PITH_PER_BLOCK = 5; 
+                // Business rules
+                const PITH_PER_BLOCK = 5; // Each block requires 5kg of pith
+                const FIBER_PER_BALE = 35; // Each bale requires 35kg of loose fiber 
                 
                 // Validate Cocopith Production form
                 $('#pithQuantityUsed').on('input', function() {
@@ -200,9 +370,48 @@
                     }
                 }
                 
+                // Validate Fiber Production form
+                $('#numberOfBales, #fiberType').on('input change', function() {
+                    validateFiberProduction();
+                });
+                
+                $('#fiberForm').on('submit', function(e) {
+                    if (!validateFiberProduction()) {
+                        e.preventDefault();
+                    }
+                });
+                
+                function validateFiberProduction() {
+                    const numberOfBales = parseInt($('#numberOfBales').val());
+                    const fiberType = $('#fiberType').val();
+                    const balesInput = $('#numberOfBales');
+                    const warningAlert = $('#fiberStockWarning');
+                    
+                    if (isNaN(numberOfBales) || numberOfBales <= 0) {
+                        balesInput.removeClass('is-invalid');
+                        warningAlert.addClass('d-none');
+                        return true;
+                    }
+                    
+                    const availableLooseFiber = fiberType === 'WHITE' ? whiteLooseFiberStock : brownLooseFiberStock;
+                    const maxBales = Math.floor(availableLooseFiber / FIBER_PER_BALE);
+                    
+                    if (numberOfBales > maxBales) {
+                        balesInput.addClass('is-invalid');
+                        $('#maxBalesPossible').text(maxBales);
+                        warningAlert.removeClass('d-none');
+                        return false;
+                    } else {
+                        balesInput.removeClass('is-invalid');
+                        warningAlert.addClass('d-none');
+                        return true;
+                    }
+                }
+                
                 // Initial validation
                 validatePithQuantity();
                 validateBlockProduction();
+                validateFiberProduction();
             });
             /*]]>*/
         </script>

@@ -37,10 +37,14 @@ public class BackupService {
                     "dealers",
                     "employees",
                     "expenses",
+                    "fiber_production",
                     "fiber_stock",
                     "husk_stock",
                     "labour_entries",
+                    "loose_fiber_stock",
                     "low_ec_pith_stock",
+                    "manual_bills",
+                    "manual_bill_items",
                     "parties",
                     "pith_stock",
                     "processed_raw_materials",
@@ -49,6 +53,7 @@ public class BackupService {
                     "raw_materials",
                     "raw_material_cost",
                     "sales",
+                    "users",
                     "white_fiber_stock"
             };
 

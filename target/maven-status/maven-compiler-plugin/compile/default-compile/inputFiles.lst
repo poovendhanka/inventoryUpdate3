@@ -1,9 +1,11 @@
+D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\service\FiberProductionService.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\exception\GlobalExceptionHandler.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\CoconutHuskInventoryApplication.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\repository\WhiteFiberStockRepository.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\controller\BlockProductionReportController.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\controller\DealerController.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\controller\SettingsController.java
+D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\model\LooseFiberStock.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\controller\ProductionController.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\controller\CocopithProductionController.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\controller\ProductionInventoryController.java
@@ -11,6 +13,7 @@ D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\model\Employee.ja
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\service\ProductCostService.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\controller\BaseController.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\controller\ProductionReportController.java
+D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\service\impl\LooseFiberStockServiceImpl.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\repository\RawMaterialCostRepository.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\controller\EyarkkaiController.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\model\Account.java
@@ -35,7 +38,10 @@ D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\repository\SaleRe
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\service\BillPdfService.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\repository\ExpenseRepository.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\controller\AdminEditController.java
+D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\model\FiberProduction.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\controller\AdminController.java
+D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\repository\LooseFiberStockRepository.java
+D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\service\LooseFiberStockService.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\repository\PithStockRepository.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\model\PithStock.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\repository\EmployeeRepository.java
@@ -101,6 +107,7 @@ D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\service\impl\Pith
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\controller\AccountsController.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\repository\BrownFiberStockRepository.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\dto\ProcessedRawMaterialReport.java
+D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\controller\FiberReportController.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\controller\AccountController.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\model\BillNumber.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\repository\RawMaterialRepository.java
@@ -108,6 +115,7 @@ D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\controller\Cocopi
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\service\ProductionService.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\model\BrownFiberStock.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\controller\SalesReportController.java
+D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\repository\FiberProductionRepository.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\controller\PartyController.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\model\PithType.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\service\HuskStockService.java

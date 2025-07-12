@@ -24,9 +24,6 @@ public class Production {
     @Column(name = "batch_number")
     private Integer batchNumber;
 
-    @Column(name = "num_bales")
-    private Integer numBales = 18;
-
     @Column(name = "num_boxes")
     private Integer numBoxes = 1;
 
@@ -47,8 +44,11 @@ public class Production {
 
     private Double pithQuantity = 750.0;
 
-    @Column(name = "fiber_bales")
-    private Integer fiberBales;
+    @Column(name = "loose_fiber_quantity")
+    private Double looseFiberQuantity;
+
+    @Column(name = "cft_consumed")
+    private Double cftConsumed;
 
     @Transient
     private Duration timeTaken;
@@ -64,10 +64,13 @@ public class Production {
     @Transient
     private Duration duration;
 
+    // Production conversion constants
+    private static final double CFT_TO_PITH_RATIO = 1.350; // 1 CFT = 1.350 kg pith
+    private static final double CFT_TO_FIBER_RATIO = 0.650; // 1 CFT = 650g fiber
+
     @PrePersist
     void prePersist() {
         this.systemTime = LocalDateTime.now();
-        this.fiberBales = this.numBales;
 
         // Set fiber type based on husk type
         if (this.huskType == null) {
@@ -75,12 +78,27 @@ public class Production {
         }
         this.fiberType = (this.huskType == HuskType.GREEN) ? FiberType.WHITE : FiberType.BROWN;
 
+        // Calculate CFT consumed based on pith quantity
+        if (this.pithQuantity != null) {
+            this.cftConsumed = this.pithQuantity / CFT_TO_PITH_RATIO;
+            this.looseFiberQuantity = this.cftConsumed * CFT_TO_FIBER_RATIO;
+        }
+
         if (this.productionDate == null) {
             this.productionDate = LocalDate.now();
         }
 
         if (this.batchCompletionTime == null) {
             this.batchCompletionTime = LocalDateTime.now();
+        }
+    }
+
+    @PreUpdate
+    void preUpdate() {
+        // Recalculate values if pith quantity changes
+        if (this.pithQuantity != null) {
+            this.cftConsumed = this.pithQuantity / CFT_TO_PITH_RATIO;
+            this.looseFiberQuantity = this.cftConsumed * CFT_TO_FIBER_RATIO;
         }
     }
 

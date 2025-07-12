@@ -49,6 +49,13 @@
                    <i class="fas fa-truck"></i> Purchase Report
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" id="fiber-tab" 
+                   th:classappend="${activeReportTab == 'fiber'} ? 'active' : ''"
+                   href="#fiber-report" data-bs-toggle="tab">
+                   <i class="fas fa-weight-hanging"></i> Fiber Report
+                </a>
+            </li>
         </ul>
 
         <!-- Tab Content -->
@@ -245,6 +252,49 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Fiber Report Tab -->
+            <div class="tab-pane fade" id="fiber-report" 
+                 th:classappend="${activeReportTab == 'fiber'} ? 'show active' : ''">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Generate Fiber Production Report</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/fiber-report/view}" method="get">
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Start Date <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" id="fiberStartDate" name="startDate" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">End Date <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" id="fiberEndDate" name="endDate" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Fiber Type</label>
+                                    <select class="form-select" id="fiberType" name="fiberType">
+                                        <option value="">All Fiber Types</option>
+                                        <option value="WHITE">White Fiber</option>
+                                        <option value="BROWN">Brown Fiber</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-success me-2">
+                                        <i class="fas fa-chart-bar"></i> Generate Report
+                                    </button>
+                                    <div class="form-check form-check-inline ms-3">
+                                        <input class="form-check-input" type="checkbox" id="fiberDownloadCsv" name="downloadCsv" value="true">
+                                        <label class="form-check-label" for="fiberDownloadCsv">Download as CSV</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -259,8 +309,8 @@
                 const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
                 
                 // Set default dates for all reports to current month range
-                $('#productionStartDate, #cocopithStartDate, #blockStartDate, #salesStartDate, #purchaseStartDate').val(firstDay.toISOString().split('T')[0]);
-                $('#productionEndDate, #cocopithEndDate, #blockEndDate, #salesEndDate, #purchaseEndDate').val(lastDay.toISOString().split('T')[0]);
+                $('#productionStartDate, #cocopithStartDate, #blockStartDate, #salesStartDate, #purchaseStartDate, #fiberStartDate').val(firstDay.toISOString().split('T')[0]);
+                $('#productionEndDate, #cocopithEndDate, #blockEndDate, #salesEndDate, #purchaseEndDate, #fiberEndDate').val(lastDay.toISOString().split('T')[0]);
                 
                 // Save active tab to sessionStorage when tab changes
                 $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {

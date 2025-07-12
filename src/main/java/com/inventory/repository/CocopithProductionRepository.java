@@ -11,4 +11,5 @@ public interface CocopithProductionRepository extends JpaRepository<CocopithProd
     List<CocopithProduction> findByProductionDateBetweenOrderByProductionDateDesc(
             LocalDateTime startDate, LocalDateTime endDate);
     Page<CocopithProduction> findTopByOrderByProductionDateDesc(Pageable pageable);
+    List<CocopithProduction> findTop10ByOrderByProductionDateDesc();
 }

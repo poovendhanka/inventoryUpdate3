@@ -12,23 +12,65 @@
     <div id="content">
         <div class="row">
             <!-- Stock Overview -->
-            <div class="col-md-6 mb-4">
+            <div class="col-md-8 mb-4">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Current Stock</h5>
+                        <h5 class="card-title mb-0">Current Stock Overview</h5>
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-6">
+                            <!-- Pith Stock -->
+                            <div class="col-md-3 mb-3">
                                 <div class="text-center">
-                                    <h6>Pith Stock</h6>
-                                    <h2 th:text="${currentPithStock + ' kg'}">0 kg</h2>
+                                    <h6 class="text-muted">High EC Pith</h6>
+                                    <h3 class="text-primary mb-0" th:text="${currentPithStock + ' kg'}">0 kg</h3>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3 mb-3">
                                 <div class="text-center">
-                                    <h6>Fiber Stock</h6>
-                                    <h2 th:text="${currentFiberStock + ' kg'}">0 kg</h2>
+                                    <h6 class="text-muted">Low EC Pith</h6>
+                                    <h3 class="text-info mb-0" th:text="${currentLowEcPithStock + ' kg'}">0 kg</h3>
+                                </div>
+                            </div>
+                            
+                            <!-- Baled Fiber Stock -->
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center">
+                                    <h6 class="text-muted">Baled Fiber</h6>
+                                    <h3 class="text-success mb-0" th:text="${totalFiberBaleStock + ' bales'}">0 bales</h3>
+                                    <small class="text-muted">
+                                        W: <span th:text="${whiteFiberBaleStock}">0</span> | 
+                                        B: <span th:text="${brownFiberBaleStock}">0</span>
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <!-- Loose Fiber Stock -->
+                            <div class="col-md-3 mb-3">
+                                <div class="text-center">
+                                    <h6 class="text-muted">Loose Fiber</h6>
+                                    <h3 class="text-warning mb-0" th:text="${totalLooseFiberStock + ' kg'}">0 kg</h3>
+                                    <small class="text-muted">
+                                        W: <span th:text="${#numbers.formatDecimal(whiteLooseFiberStock, 0, 1)}">0</span> | 
+                                        B: <span th:text="${#numbers.formatDecimal(brownLooseFiberStock, 0, 1)}">0</span>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Potential Bales Info -->
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="alert alert-light mb-0">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-muted">
+                                            <i class="fas fa-info-circle"></i> 
+                                            Potential Bales from Loose Fiber:
+                                        </span>
+                                        <span class="badge bg-secondary" th:text="${#numbers.formatInteger(totalLooseFiberStock / 35, 0)} + ' bales'">
+                                            0 bales
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -37,7 +79,7 @@
             </div>
 
             <!-- Quick Actions -->
-            <div class="col-md-6 mb-4">
+            <div class="col-md-4 mb-4">
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title mb-0">Quick Actions</h5>
@@ -49,6 +91,9 @@
                             </a>
                             <a href="/production" class="btn btn-success">
                                 <i class="fas fa-industry"></i> Start Production
+                            </a>
+                            <a href="/cocopith-production" class="btn btn-info">
+                                <i class="fas fa-cogs"></i> Cocopith Production
                             </a>
                             <a href="/sales" class="btn btn-success">
                                 <i class="fas fa-shopping-cart"></i> Record Sale

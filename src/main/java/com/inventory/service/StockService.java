@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.Duration;
 import com.inventory.model.HuskType;
 import com.inventory.service.HuskStockService;
+import com.inventory.service.LooseFiberStockService;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +24,7 @@ public class StockService {
 
     private final PithStockService pithStockService;
     private final FibreStockService fibreStockService;
+    private final LooseFiberStockService looseFiberStockService;
     private final CocopithProductionRepository cocopithProductionRepository;
     private final BlockProductionRepository blockProductionRepository;
     private final SaleRepository saleRepository;
@@ -179,5 +181,26 @@ public class StockService {
         // When adding blocks back, we need to add back the pith that was used
         Double pithQuantityToAdd = blockCount * 5.0;
         pithStockService.addStock(pithQuantityToAdd);
+    }
+
+    // Loose fiber stock methods
+    public Double getCurrentLooseFiberStock(FiberType fiberType) {
+        return looseFiberStockService.getCurrentStock(fiberType);
+    }
+
+    public Double getCurrentLooseFiberStock() {
+        return looseFiberStockService.getCurrentStock(FiberType.WHITE) +
+                looseFiberStockService.getCurrentStock(FiberType.BROWN);
+    }
+
+    @Transactional
+    public void addLooseFiberStock(Double quantity, FiberType fiberType) {
+        looseFiberStockService.addStock(quantity, fiberType);
+    }
+
+    @Transactional
+    public void reduceLooseFiberStock(Double quantity, FiberType fiberType) {
+        looseFiberStockService.validateStock(quantity, fiberType);
+        looseFiberStockService.addStock(-quantity, fiberType);
     }
 }

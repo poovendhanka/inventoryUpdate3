@@ -29,7 +29,7 @@ public class ReportController extends BaseController {
         String activeTab = (tab != null) ? tab : "production";
 
         // Validate the tab value
-        if (!activeTab.equals("production") && !activeTab.equals("cocopith") && !activeTab.equals("block") && !activeTab.equals("sales") && !activeTab.equals("purchase")) {
+        if (!activeTab.equals("production") && !activeTab.equals("cocopith") && !activeTab.equals("block") && !activeTab.equals("sales") && !activeTab.equals("purchase") && !activeTab.equals("fiber")) {
             activeTab = "production";
         }
 

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.time.format.DateTimeFormatter;
 import com.inventory.service.StockService;
+import com.inventory.service.LooseFiberStockService;
 
 @Service
 @Transactional
@@ -28,7 +29,7 @@ public class ProductionService {
 
     private final ProductionRepository productionRepository;
     private final PithStockService pithStockService;
-    private final FibreStockService fibreStockService;
+    private final LooseFiberStockService looseFiberStockService;
     private final StockService stockService;
 
     public void createProduction(Production production) {
@@ -36,7 +37,7 @@ public class ProductionService {
         Integer batchNumber = generateBatchNumber();
         production.setBatchNumber(batchNumber);
 
-        // Save production
+        // Save production (this will calculate loose fiber and CFT consumed via @PrePersist)
         Production savedProduction = productionRepository.save(production);
 
         // Update stocks based on production
@@ -49,16 +50,14 @@ public class ProductionService {
             pithStockService.addStock(production.getPithQuantity());
         }
 
-        // Update fiber stock
-        if (production.getFiberBales() != null && production.getFiberBales() > 0) {
-            fibreStockService.addStock(production.getFiberBales().doubleValue(), production.getFiberType());
+        // Update loose fiber stock (new logic)
+        if (production.getLooseFiberQuantity() != null && production.getLooseFiberQuantity() > 0) {
+            looseFiberStockService.addStock(production.getLooseFiberQuantity(), production.getFiberType());
         }
 
-        // Reduce husk stock based on pith production
-        if (production.getPithQuantity() != null && production.getHuskType() != null) {
-            double pithQty = production.getPithQuantity();
-            double huskToReduce = pithQty * 2.0; // 2 CFT per 1kg pith
-            stockService.reduceHuskStock(production.getHuskType(), huskToReduce);
+        // Reduce husk stock based on CFT consumed (new logic)
+        if (production.getCftConsumed() != null && production.getHuskType() != null) {
+            stockService.reduceHuskStock(production.getHuskType(), production.getCftConsumed());
         }
     }
 
@@ -101,16 +100,14 @@ public class ProductionService {
             pithStockService.addStock(-production.getPithQuantity());
         }
 
-        // Reverse fiber stock addition (reduce it)
-        if (production.getFiberBales() != null && production.getFiberBales() > 0) {
-            fibreStockService.addStock(-production.getFiberBales().doubleValue(), production.getFiberType());
+        // Reverse loose fiber stock addition (reduce it)
+        if (production.getLooseFiberQuantity() != null && production.getLooseFiberQuantity() > 0) {
+            looseFiberStockService.addStock(-production.getLooseFiberQuantity(), production.getFiberType());
         }
 
         // Reverse husk stock reduction (add it back)
-        if (production.getPithQuantity() != null && production.getHuskType() != null) {
-            double pithQty = production.getPithQuantity();
-            double huskToAdd = pithQty * 2.0; // 2 CFT per 1kg pith
-            stockService.addHuskStock(production.getHuskType(), huskToAdd);
+        if (production.getCftConsumed() != null && production.getHuskType() != null) {
+            stockService.addHuskStock(production.getHuskType(), production.getCftConsumed());
         }
     }
     
@@ -124,13 +121,13 @@ public class ProductionService {
             }
         }
         
-        // Check if we have enough fiber stock to reduce
-        if (production.getFiberBales() != null && production.getFiberBales() > 0) {
-            Double currentFiberStock = fibreStockService.getCurrentStock(production.getFiberType());
-            if (currentFiberStock < production.getFiberBales().doubleValue()) {
+        // Check if we have enough loose fiber stock to reduce
+        if (production.getLooseFiberQuantity() != null && production.getLooseFiberQuantity() > 0) {
+            Double currentLooseFiberStock = looseFiberStockService.getCurrentStock(production.getFiberType());
+            if (currentLooseFiberStock < production.getLooseFiberQuantity()) {
                 throw new RuntimeException("Cannot delete production: Insufficient " + 
-                    production.getFiberType().getDisplayName() + " fiber stock to reverse. " +
-                    "Current: " + currentFiberStock + " bales, Required: " + production.getFiberBales() + " bales");
+                    production.getFiberType().getDisplayName() + " loose fiber stock to reverse. " +
+                    "Current: " + currentLooseFiberStock + " kg, Required: " + production.getLooseFiberQuantity() + " kg");
             }
         }
     }

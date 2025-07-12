@@ -1,9 +1,16 @@
 package com.inventory.controller;
 
 import com.inventory.model.BlockProduction;
+import com.inventory.model.CocopithProduction;
+import com.inventory.model.FiberProduction;
 import com.inventory.model.PithType;
+import com.inventory.model.FiberType;
 import com.inventory.repository.BlockProductionRepository;
+import com.inventory.repository.CocopithProductionRepository;
+import com.inventory.repository.FiberProductionRepository;
 import com.inventory.service.StockService;
+import com.inventory.service.FiberProductionService;
+import com.inventory.service.LooseFiberStockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +27,10 @@ public class CocopithProductionController extends BaseController {
 
     private final StockService stockService;
     private final BlockProductionRepository blockProductionRepository;
+    private final CocopithProductionRepository cocopithProductionRepository;
+    private final FiberProductionRepository fiberProductionRepository;
+    private final FiberProductionService fiberProductionService;
+    private final LooseFiberStockService looseFiberStockService;
 
     @GetMapping
     public String showCocopithProductionPage(Model model) {
@@ -28,6 +39,18 @@ public class CocopithProductionController extends BaseController {
             model.addAttribute("currentLowEcPithStock", stockService.getCurrentLowEcPithStock());
             model.addAttribute("normalBlockStock", stockService.getCurrentBlockStock(PithType.NORMAL));
             model.addAttribute("lowEcBlockStock", stockService.getCurrentBlockStock(PithType.LOW));
+            
+            // Add loose fiber stock for new fiber production tab
+            model.addAttribute("whiteLooseFiberStock", looseFiberStockService.getCurrentStock(FiberType.WHITE));
+            model.addAttribute("brownLooseFiberStock", looseFiberStockService.getCurrentStock(FiberType.BROWN));
+            model.addAttribute("whiteFiberBaleStock", stockService.getCurrentFiberStock(FiberType.WHITE));
+            model.addAttribute("brownFiberBaleStock", stockService.getCurrentFiberStock(FiberType.BROWN));
+            
+            // Add recent productions for display
+            model.addAttribute("recentCocopithProductions", cocopithProductionRepository.findTop10ByOrderByProductionDateDesc());
+            model.addAttribute("recentBlockProductions", blockProductionRepository.findTop10ByOrderByProductionTimeDesc());
+            model.addAttribute("recentFiberProductions", fiberProductionRepository.findTop10ByOrderByProductionTimeDesc());
+            
             model.addAttribute("activeTab", "cocopith-production");
             return "cocopith-production/index";
         } catch (Exception e) {
@@ -75,6 +98,25 @@ public class CocopithProductionController extends BaseController {
             redirectAttributes.addFlashAttribute("success", 
                 "Block production recorded successfully! " + blocksProduced + " blocks (" + 
                 pithType.getDisplayName() + ") produced by " + supervisorName + ".");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/cocopith-production";
+    }
+
+    @PostMapping("/fiber")
+    public String createFiberProduction(
+            @RequestParam FiberType fiberType,
+            @RequestParam Integer numberOfBales,
+            @RequestParam String supervisorName,
+            RedirectAttributes redirectAttributes) {
+        try {
+            fiberProductionService.convertLooseFiberToBales(fiberType, numberOfBales, supervisorName);
+            
+            double requiredFiber = fiberProductionService.calculateRequiredLooseFiber(numberOfBales);
+            redirectAttributes.addFlashAttribute("success", 
+                "Fiber production completed successfully! " + numberOfBales + " bales of " + 
+                fiberType.getDisplayName() + " produced using " + requiredFiber + " kg loose fiber by " + supervisorName + ".");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }

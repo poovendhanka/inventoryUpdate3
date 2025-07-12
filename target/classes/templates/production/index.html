@@ -22,7 +22,6 @@
                     <div class="card-body">
                         <form th:action="@{/production}" method="post">
                             <!-- Hidden fields for default values -->
-                            <input type="hidden" name="numBales" value="18">
                             <input type="hidden" name="pithQuantity" value="750.0">
                             
                             <div class="row">
@@ -80,8 +79,9 @@
                                         <th>Time</th>
                                         <th>Husk Type</th>
                                         <th>Fiber Type</th>
-                                        <th>Bales</th>
+                                        <th>Loose Fiber (kg)</th>
                                         <th>Pith (kg)</th>
+                                        <th>CFT Consumed</th>
                                         <th>Supervisor</th>
                                         <th>Shift</th>
                                     </tr>
@@ -90,12 +90,22 @@
                                     <tr th:each="prod : ${recentProductions}">
                                         <td th:text="${prod.batchNumber}"></td>
                                         <td th:text="${#temporals.format(prod.batchCompletionTime, 'dd-MM-yyyy HH:mm')}"></td>
-                                        <td th:text="${prod.huskType}"></td>
-                                        <td th:text="${prod.fiberType}"></td>
-                                        <td th:text="${prod.numBales}"></td>
-                                        <td th:text="${prod.pithQuantity}"></td>
+                                        <td>
+                                            <span th:if="${prod.huskType?.name() == 'GREEN'}" class="badge bg-success">Green</span>
+                                            <span th:if="${prod.huskType?.name() == 'BROWN'}" class="badge bg-warning">Brown</span>
+                                        </td>
+                                        <td>
+                                            <span th:if="${prod.fiberType?.name() == 'WHITE'}" class="badge bg-light text-dark">White</span>
+                                            <span th:if="${prod.fiberType?.name() == 'BROWN'}" class="badge bg-secondary">Brown</span>
+                                        </td>
+                                        <td th:text="${prod.looseFiberQuantity != null ? #numbers.formatDecimal(prod.looseFiberQuantity, 1, 2) : '0.00'}"></td>
+                                        <td th:text="${prod.pithQuantity != null ? #numbers.formatDecimal(prod.pithQuantity, 1, 2) : '0.00'}"></td>
+                                        <td th:text="${prod.cftConsumed != null ? #numbers.formatDecimal(prod.cftConsumed, 1, 2) : '0.00'}"></td>
                                         <td th:text="${prod.supervisorName}"></td>
-                                        <td th:text="${prod.shift}"></td>
+                                        <td>
+                                            <span th:if="${prod.shift?.name() == 'FIRST'}" class="badge bg-primary">First</span>
+                                            <span th:if="${prod.shift?.name() == 'SECOND'}" class="badge bg-info">Second</span>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>

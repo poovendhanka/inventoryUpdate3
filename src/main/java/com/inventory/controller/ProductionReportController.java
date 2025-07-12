@@ -69,11 +69,14 @@ public class ProductionReportController extends BaseController {
             totalBales = calculateTotalBales(firstShift, secondShift);
             totalBoxes = calculateTotalBoxes(firstShift, secondShift);
 
-            // Calculate shift-specific totals
-            int firstShiftBales = calculateShiftBales(firstShift);
+            // Calculate shift-specific totals - now using loose fiber instead of misleading "bales"
+            double firstShiftTotalLooseFiber = calculateShiftLooseFiber(firstShift);
             int firstShiftBoxes = calculateShiftBoxes(firstShift);
-            int secondShiftBales = calculateShiftBales(secondShift);
+            double secondShiftTotalLooseFiber = calculateShiftLooseFiber(secondShift);
             int secondShiftBoxes = calculateShiftBoxes(secondShift);
+
+            // Calculate total loose fiber for summary
+            double totalLooseFiber = firstShiftTotalLooseFiber + secondShiftTotalLooseFiber;
 
             // Add data to model
             model.addAttribute("date", fromDate);
@@ -81,9 +84,10 @@ public class ProductionReportController extends BaseController {
             model.addAttribute("secondShift", secondShift);
             model.addAttribute("totalBales", totalBales);
             model.addAttribute("totalBoxes", totalBoxes);
-            model.addAttribute("firstShiftBales", firstShiftBales);
+            model.addAttribute("totalLooseFiber", totalLooseFiber);
+            model.addAttribute("firstShiftTotalLooseFiber", firstShiftTotalLooseFiber);
             model.addAttribute("firstShiftBoxes", firstShiftBoxes);
-            model.addAttribute("secondShiftBales", secondShiftBales);
+            model.addAttribute("secondShiftTotalLooseFiber", secondShiftTotalLooseFiber);
             model.addAttribute("secondShiftBoxes", secondShiftBoxes);
 
             // Combine first and second shift for CSV export if needed
@@ -116,7 +120,8 @@ public class ProductionReportController extends BaseController {
             });
 
             // Calculate summary totals for the date range
-            totalBales = allProductions.stream().mapToInt(p -> p.getNumBales() != null ? p.getNumBales() : 0).sum();
+            double totalLooseFiber = allProductions.stream().mapToDouble(p -> p.getLooseFiberQuantity() != null ? p.getLooseFiberQuantity() : 0).sum();
+            totalBales = (int) Math.floor(totalLooseFiber / 35.0); // Calculate potential bales from loose fiber
             totalBoxes = allProductions.stream().mapToInt(p -> p.getNumBoxes() != null ? p.getNumBoxes() : 0).sum();
 
             // Add data to model for date range report
@@ -126,6 +131,7 @@ public class ProductionReportController extends BaseController {
             model.addAttribute("productionsByDate", productionsByDate);
             model.addAttribute("totalBales", totalBales);
             model.addAttribute("totalBoxes", totalBoxes);
+            model.addAttribute("totalLooseFiber", totalLooseFiber);
         }
 
         model.addAttribute("activeTab", "reports");
@@ -139,12 +145,12 @@ public class ProductionReportController extends BaseController {
 
             try (PrintWriter writer = response.getWriter()) {
                 // Write CSV header
-                writer.println("Date & Time,Shift,Fiber Type,Duration,Bales,Pith (kg)");
+                writer.println("Date & Time,Shift,Fiber Type,Duration,Loose Fiber (kg),Pith (kg)");
 
                 // Write data rows
                 for (Production prod : allProductions) {
                     String fiberType = prod.getFiberType() != null ? prod.getFiberType().toString() : "";
-                    int bales = prod.getNumBales() != null ? prod.getNumBales() : 0;
+                    double looseFiber = prod.getLooseFiberQuantity() != null ? prod.getLooseFiberQuantity() : 0;
                     double pith = prod.getPithQuantity() != null ? prod.getPithQuantity() : 0;
                     String duration = prod.getTimeTaken() != null
                             ? prod.getTimeTaken().toHours() + "h " + prod.getTimeTaken().toMinutesPart() + "m"
@@ -157,12 +163,13 @@ public class ProductionReportController extends BaseController {
                             prod.getShift().toString(),
                             fiberType,
                             duration,
-                            String.valueOf(bales),
+                            String.valueOf(looseFiber) + " kg",
                             pith + " kg"));
                 }
 
                 // Write total row
-                writer.println("TOTAL,,,,," + totalBales + ",");
+                double totalLooseFiberForCsv = allProductions.stream().mapToDouble(p -> p.getLooseFiberQuantity() != null ? p.getLooseFiberQuantity() : 0).sum();
+                writer.println("TOTAL,,,," + totalLooseFiberForCsv + " kg,");
             }
             return null;
         }
@@ -228,8 +235,15 @@ public class ProductionReportController extends BaseController {
     }
 
     private int calculateShiftBales(List<Production> shift) {
+        double totalLooseFiber = shift.stream()
+                .mapToDouble(p -> p.getLooseFiberQuantity() != null ? p.getLooseFiberQuantity() : 0)
+                .sum();
+        return (int) Math.floor(totalLooseFiber / 35.0); // Calculate potential bales from loose fiber
+    }
+
+    private double calculateShiftLooseFiber(List<Production> shift) {
         return shift.stream()
-                .mapToInt(p -> p.getNumBales() != null ? p.getNumBales() : 0)
+                .mapToDouble(p -> p.getLooseFiberQuantity() != null ? p.getLooseFiberQuantity() : 0)
                 .sum();
     }
 
