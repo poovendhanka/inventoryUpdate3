@@ -18,9 +18,13 @@ public class LabourEntry {
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 
-    @NotNull(message = "Work date is required")
-    @Column(name = "work_date", nullable = false)
-    private LocalDate workDate;
+    @NotNull(message = "From date is required")
+    @Column(name = "from_date", nullable = false)
+    private LocalDate fromDate;
+
+    @NotNull(message = "To date is required")
+    @Column(name = "to_date", nullable = false)
+    private LocalDate toDate;
 
     @NotNull(message = "Cost per hour is required")
     @DecimalMin(value = "0.0", inclusive = false, message = "Cost per hour must be greater than 0")
@@ -29,7 +33,6 @@ public class LabourEntry {
 
     @NotNull(message = "Hours worked is required")
     @DecimalMin(value = "0.0", inclusive = false, message = "Hours worked must be greater than 0")
-    @DecimalMax(value = "24.0", message = "Hours worked cannot exceed 24 hours")
     @Column(name = "hours_worked", nullable = false)
     private Double hoursWorked;
 
@@ -43,17 +46,37 @@ public class LabourEntry {
     @Column(name = "total_cost", nullable = false)
     private Double totalCost;
 
+    @Column(name = "advance_adjustment", nullable = false)
+    private Double advanceAdjustment = 0.0;
+
+    @Column(name = "net_payable", nullable = false)
+    private Double netPayable = 0.0;
+
     @Column(name = "entry_date", nullable = false)
     private LocalDateTime entryDate;
 
     @PrePersist
     @PreUpdate
     private void calculateTotalCost() {
+        // Validate date range
+        if (fromDate != null && toDate != null && toDate.isBefore(fromDate)) {
+            throw new IllegalArgumentException("To date must be greater than or equal to From date");
+        }
+        
         if (costPerHour != null && hoursWorked != null) {
             this.totalCost = costPerHour * hoursWorked;
         }
         if (entryDate == null) {
             this.entryDate = LocalDateTime.now();
+        }
+        // Calculate net payable if not already set (ensures it never goes negative)
+        if (netPayable == null || netPayable < 0) {
+            double total = totalCost != null ? totalCost : 0.0;
+            double adjustment = advanceAdjustment != null ? advanceAdjustment : 0.0;
+            this.netPayable = Math.max(0.0, total - adjustment);
+        }
+        if (advanceAdjustment == null) {
+            this.advanceAdjustment = 0.0;
         }
     }
 } 

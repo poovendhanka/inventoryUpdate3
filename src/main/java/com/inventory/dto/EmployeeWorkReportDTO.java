@@ -8,6 +8,11 @@ public class EmployeeWorkReportDTO {
     private double totalHours;
     private double totalSalary;
     private double averagePerDay;
+    private double totalAdvanceAdjustment;
+    private double totalNetPayable;
+    private double openingAdvance;
+    private double advancesGiven;
+    private double closingAdvance;
     private List<LabourEntry> labourEntries;
     
     public EmployeeWorkReportDTO() {}
@@ -18,6 +23,23 @@ public class EmployeeWorkReportDTO {
         this.totalHours = totalHours;
         this.totalSalary = totalSalary;
         this.averagePerDay = averagePerDay;
+        this.labourEntries = labourEntries;
+    }
+
+    public EmployeeWorkReportDTO(int totalDays, double totalHours, double totalSalary, 
+                                double averagePerDay, double totalAdvanceAdjustment, 
+                                double totalNetPayable, double openingAdvance, 
+                                double advancesGiven, double closingAdvance, 
+                                List<LabourEntry> labourEntries) {
+        this.totalDays = totalDays;
+        this.totalHours = totalHours;
+        this.totalSalary = totalSalary;
+        this.averagePerDay = averagePerDay;
+        this.totalAdvanceAdjustment = totalAdvanceAdjustment;
+        this.totalNetPayable = totalNetPayable;
+        this.openingAdvance = openingAdvance;
+        this.advancesGiven = advancesGiven;
+        this.closingAdvance = closingAdvance;
         this.labourEntries = labourEntries;
     }
     
@@ -60,5 +82,45 @@ public class EmployeeWorkReportDTO {
     
     public void setLabourEntries(List<LabourEntry> labourEntries) {
         this.labourEntries = labourEntries;
+    }
+
+    public double getTotalAdvanceAdjustment() {
+        return totalAdvanceAdjustment;
+    }
+
+    public void setTotalAdvanceAdjustment(double totalAdvanceAdjustment) {
+        this.totalAdvanceAdjustment = totalAdvanceAdjustment;
+    }
+
+    public double getTotalNetPayable() {
+        return totalNetPayable;
+    }
+
+    public void setTotalNetPayable(double totalNetPayable) {
+        this.totalNetPayable = totalNetPayable;
+    }
+
+    public double getOpeningAdvance() {
+        return openingAdvance;
+    }
+
+    public void setOpeningAdvance(double openingAdvance) {
+        this.openingAdvance = openingAdvance;
+    }
+
+    public double getAdvancesGiven() {
+        return advancesGiven;
+    }
+
+    public void setAdvancesGiven(double advancesGiven) {
+        this.advancesGiven = advancesGiven;
+    }
+
+    public double getClosingAdvance() {
+        return closingAdvance;
+    }
+
+    public void setClosingAdvance(double closingAdvance) {
+        this.closingAdvance = closingAdvance;
     }
 } 

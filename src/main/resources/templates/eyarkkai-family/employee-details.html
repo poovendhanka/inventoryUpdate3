@@ -158,7 +158,9 @@
                     <div class="card-body">
                         <!-- Work Report Form for Active Employees -->
                         <form th:if="${isOldEmployee == null or !isOldEmployee}" id="workReportForm" method="get" class="row g-3"
-                              th:action="@{/eyarkkai-family/employees/{id}/work-report(id=${employee.id})}">
+                              th:action="@{/eyarkkai-family/employees/{id}/work-report(id=${employee.id})}"
+                              th:data-employee-id="${employee.id}">
+                            <input type="hidden" id="employeeIdHidden" th:value="${employee.id}">
                             <div class="col-md-3">
                                 <label for="fromDate" class="form-label">From Date</label>
                                 <input type="date" class="form-control" id="fromDate" name="fromDate" 
@@ -182,7 +184,9 @@
                         
                         <!-- Work Report Form for Old Employees -->
                         <form th:if="${isOldEmployee != null and isOldEmployee}" id="workReportForm" method="get" class="row g-3"
-                              th:action="@{/eyarkkai-family/old-employees/{id}/work-report(id=${employee.id})}">
+                              th:action="@{/eyarkkai-family/old-employees/{id}/work-report(id=${employee.id})}"
+                              th:data-employee-id="${employee.id}">
+                            <input type="hidden" id="employeeIdHiddenOld" th:value="${employee.id}">
                             <div class="col-md-3">
                                 <label for="fromDateOld" class="form-label">From Date</label>
                                 <input type="date" class="form-control" id="fromDateOld" name="fromDate" 
@@ -234,7 +238,7 @@
                                     <div class="card bg-info text-white summary-card">
                                         <div class="card-body text-center py-2">
                                             <h5 class="mb-1" th:text="${'₹' + #numbers.formatDecimal(workReportData.totalSalary, 1, 2)}">₹0.00</h5>
-                                            <small class="summary-text">Total Salary Paid</small>
+                                            <small class="summary-text">Total Salary</small>
                                         </div>
                                     </div>
                                 </div>
@@ -247,29 +251,88 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Advance Summary Cards -->
+                            <div class="row mb-3" th:if="${workReportData.openingAdvance > 0 or workReportData.advancesGiven > 0 or workReportData.totalAdvanceAdjustment > 0}">
+                                <div class="col-12">
+                                    <h6 class="text-muted mb-2"><i class="fas fa-money-bill-wave"></i> Advance Summary</h6>
+                                </div>
+                                <div class="col-md-3 col-6 mb-2">
+                                    <div class="card bg-secondary text-white summary-card">
+                                        <div class="card-body text-center py-2">
+                                            <h5 class="mb-1" th:text="${'₹' + #numbers.formatDecimal(workReportData.openingAdvance, 1, 2)}">₹0.00</h5>
+                                            <small class="summary-text">Opening Advance</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6 mb-2">
+                                    <div class="card bg-warning text-dark summary-card">
+                                        <div class="card-body text-center py-2">
+                                            <h5 class="mb-1" th:text="${'₹' + #numbers.formatDecimal(workReportData.advancesGiven, 1, 2)}">₹0.00</h5>
+                                            <small class="summary-text">Advances Given</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6 mb-2">
+                                    <div class="card bg-danger text-white summary-card">
+                                        <div class="card-body text-center py-2">
+                                            <h5 class="mb-1" th:text="${'₹' + #numbers.formatDecimal(workReportData.totalAdvanceAdjustment, 1, 2)}">₹0.00</h5>
+                                            <small class="summary-text">Advance Adjusted</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6 mb-2">
+                                    <div class="card bg-primary text-white summary-card">
+                                        <div class="card-body text-center py-2">
+                                            <h5 class="mb-1" th:text="${'₹' + #numbers.formatDecimal(workReportData.totalNetPayable, 1, 2)}">₹0.00</h5>
+                                            <small class="summary-text">Net Paid</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 mt-2">
+                                    <div class="alert alert-info mb-0 py-2">
+                                        <small>
+                                            <strong>Closing Advance:</strong> 
+                                            <span th:text="${'₹' + #numbers.formatDecimal(workReportData.closingAdvance, 1, 2)}">₹0.00</span>
+                                            <span class="text-muted ms-2">(Opening + Given - Adjusted)</span>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
                             
                             <!-- Detailed Work Entries Table -->
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover table-sm work-report-table">
                                     <thead class="table-success">
                                         <tr>
-                                            <th class="text-center">Date</th>
+                                            <th class="text-center">Date Range</th>
                                             <th class="text-center">Shift</th>
                                             <th class="text-center">Hours</th>
                                             <th class="text-center">Rate/Hr</th>
                                             <th class="text-center">Total</th>
+                                            <th class="text-center">Advance Adj.</th>
+                                            <th class="text-center">Net Payable</th>
                                             <th class="text-center">Description</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr th:if="${workReportData.labourEntries.empty}">
-                                            <td colspan="6" class="text-center text-muted py-4">
+                                            <td colspan="8" class="text-center text-muted py-4">
                                                 <i class="fas fa-info-circle me-2"></i>
                                                 No work entries found for the selected date range
                                             </td>
                                         </tr>
                                         <tr th:each="entry : ${workReportData.labourEntries}">
-                                            <td class="text-center" th:text="${#temporals.format(entry.workDate, 'dd-MM-yyyy')}">Date</td>
+                                            <td class="text-center">
+                                                <span th:if="${entry.fromDate.equals(entry.toDate)}" 
+                                                      th:text="${#temporals.format(entry.fromDate, 'dd-MM-yyyy')}">
+                                                </span>
+                                                <span th:if="${!entry.fromDate.equals(entry.toDate)}">
+                                                    <span th:text="${#temporals.format(entry.fromDate, 'dd-MM-yyyy')}"></span>
+                                                    <br><small class="text-muted">to</small><br>
+                                                    <span th:text="${#temporals.format(entry.toDate, 'dd-MM-yyyy')}"></span>
+                                                </span>
+                                            </td>
                                             <td class="text-center">
                                                 <span class="badge badge-sm" 
                                                       th:classappend="${entry.shift.contains('First')} ? 'bg-primary' : 'bg-secondary'"
@@ -282,6 +345,19 @@
                                             <td class="text-center">
                                                 <strong class="text-success" th:text="${'₹' + #numbers.formatDecimal(entry.totalCost, 1, 2)}">₹0.00</strong>
                                             </td>
+                                            <td class="text-center">
+                                                <span th:if="${entry.advanceAdjustment != null and entry.advanceAdjustment > 0}" 
+                                                      class="text-warning" 
+                                                      th:text="${'₹' + #numbers.formatDecimal(entry.advanceAdjustment, 1, 2)}">
+                                                </span>
+                                                <span th:if="${entry.advanceAdjustment == null or entry.advanceAdjustment == 0}" 
+                                                      class="text-muted">
+                                                    ₹0.00
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <strong class="text-primary" th:text="${'₹' + #numbers.formatDecimal(entry.netPayable, 1, 2)}">₹0.00</strong>
+                                            </td>
                                             <td class="text-center" th:text="${entry.description != null ? entry.description : '-'}">Description</td>
                                         </tr>
                                     </tbody>
@@ -291,6 +367,8 @@
                                             <td class="text-center"><strong th:text="${workReportData.totalHours}">0.0</strong></td>
                                             <td class="text-center"><strong>-</strong></td>
                                             <td class="text-center"><strong class="text-success" th:text="${'₹' + #numbers.formatDecimal(workReportData.totalSalary, 1, 2)}">₹0.00</strong></td>
+                                            <td class="text-center"><strong class="text-warning" th:text="${'₹' + #numbers.formatDecimal(workReportData.totalAdvanceAdjustment, 1, 2)}">₹0.00</strong></td>
+                                            <td class="text-center"><strong class="text-primary" th:text="${'₹' + #numbers.formatDecimal(workReportData.totalNetPayable, 1, 2)}">₹0.00</strong></td>
                                             <td class="text-center"></td>
                                         </tr>
                                     </tfoot>
@@ -333,7 +411,39 @@
                 
                 // Get employee data for export functionality
                 const isOldEmployee = /*[[${isOldEmployee}]]*/ false;
-                const employeeId = /*[[${employee.id}]]*/ 0;
+                
+                // Get employee ID from multiple sources (most reliable first)
+                let employeeId = null;
+                
+                // Try hidden input field first
+                const hiddenInput = document.getElementById('employeeIdHidden') || document.getElementById('employeeIdHiddenOld');
+                if (hiddenInput && hiddenInput.value) {
+                    employeeId = hiddenInput.value;
+                }
+                
+                // Fallback to form data attribute
+                if (!employeeId || employeeId === '0' || employeeId === 'null') {
+                    const workReportForm = document.getElementById('workReportForm');
+                    if (workReportForm) {
+                        const formEmployeeId = workReportForm.getAttribute('data-employee-id');
+                        if (formEmployeeId && formEmployeeId !== '0' && formEmployeeId !== 'null') {
+                            employeeId = formEmployeeId;
+                        }
+                    }
+                }
+                
+                // Final fallback to Thymeleaf expression
+                if (!employeeId || employeeId === '0' || employeeId === 'null') {
+                    const thymeleafEmployeeId = /*[[${employee != null ? employee.id : null}]]*/ null;
+                    if (thymeleafEmployeeId != null && thymeleafEmployeeId !== 0) {
+                        employeeId = String(thymeleafEmployeeId);
+                    }
+                }
+                
+                // Validate employee ID
+                if (!employeeId || employeeId === '0' || employeeId === 'null') {
+                    console.error('Employee ID is not available for export');
+                }
                 
                 // Handle export buttons for both forms
                 const exportBtn = document.getElementById('exportBtn') || document.getElementById('exportBtnOld');
@@ -344,6 +454,12 @@
                         
                         if (!fromDate || !toDate) {
                             alert('Please select both from and to dates');
+                            return;
+                        }
+                        
+                        // Validate employee ID before proceeding
+                        if (!employeeId || employeeId === '0' || employeeId === 'null') {
+                            alert('Error: Employee ID is not available. Please refresh the page and try again.');
                             return;
                         }
                         

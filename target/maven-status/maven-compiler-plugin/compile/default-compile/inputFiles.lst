@@ -24,6 +24,8 @@ D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\service\PartyServ
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\controller\GeneralExpensesController.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\service\LabourEntryService.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\config\DataInitializer.java
+D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\model\LabourAdvance.java
+D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\repository\LabourAdvanceRepository.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\repository\ProcessedRawMaterialRepository.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\model\FiberType.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\model\HuskStock.java
@@ -82,6 +84,7 @@ D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\service\impl\Fibr
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\repository\BlockProductionRepository.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\service\DatabaseBackupService.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\repository\LabourEntryRepository.java
+D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\service\LabourAdvanceService.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\repository\DealerRepository.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\model\TransactionType.java
 D:\ErrorReportFix\inventoryUpdate3\src\main\java\com\inventory\model\ManualBill.java

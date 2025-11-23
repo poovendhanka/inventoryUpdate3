@@ -302,10 +302,14 @@ public class EyarkkaiController {
             csvContent.append("Total Salary Paid,₹").append(String.format("%.2f", workReportData.getTotalSalary())).append("\n");
             csvContent.append("Average Per Day,₹").append(String.format("%.2f", workReportData.getAveragePerDay())).append("\n\n");
             
-            csvContent.append("Date,Shift,Hours Worked,Cost per Hour,Total Cost,Description\n");
+            csvContent.append("Date Range,Shift,Hours Worked,Cost per Hour,Total Cost,Description\n");
             
             workReportData.getLabourEntries().forEach(entry -> {
-                csvContent.append(entry.getWorkDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))).append(",")
+                String dateRange = entry.getFromDate().equals(entry.getToDate()) 
+                    ? entry.getFromDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                    : entry.getFromDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + " to " + 
+                      entry.getToDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                csvContent.append(dateRange).append(",")
                          .append(entry.getShift()).append(",")
                          .append(entry.getHoursWorked()).append(",")
                          .append("₹").append(String.format("%.2f", entry.getCostPerHour())).append(",")
@@ -359,10 +363,14 @@ public class EyarkkaiController {
             csvContent.append("Total Salary Paid,₹").append(String.format("%.2f", workReportData.getTotalSalary())).append("\n");
             csvContent.append("Average Per Day,₹").append(String.format("%.2f", workReportData.getAveragePerDay())).append("\n\n");
             
-            csvContent.append("Date,Shift,Hours Worked,Cost per Hour,Total Cost,Description\n");
+            csvContent.append("Date Range,Shift,Hours Worked,Cost per Hour,Total Cost,Description\n");
             
             workReportData.getLabourEntries().forEach(entry -> {
-                csvContent.append(entry.getWorkDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))).append(",")
+                String dateRange = entry.getFromDate().equals(entry.getToDate()) 
+                    ? entry.getFromDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                    : entry.getFromDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + " to " + 
+                      entry.getToDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                csvContent.append(dateRange).append(",")
                          .append(entry.getShift()).append(",")
                          .append(entry.getHoursWorked()).append(",")
                          .append("₹").append(String.format("%.2f", entry.getCostPerHour())).append(",")

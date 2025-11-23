@@ -13,22 +13,50 @@ import java.util.List;
 @Repository
 public interface LabourEntryRepository extends JpaRepository<LabourEntry, Long> {
 
-    List<LabourEntry> findByWorkDateBetweenOrderByWorkDateDescEntryDateDesc(LocalDate startDate, LocalDate endDate);
+    // Find entries where the entry's date range overlaps with the given date range
+    @Query("SELECT le FROM LabourEntry le WHERE (le.fromDate <= :endDate AND le.toDate >= :startDate) ORDER BY le.fromDate DESC, le.entryDate DESC")
+    List<LabourEntry> findByDateRangeOverlapOrderByFromDateDescEntryDateDesc(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
-    List<LabourEntry> findByEmployeeOrderByWorkDateDescEntryDateDesc(Employee employee);
+    @Query("SELECT le FROM LabourEntry le ORDER BY le.fromDate DESC, le.entryDate DESC")
+    List<LabourEntry> findAllOrderByFromDateDescEntryDateDesc();
 
-    List<LabourEntry> findByEmployeeAndWorkDateBetweenOrderByWorkDateDesc(Employee employee, LocalDate startDate, LocalDate endDate);
+    @Query("SELECT le FROM LabourEntry le WHERE le.employee = :employee ORDER BY le.fromDate DESC, le.entryDate DESC")
+    List<LabourEntry> findByEmployeeOrderByFromDateDescEntryDateDesc(@Param("employee") Employee employee);
 
-    List<LabourEntry> findByWorkDateOrderByEntryDateDesc(LocalDate workDate);
+    // Find entries for employee where the entry's date range overlaps with the given date range
+    @Query("SELECT le FROM LabourEntry le WHERE le.employee = :employee AND (le.fromDate <= :endDate AND le.toDate >= :startDate) ORDER BY le.fromDate DESC")
+    List<LabourEntry> findByEmployeeAndDateRangeOverlapOrderByFromDateDesc(@Param("employee") Employee employee, 
+                                                                           @Param("startDate") LocalDate startDate, 
+                                                                           @Param("endDate") LocalDate endDate);
 
-    @Query("SELECT le FROM LabourEntry le ORDER BY le.workDate DESC, le.entryDate DESC")
-    List<LabourEntry> findAllOrderByWorkDateDescEntryDateDesc();
+    // Find entries that overlap with a specific date
+    @Query("SELECT le FROM LabourEntry le WHERE le.fromDate <= :date AND le.toDate >= :date ORDER BY le.entryDate DESC")
+    List<LabourEntry> findByDateOverlapOrderByEntryDateDesc(@Param("date") LocalDate date);
 
-    @Query("SELECT SUM(le.totalCost) FROM LabourEntry le WHERE le.workDate BETWEEN :startDate AND :endDate")
+    // Sum queries - entries where date range overlaps with query range
+    @Query("SELECT SUM(le.totalCost) FROM LabourEntry le WHERE (le.fromDate <= :endDate AND le.toDate >= :startDate)")
     Double getTotalCostByDateRange(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
-    @Query("SELECT SUM(le.totalCost) FROM LabourEntry le WHERE le.workDate = :date")
+    @Query("SELECT SUM(le.totalCost) FROM LabourEntry le WHERE le.fromDate <= :date AND le.toDate >= :date")
     Double getTotalCostByDate(@Param("date") LocalDate date);
 
-    boolean existsByEmployeeAndWorkDate(Employee employee, LocalDate workDate);
+    @Query("SELECT SUM(le.advanceAdjustment) FROM LabourEntry le WHERE le.employee = :employee AND (le.fromDate <= :endDate AND le.toDate >= :startDate)")
+    Double getTotalAdvanceAdjustmentByEmployeeAndDateRange(@Param("employee") Employee employee, 
+                                                            @Param("startDate") LocalDate startDate, 
+                                                            @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT SUM(le.advanceAdjustment) FROM LabourEntry le WHERE (le.fromDate <= :endDate AND le.toDate >= :startDate)")
+    Double getTotalAdvanceAdjustmentByDateRange(@Param("startDate") LocalDate startDate, 
+                                                @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT SUM(le.netPayable) FROM LabourEntry le WHERE (le.fromDate <= :endDate AND le.toDate >= :startDate)")
+    Double getTotalNetPayableByDateRange(@Param("startDate") LocalDate startDate, 
+                                         @Param("endDate") LocalDate endDate);
+
+    // Check if employee has overlapping date range entry
+    @Query("SELECT COUNT(le) > 0 FROM LabourEntry le WHERE le.employee = :employee AND le.id != COALESCE(:excludeId, -1) AND (le.fromDate <= :toDate AND le.toDate >= :fromDate)")
+    boolean existsByEmployeeAndDateRangeOverlap(@Param("employee") Employee employee, 
+                                                 @Param("fromDate") LocalDate fromDate, 
+                                                 @Param("toDate") LocalDate toDate,
+                                                 @Param("excludeId") Long excludeId);
 } 
