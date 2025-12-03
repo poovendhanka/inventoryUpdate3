@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,13 +26,17 @@ public class LabourAdvanceService {
     private final LabourAdvanceRepository advanceRepository;
     private final ExpenseService expenseService;
 
+    private static final BigDecimal ZERO = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+    private static final BigDecimal SETTLEMENT_THRESHOLD = new BigDecimal("0.0001");
+
     public LabourAdvance recordAdvance(Employee employee, Double amount, LocalDate advanceDate, String remarks) {
         log.info("Recording advance of ₹{} for employee: {}", amount, employee.getName());
-        
+        BigDecimal advanceAmount = scaleCurrency(amount != null ? BigDecimal.valueOf(amount) : ZERO);
+
         LabourAdvance advance = new LabourAdvance();
         advance.setEmployee(employee);
-        advance.setAmount(amount);
-        advance.setRemainingAmount(amount);
+        advance.setAmount(advanceAmount);
+        advance.setRemainingAmount(advanceAmount);
         advance.setAdvanceDate(advanceDate != null ? advanceDate : LocalDate.now());
         advance.setRemarks(remarks);
         advance.setSettled(false);
@@ -44,8 +50,8 @@ public class LabourAdvanceService {
     }
 
     public double getOutstandingAdvance(Employee employee) {
-        Double total = advanceRepository.getOutstandingAdvanceTotal(employee);
-        return total != null ? total : 0.0;
+        BigDecimal total = advanceRepository.getOutstandingAdvanceTotal(employee);
+        return total != null ? total.doubleValue() : 0.0;
     }
 
     public List<LabourAdvance> getOutstandingAdvances(Employee employee) {
@@ -61,8 +67,8 @@ public class LabourAdvanceService {
     }
 
     public double getTotalAdvancesGivenInPeriod(Employee employee, LocalDate startDate, LocalDate endDate) {
-        Double total = advanceRepository.getTotalAdvancesGivenInPeriod(employee, startDate, endDate);
-        return total != null ? total : 0.0;
+        BigDecimal total = advanceRepository.getTotalAdvancesGivenInPeriod(employee, startDate, endDate);
+        return total != null ? total.doubleValue() : 0.0;
     }
 
     /**
@@ -83,30 +89,32 @@ public class LabourAdvanceService {
             ? customDeduction 
             : totalCost;
 
-        double remainingToAdjust = Math.min(totalCost, requestedDeduction);
-        double totalAdjusted = 0.0;
+        BigDecimal remainingToAdjust = scaleCurrency(BigDecimal.valueOf(Math.min(totalCost, requestedDeduction)));
+        BigDecimal totalAdjusted = ZERO;
 
         List<LabourAdvance> outstandingAdvances = getOutstandingAdvances(entry.getEmployee());
 
         for (LabourAdvance advance : outstandingAdvances) {
-            if (remainingToAdjust <= 0.0001) {
+            if (remainingToAdjust.compareTo(SETTLEMENT_THRESHOLD) <= 0) {
                 break;
             }
 
-            double useAmount = Math.min(advance.getRemainingAmount(), remainingToAdjust);
-            advance.setRemainingAmount(advance.getRemainingAmount() - useAmount);
+            BigDecimal advanceRemaining = scaleCurrency(advance.getRemainingAmount());
+            BigDecimal useAmount = advanceRemaining.min(remainingToAdjust);
+            BigDecimal updatedRemaining = scaleCurrency(advanceRemaining.subtract(useAmount));
+            advance.setRemainingAmount(updatedRemaining);
 
-            if (advance.getRemainingAmount() <= 0.0001) {
-                advance.setRemainingAmount(0.0);
+            if (advance.getRemainingAmount() != null && advance.getRemainingAmount().compareTo(SETTLEMENT_THRESHOLD) <= 0) {
+                advance.setRemainingAmount(ZERO);
                 advance.setSettled(true);
             }
 
-            totalAdjusted += useAmount;
-            remainingToAdjust -= useAmount;
+            totalAdjusted = totalAdjusted.add(useAmount);
+            remainingToAdjust = scaleCurrency(remainingToAdjust.subtract(useAmount));
         }
 
         // Save all modified advances
-        if (totalAdjusted > 0) {
+        if (totalAdjusted.compareTo(BigDecimal.ZERO) > 0) {
             advanceRepository.saveAll(outstandingAdvances);
             String dateRange = entry.getFromDate().equals(entry.getToDate()) 
                 ? entry.getFromDate().toString()
@@ -115,7 +123,7 @@ public class LabourAdvanceService {
                     totalAdjusted, entry.getEmployee().getName(), dateRange);
         }
 
-        return totalAdjusted;
+        return totalAdjusted.doubleValue();
     }
 
     /**
@@ -131,7 +139,7 @@ public class LabourAdvanceService {
 
             Expense expense = new Expense();
             expense.setExpenseType(ExpenseType.LABOUR);
-            expense.setAmount(advance.getAmount());
+            expense.setAmount(advance.getAmount() != null ? advance.getAmount().doubleValue() : null);
             
             // Create description
             String description = String.format("Advance for %s", employee.getName());
@@ -170,6 +178,13 @@ public class LabourAdvanceService {
             log.error("Error creating expense record for advance {}", advance.getId(), e);
             // Don't throw exception - we don't want to fail the advance save if expense creation fails
         }
+    }
+
+    private BigDecimal scaleCurrency(BigDecimal value) {
+        if (value == null) {
+            return ZERO;
+        }
+        return value.setScale(2, RoundingMode.HALF_UP);
     }
 }
 

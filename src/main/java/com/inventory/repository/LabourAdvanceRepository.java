@@ -25,10 +25,10 @@ public interface LabourAdvanceRepository extends JpaRepository<LabourAdvance, Lo
                                                     @Param("endDate") LocalDate endDate);
     
     @Query("SELECT COALESCE(SUM(a.remainingAmount), 0) FROM LabourAdvance a WHERE a.employee = :employee AND a.settled = false")
-    Double getOutstandingAdvanceTotal(@Param("employee") Employee employee);
+    java.math.BigDecimal getOutstandingAdvanceTotal(@Param("employee") Employee employee);
     
     @Query("SELECT COALESCE(SUM(a.amount), 0) FROM LabourAdvance a WHERE a.employee = :employee AND a.advanceDate BETWEEN :startDate AND :endDate")
-    Double getTotalAdvancesGivenInPeriod(@Param("employee") Employee employee, 
+    java.math.BigDecimal getTotalAdvancesGivenInPeriod(@Param("employee") Employee employee, 
                                         @Param("startDate") LocalDate startDate, 
                                         @Param("endDate") LocalDate endDate);
 }
