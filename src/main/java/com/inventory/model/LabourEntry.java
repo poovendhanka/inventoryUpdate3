@@ -3,6 +3,9 @@ package com.inventory.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -46,11 +49,11 @@ public class LabourEntry {
     @Column(name = "total_cost", nullable = false)
     private Double totalCost;
 
-    @Column(name = "advance_adjustment", nullable = false)
-    private Double advanceAdjustment = 0.0;
+    @Column(name = "advance_adjustment", nullable = false, precision = 12, scale = 2)
+    private BigDecimal advanceAdjustment = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
 
-    @Column(name = "net_payable", nullable = false)
-    private Double netPayable = 0.0;
+    @Column(name = "net_payable", nullable = false, precision = 12, scale = 2)
+    private BigDecimal netPayable = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
 
     @Column(name = "entry_date", nullable = false)
     private LocalDateTime entryDate;
@@ -70,13 +73,22 @@ public class LabourEntry {
             this.entryDate = LocalDateTime.now();
         }
         // Calculate net payable if not already set (ensures it never goes negative)
-        if (netPayable == null || netPayable < 0) {
-            double total = totalCost != null ? totalCost : 0.0;
-            double adjustment = advanceAdjustment != null ? advanceAdjustment : 0.0;
-            this.netPayable = Math.max(0.0, total - adjustment);
+        if (netPayable == null || netPayable.compareTo(BigDecimal.ZERO) < 0) {
+            BigDecimal total = totalCost != null
+                    ? BigDecimal.valueOf(totalCost).setScale(2, RoundingMode.HALF_UP)
+                    : BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+            BigDecimal adjustment = advanceAdjustment != null
+                    ? advanceAdjustment
+                    : BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+
+            BigDecimal calculated = total.subtract(adjustment);
+            if (calculated.compareTo(BigDecimal.ZERO) < 0) {
+                calculated = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+            }
+            this.netPayable = calculated.setScale(2, RoundingMode.HALF_UP);
         }
         if (advanceAdjustment == null) {
-            this.advanceAdjustment = 0.0;
+            this.advanceAdjustment = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
         }
     }
 } 

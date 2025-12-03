@@ -41,16 +41,16 @@ public interface LabourEntryRepository extends JpaRepository<LabourEntry, Long> 
     Double getTotalCostByDate(@Param("date") LocalDate date);
 
     @Query("SELECT SUM(le.advanceAdjustment) FROM LabourEntry le WHERE le.employee = :employee AND (le.fromDate <= :endDate AND le.toDate >= :startDate)")
-    Double getTotalAdvanceAdjustmentByEmployeeAndDateRange(@Param("employee") Employee employee, 
+    java.math.BigDecimal getTotalAdvanceAdjustmentByEmployeeAndDateRange(@Param("employee") Employee employee, 
                                                             @Param("startDate") LocalDate startDate, 
                                                             @Param("endDate") LocalDate endDate);
 
     @Query("SELECT SUM(le.advanceAdjustment) FROM LabourEntry le WHERE (le.fromDate <= :endDate AND le.toDate >= :startDate)")
-    Double getTotalAdvanceAdjustmentByDateRange(@Param("startDate") LocalDate startDate, 
+    java.math.BigDecimal getTotalAdvanceAdjustmentByDateRange(@Param("startDate") LocalDate startDate, 
                                                 @Param("endDate") LocalDate endDate);
 
     @Query("SELECT SUM(le.netPayable) FROM LabourEntry le WHERE (le.fromDate <= :endDate AND le.toDate >= :startDate)")
-    Double getTotalNetPayableByDateRange(@Param("startDate") LocalDate startDate, 
+    java.math.BigDecimal getTotalNetPayableByDateRange(@Param("startDate") LocalDate startDate, 
                                          @Param("endDate") LocalDate endDate);
 
     // Check if employee has overlapping date range entry

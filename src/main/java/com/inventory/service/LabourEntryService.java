@@ -90,11 +90,12 @@ public class LabourEntryService {
         
         // Apply advance adjustment if requested
         double adjustmentAmount = labourAdvanceService.applyAdvanceAdjustment(labourEntry, applyAdvance, customDeduction);
-        labourEntry.setAdvanceAdjustment(adjustmentAmount);
+        labourEntry.setAdvanceAdjustment(java.math.BigDecimal.valueOf(adjustmentAmount));
         
         // Calculate net payable
         double totalCost = labourEntry.getTotalCost() != null ? labourEntry.getTotalCost() : 0.0;
-        labourEntry.setNetPayable(Math.max(0.0, totalCost - adjustmentAmount));
+        double netPayable = Math.max(0.0, totalCost - adjustmentAmount);
+        labourEntry.setNetPayable(java.math.BigDecimal.valueOf(netPayable));
         
         LabourEntry savedEntry = labourEntryRepository.save(labourEntry);
         
@@ -179,7 +180,7 @@ public class LabourEntryService {
                 .sum();
         
         double totalNetPayable = entries.stream()
-                .mapToDouble(entry -> entry.getNetPayable() != null ? entry.getNetPayable() : 0.0)
+                .mapToDouble(entry -> entry.getNetPayable() != null ? entry.getNetPayable().doubleValue() : 0.0)
                 .sum();
         
         // Calculate unique working days - sum of days in all date ranges
@@ -200,18 +201,18 @@ public class LabourEntryService {
     }
 
     public double getTotalAdvanceAdjustmentByEmployeeAndDateRange(Employee employee, LocalDate startDate, LocalDate endDate) {
-        Double total = labourEntryRepository.getTotalAdvanceAdjustmentByEmployeeAndDateRange(employee, startDate, endDate);
-        return total != null ? total : 0.0;
+        java.math.BigDecimal total = labourEntryRepository.getTotalAdvanceAdjustmentByEmployeeAndDateRange(employee, startDate, endDate);
+        return total != null ? total.doubleValue() : 0.0;
     }
 
     public double getTotalAdvanceAdjustmentByDateRange(LocalDate startDate, LocalDate endDate) {
-        Double total = labourEntryRepository.getTotalAdvanceAdjustmentByDateRange(startDate, endDate);
-        return total != null ? total : 0.0;
+        java.math.BigDecimal total = labourEntryRepository.getTotalAdvanceAdjustmentByDateRange(startDate, endDate);
+        return total != null ? total.doubleValue() : 0.0;
     }
 
     public double getTotalNetPayableByDateRange(LocalDate startDate, LocalDate endDate) {
-        Double total = labourEntryRepository.getTotalNetPayableByDateRange(startDate, endDate);
-        return total != null ? total : 0.0;
+        java.math.BigDecimal total = labourEntryRepository.getTotalNetPayableByDateRange(startDate, endDate);
+        return total != null ? total.doubleValue() : 0.0;
     }
 
     /**
@@ -229,8 +230,8 @@ public class LabourEntryService {
             expense.setExpenseType(ExpenseType.LABOUR);
             
             // Use net payable as the expense amount (actual amount paid after advance adjustment)
-            double expenseAmount = labourEntry.getNetPayable() != null && labourEntry.getNetPayable() > 0 
-                ? labourEntry.getNetPayable() 
+            double expenseAmount = labourEntry.getNetPayable() != null && labourEntry.getNetPayable().doubleValue() > 0 
+                ? labourEntry.getNetPayable().doubleValue() 
                 : (labourEntry.getTotalCost() != null ? labourEntry.getTotalCost() : 0.0);
             expense.setAmount(expenseAmount);
             
@@ -245,8 +246,8 @@ public class LabourEntryService {
                 dateRangeStr,
                 labourEntry.getShift());
             
-            if (labourEntry.getAdvanceAdjustment() != null && labourEntry.getAdvanceAdjustment() > 0) {
-                description += String.format(" | Advance Adjusted: ₹%.2f", labourEntry.getAdvanceAdjustment());
+            if (labourEntry.getAdvanceAdjustment() != null && labourEntry.getAdvanceAdjustment().doubleValue() > 0) {
+                description += String.format(" | Advance Adjusted: ₹%.2f", labourEntry.getAdvanceAdjustment().doubleValue());
             }
             
             expense.setDescription(description);

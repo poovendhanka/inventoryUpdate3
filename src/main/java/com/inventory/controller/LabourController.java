@@ -85,13 +85,20 @@ public class LabourController extends BaseController {
                 ? labourEntry.getFromDate().toString() 
                 : labourEntry.getFromDate().toString() + " to " + labourEntry.getToDate().toString();
             
-            String successMessage = "Labour entry saved successfully! " + labourEntry.getEmployee().getName() + 
-                " - " + labourEntry.getHoursWorked() + " hours from " + dateRangeStr + 
+            String successMessage = "Labour entry saved successfully! " + labourEntry.getEmployee().getName() +
+                " - " + labourEntry.getHoursWorked() + " hours from " + dateRangeStr +
                 " (Total: ₹" + String.format("%.2f", labourEntry.getTotalCost()) + ")";
-            
-            if (applyAdvance && labourEntry.getAdvanceAdjustment() > 0) {
-                successMessage += " | Advance Adjusted: ₹" + String.format("%.2f", labourEntry.getAdvanceAdjustment()) +
-                    " | Net Payable: ₹" + String.format("%.2f", labourEntry.getNetPayable());
+
+            double advanceAdjustmentValue = labourEntry.getAdvanceAdjustment() != null
+                    ? labourEntry.getAdvanceAdjustment().doubleValue()
+                    : 0.0;
+            double netPayableValue = labourEntry.getNetPayable() != null
+                    ? labourEntry.getNetPayable().doubleValue()
+                    : 0.0;
+
+            if (applyAdvance && advanceAdjustmentValue > 0) {
+                successMessage += " | Advance Adjusted: ₹" + String.format("%.2f", advanceAdjustmentValue) +
+                    " | Net Payable: ₹" + String.format("%.2f", netPayableValue);
             } else if (applyAdvance) {
                 successMessage += " | No outstanding advance to adjust";
             }
