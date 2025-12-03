@@ -24,6 +24,7 @@ public class LabourAdvance {
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 
+
     @NotNull(message = "Amount is required")
     @DecimalMin(value = "0.01", message = "Amount must be greater than 0")
     @Column(nullable = false, precision = 12, scale = 2)

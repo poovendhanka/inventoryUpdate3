@@ -16,6 +16,7 @@ public interface LabourAdvanceRepository extends JpaRepository<LabourAdvance, Lo
     @Query("SELECT a FROM LabourAdvance a WHERE a.employee = :employee AND a.settled = false ORDER BY a.advanceDate ASC, a.id ASC")
     List<LabourAdvance> findOutstandingByEmployeeOrderByOldest(@Param("employee") Employee employee);
     
+
     @Query("SELECT a FROM LabourAdvance a WHERE a.employee = :employee ORDER BY a.advanceDate DESC, a.id DESC")
     List<LabourAdvance> findByEmployeeOrderByAdvanceDateDesc(@Param("employee") Employee employee);
     

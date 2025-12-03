@@ -46,6 +46,7 @@ public class LabourAdvanceService {
         // Create expense record for the advance
         createExpenseFromAdvance(savedAdvance);
         
+
         return savedAdvance;
     }
 
